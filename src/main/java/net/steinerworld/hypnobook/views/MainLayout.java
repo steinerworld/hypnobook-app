@@ -10,9 +10,10 @@ import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import net.steinerworld.components.appnav.AppNav;
-import net.steinerworld.components.appnav.AppNavItem;
-import net.steinerworld.views.buchhaltung.BuchhaltungView;
+
+import net.steinerworld.hypnobook.components.appnav.AppNav;
+import net.steinerworld.hypnobook.components.appnav.AppNavItem;
+import net.steinerworld.hypnobook.views.buchhaltung.BuchhaltungView;
 
 /**
  * The main view is a top-level placeholder for other views.
