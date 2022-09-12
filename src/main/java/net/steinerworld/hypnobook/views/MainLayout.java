@@ -11,8 +11,8 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import net.steinerworld.hypnobook.components.appnav.AppNav;
-import net.steinerworld.hypnobook.components.appnav.AppNavItem;
+import net.steinerworld.hypnobook.views.appnav.AppNav;
+import net.steinerworld.hypnobook.views.appnav.AppNavItem;
 import net.steinerworld.hypnobook.views.buchhaltung.BuchhaltungView;
 
 /**

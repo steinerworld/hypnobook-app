@@ -1,4 +1,6 @@
-package net.steinerworld.hypnobook.components.appnav;
+package net.steinerworld.hypnobook.views.appnav;
+
+import java.util.Optional;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasSize;
@@ -6,7 +8,6 @@ import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.dom.Element;
-import java.util.Optional;
 
 /**
  * A navigation menu with support for hierarchical and flat menus.
