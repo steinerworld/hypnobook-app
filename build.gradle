@@ -28,6 +28,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'com.vaadin:vaadin-spring-boot-starter'
 	implementation 'com.vaadin:vaadin-core'
+	implementation 'org.flywaydb:flyway-core:9.3.0'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'

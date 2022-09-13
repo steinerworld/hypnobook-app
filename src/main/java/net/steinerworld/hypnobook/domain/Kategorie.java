@@ -7,13 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +36,7 @@ public class Kategorie implements Serializable {
    @Column(name = "bezeichnung")
    private String bezeichnung;
 
-   @ManyToOne
-   @JsonIgnoreProperties(value = {"kategories", "periodes"}, allowSetters = true)
-   private Buchhaltung buchhaltung;
+   //   @ManyToOne
+   //   @JsonIgnoreProperties(value = {"kategories", "periodes"}, allowSetters = true)
+   //   private Buchhaltung buchhaltung;
 }

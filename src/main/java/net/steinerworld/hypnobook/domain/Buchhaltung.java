@@ -2,21 +2,16 @@ package net.steinerworld.hypnobook.domain;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -55,13 +50,13 @@ public class Buchhaltung implements Serializable {
    @Column(name = "text")
    private String text;
 
-   @OneToMany(mappedBy = "buchhaltung")
-   @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-   @JsonIgnoreProperties(value = {"buchhaltung"}, allowSetters = true)
-   private Set<Kategorie> kategories = new HashSet<>();
-
-   @OneToMany(mappedBy = "buchhaltung")
-   @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-   @JsonIgnoreProperties(value = {"buchhaltung"}, allowSetters = true)
-   private Set<Steuerperiode> periodes = new HashSet<>();
+   //   @OneToMany(mappedBy = "buchhaltung")
+   //   @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+   //   @JsonIgnoreProperties(value = {"buchhaltung"}, allowSetters = true)
+   //   private Set<Kategorie> kategories = new HashSet<>();
+   //
+   //   @OneToMany(mappedBy = "buchhaltung")
+   //   @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+   //   @JsonIgnoreProperties(value = {"buchhaltung"}, allowSetters = true)
+   //   private Set<Steuerperiode> periodes = new HashSet<>();
 }

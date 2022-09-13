@@ -10,13 +10,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -49,7 +46,7 @@ public class Steuerperiode implements Serializable {
    @Column(name = "status")
    private SteuerperiodeState status;
 
-   @ManyToOne
-   @JsonIgnoreProperties(value = {"kategories", "periodes"}, allowSetters = true)
-   private Buchhaltung buchhaltung;
+   //   @ManyToOne
+   //   @JsonIgnoreProperties(value = {"kategories", "periodes"}, allowSetters = true)
+   //   private Buchhaltung buchhaltung;
 }
