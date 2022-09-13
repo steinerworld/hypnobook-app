@@ -7,9 +7,9 @@ build/
 !**/src/test/**/build/
 
 ### VAADIN ###
-!**/frontent/
-*.json
-*.ts
+**/frontent/
+.json
+.ts
 
 ### STS ###
 .apt_generated
