@@ -5,6 +5,26 @@ flyway:
 
 spring:
   datasource:
-    url: jdbc:postgresql://10.12.0.1:5435/hypnobook
+    url: jdbc:postgresql://localhost:5435/hypnobook
     password: appuser
     username: appuser
+  mustache:
+    check-template-location: false
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org:
+      atmosphere: warn
+
+vaadin:
+    # Launch the default browser when starting the application in development mode
+    launch-browser: true
+    # To improve the performance during development.
+    # For more information https://vaadin.com/docs/flow/spring/tutorial-spring-configuration.html#special-configuration-parameters
+    whitelisted-packages: com.vaadin,org.vaadin,dev.hilla,ch.martinelli.wstage22.vaadin

@@ -1,6 +1,4 @@
-package net.steinerworld.hypnobook.views.appnav;
-
-import java.util.Optional;
+package net.steinerworld.hypnobook.ui.components.appnav;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
@@ -12,6 +10,8 @@ import com.vaadin.flow.internal.StateTree;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.router.Router;
 import com.vaadin.flow.server.VaadinService;
+
+import java.util.Optional;
 
 /**
  * A menu item for the {@link AppNav} component.

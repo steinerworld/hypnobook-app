@@ -8,7 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -20,6 +23,7 @@ import lombok.Setter;
  * A Buchhaltung.
  */
 @Entity
+@Table(name = "buchhaltung")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Getter @Setter
 public class Buchhaltung implements Serializable {
@@ -27,8 +31,8 @@ public class Buchhaltung implements Serializable {
    private static final long serialVersionUID = 1L;
 
    @Id
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-   @SequenceGenerator(name = "sequenceGenerator")
+   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "buchhaltung_seq")
+   @SequenceGenerator(name = "buchhaltung_seq", sequenceName = "buchhaltung_seq")
    @Column(name = "id")
    private Long id;
 
@@ -49,6 +53,16 @@ public class Buchhaltung implements Serializable {
 
    @Column(name = "text")
    private String text;
+
+   @ManyToOne(optional = false)
+   @JoinColumn(name = "kategorie_id", nullable = false, referencedColumnName = "id")
+   @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+   private Kategorie kategorie;
+
+   @ManyToOne(optional = false)
+   @JoinColumn(name = "steuerperiode_id", nullable = false, referencedColumnName = "id")
+   @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+   private Steuerperiode steuerperiode;
 
    //   @OneToMany(mappedBy = "buchhaltung")
    //   @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)

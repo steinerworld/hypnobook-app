@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -22,14 +23,15 @@ import lombok.Setter;
  * A Steuerperiode.
  */
 @Entity
+@Table(name = "steuerperiode")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Getter @Setter
 public class Steuerperiode implements Serializable {
    private static final long serialVersionUID = 1L;
 
    @Id
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-   @SequenceGenerator(name = "sequenceGenerator")
+   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "periode_seq")
+   @SequenceGenerator(name = "periode_seq", sequenceName = "periode_seq")
    @Column(name = "id")
    private Long id;
 
