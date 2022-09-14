@@ -9,10 +9,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.vaadin.flow.spring.annotation.SpringComponent;
+
 import net.steinerworld.hypnobook.domain.AppUser;
 import net.steinerworld.hypnobook.repository.AppUserRepository;
 
-//@SpringComponent
+@SpringComponent
 public class AppUserGenerator {
    private static final Logger LOGGER = LoggerFactory.getLogger(AppUserGenerator.class);
 
