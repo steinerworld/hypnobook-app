@@ -47,8 +47,4 @@ public class Steuerperiode implements Serializable {
    @Enumerated(EnumType.STRING)
    @Column(name = "status")
    private SteuerperiodeState status;
-
-   //   @ManyToOne
-   //   @JsonIgnoreProperties(value = {"kategories", "periodes"}, allowSetters = true)
-   //   private Buchhaltung buchhaltung;
 }

@@ -37,8 +37,4 @@ public class Kategorie implements Serializable {
 
    @Column(name = "bezeichnung")
    private String bezeichnung;
-
-   //   @ManyToOne
-   //   @JsonIgnoreProperties(value = {"kategories", "periodes"}, allowSetters = true)
-   //   private Buchhaltung buchhaltung;
 }

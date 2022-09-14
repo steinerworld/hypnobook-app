@@ -18,8 +18,6 @@ public class CustomUserDetailService implements UserDetailsService {
    private static final Logger LOGGER = LoggerFactory.getLogger(CustomUserDetailService.class);
    private final AppUserRepository userRepository;
 
-   //   @Autowired private PasswordEncoder passwordEncoder;
-
    @Override public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
       LOGGER.info("User '{}' will rein", username);
       return userRepository.findByUsername(username)

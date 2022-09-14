@@ -63,14 +63,4 @@ public class Buchhaltung implements Serializable {
    @JoinColumn(name = "steuerperiode_id", nullable = false, referencedColumnName = "id")
    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
    private Steuerperiode steuerperiode;
-
-   //   @OneToMany(mappedBy = "buchhaltung")
-   //   @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-   //   @JsonIgnoreProperties(value = {"buchhaltung"}, allowSetters = true)
-   //   private Set<Kategorie> kategories = new HashSet<>();
-   //
-   //   @OneToMany(mappedBy = "buchhaltung")
-   //   @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-   //   @JsonIgnoreProperties(value = {"buchhaltung"}, allowSetters = true)
-   //   private Set<Steuerperiode> periodes = new HashSet<>();
 }
