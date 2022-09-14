@@ -1,5 +1,6 @@
 package net.steinerworld.hypnobook.ui.views.about;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 
 import com.vaadin.flow.component.html.H2;
@@ -16,8 +17,8 @@ import net.steinerworld.hypnobook.ui.views.MainLayout;
 @PageTitle("About")
 @Route(value = "about", layout = MainLayout.class)
 public class AboutView extends VerticalLayout {
-
-    public AboutView() {
+    @PostConstruct
+    public void initialize() {
         setSpacing(false);
 
         Image img = new Image("images/empty-plant.png", "placeholder plant");

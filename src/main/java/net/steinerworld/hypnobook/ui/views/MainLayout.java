@@ -1,19 +1,21 @@
 package net.steinerworld.hypnobook.ui.views;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.PostConstruct;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.router.PageTitle;
 
+import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.services.SecurityService;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNav;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNavItem;
@@ -23,13 +25,14 @@ import net.steinerworld.hypnobook.ui.views.helloworld.HelloWorldView;
 /**
  * The main view is a top-level placeholder for other views.
  */
+@RequiredArgsConstructor
 public class MainLayout extends AppLayout {
 
+    private final SecurityService securityService;
     private H1 viewTitle;
-    private SecurityService securityService;
 
-    public MainLayout(@Autowired SecurityService securityService) {
-        this.securityService = securityService;
+    @PostConstruct
+    public void initialize() {
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         addToDrawer(createDrawerContent());
@@ -48,7 +51,9 @@ public class MainLayout extends AppLayout {
         if (securityService.getAuthenticatedUser() != null) {
             Button logout = new Button("Logout", click ->
                   securityService.logout());
-            header.add(logout);
+            Div logoutDiv = new Div(logout);
+            logoutDiv.addClassName("view-logout");
+            header.add(logoutDiv);
         }
 
         header.addClassNames("view-header");
@@ -56,7 +61,7 @@ public class MainLayout extends AppLayout {
     }
 
     private Component createDrawerContent() {
-        H2 appName = new H2("wstage22-vaadin");
+        H2 appName = new H2("Hypno Book");
         appName.addClassNames("app-name");
 
         com.vaadin.flow.component.html.Section section = new com.vaadin.flow.component.html.Section(appName,

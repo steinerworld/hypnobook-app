@@ -1,6 +1,12 @@
 .view-title {
   margin: 0;
   font-size: var(--lumo-font-size-l);
+  width: -webkit-fill-available;
+}
+
+.view-logout {
+  width: -webkit-fill-available;
+  text-align: right;
 }
 
 .view-header {
