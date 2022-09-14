@@ -142,5 +142,4 @@ public class AppNav extends Component implements HasSize, HasStyle {
         getElement().setAttribute("collapsible", "");
         return this;
     }
-
 }

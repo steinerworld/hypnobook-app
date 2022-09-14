@@ -5,14 +5,18 @@ flyway:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5435/hypnobook
+    url: jdbc:postgresql://10.12.0.1:5435/hypnobook
     password: appuser
     username: appuser
+    ucm:
+      autocommit: false
   mustache:
     check-template-location: false
   jpa:
     hibernate:
       ddl-auto: validate
+
+
 
 server:
   port: 8080
