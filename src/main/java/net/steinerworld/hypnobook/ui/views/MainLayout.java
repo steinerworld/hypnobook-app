@@ -6,6 +6,9 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import com.vaadin.componentfactory.ToggleButton;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -17,11 +20,15 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
+import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +37,7 @@ import net.steinerworld.hypnobook.services.SecurityService;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNav;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNavItem;
 import net.steinerworld.hypnobook.ui.views.about.AboutView;
+import net.steinerworld.hypnobook.ui.views.buchhaltung.BuchhaltungView;
 import net.steinerworld.hypnobook.ui.views.helloworld.HelloWorldView;
 
 /**
@@ -74,14 +82,14 @@ public class MainLayout extends AppLayout {
         // AppNav is not yet an official component.
         // For documentation, visit https://github.com/vaadin/vcf-nav#readme
         AppNav nav = new AppNav();
-
         if (accessChecker.hasAccess(HelloWorldView.class)) {
             nav.addItem(new AppNavItem("Hello World", HelloWorldView.class, "la la-globe"));
-
         }
         if (accessChecker.hasAccess(AboutView.class)) {
             nav.addItem(new AppNavItem("About", AboutView.class, "la la-file"));
-
+        }
+        if (accessChecker.hasAccess(BuchhaltungView.class)) {
+            nav.addItem(new AppNavItem("Buchhaltung", BuchhaltungView.class, "la la-file"));
         }
 
         return nav;
@@ -89,6 +97,7 @@ public class MainLayout extends AppLayout {
 
     private Footer createFooter() {
         Footer layout = new Footer();
+        layout.addClassName("footer-div");
 
         Optional<AppUser> maybeUser = securityService.authenticatedAppUser();
         if (maybeUser.isPresent()) {
@@ -113,18 +122,30 @@ public class MainLayout extends AppLayout {
             div.getElement().getStyle().set("align-items", "center");
             div.getElement().getStyle().set("gap", "var(--lumo-space-s)");
             userName.add(div);
-            userName.getSubMenu().addItem("Sign out", e -> {
-                securityService.logout();
-            });
-
-            layout.add(userMenu);
+            userName.getSubMenu().addItem("Sign out", e -> securityService.logout());
+            layout.add(createThemeModeToggle(), userMenu);
         } else {
             Anchor loginLink = new Anchor("login", "Sign in");
             layout.add(loginLink);
         }
-
         return layout;
     }
+
+    private Component createThemeModeToggle() {
+        Icon moon = new Icon(VaadinIcon.MOON_O);
+        Icon sun = new Icon(VaadinIcon.SUN_O);
+        ToggleButton toggle = new ToggleButton();
+        toggle.addValueChangeListener(e -> {
+            ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+            if (themeList.contains(Lumo.DARK)) {
+                themeList.remove(Lumo.DARK);
+            } else {
+                themeList.add(Lumo.DARK);
+            }
+        });
+        return new HorizontalLayout(sun, toggle, moon);
+    }
+
 
     @Override
     protected void afterNavigation() {

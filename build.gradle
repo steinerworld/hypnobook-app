@@ -17,6 +17,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url "${vaadinAddonsUrl}" }
 }
 
 ext {
@@ -35,6 +36,10 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// addon
+	implementation 'com.vaadin.componentfactory:togglebutton:2.0.0'
+
 }
 
 dependencyManagement {

@@ -29,8 +29,9 @@ public class AppUserGenerator {
 
          LOGGER.info("Generating demo data");
 
-         LOGGER.info("... generating 2 User entities...");
+         LOGGER.info("... generating User...");
          AppUser user = new AppUser();
+         user.setName("Michael Steiner");
          user.setUsername("admin");
          user.setPassword(passwordEncoder.encode("admin"));
          user.setProfilePicture(Base64.getDecoder().decode(
