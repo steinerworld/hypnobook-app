@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,20 +25,20 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
- * A Buchhaltung.
+ * A Buchung.
  */
 @Entity
-@Table(name = "buchhaltung")
+@Table(name = "buchung")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Getter @Setter @Accessors(chain = true)
 @ToString
-public class Buchhaltung implements Serializable {
+public class Buchung implements Serializable {
 
    private static final long serialVersionUID = 1L;
 
    @Id
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "buchhaltung_seq")
-   @SequenceGenerator(name = "buchhaltung_seq", sequenceName = "buchhaltung_seq")
+   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "buchung_seq")
+   @SequenceGenerator(name = "buchung_seq", sequenceName = "buchung_seq")
    @Column(name = "id")
    private Long id;
 
@@ -58,6 +60,10 @@ public class Buchhaltung implements Serializable {
    @Column(name = "text")
    private String text;
 
+   @Enumerated(EnumType.STRING)
+   @Column(name = "buchungtype")
+   private BuchungType buchungType;
+
    @ManyToOne()
    @JoinColumn(name = "kategorie_id", referencedColumnName = "id")
    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -73,14 +79,14 @@ public class Buchhaltung implements Serializable {
          return true;
       if (o == null || getClass() != o.getClass())
          return false;
-      Buchhaltung that = (Buchhaltung) o;
+      Buchung that = (Buchung) o;
       return id.equals(that.id) && buchungsdatum.equals(that.buchungsdatum) && Objects.equals(einnahme, that.einnahme)
             && Objects.equals(eingangsdatum, that.eingangsdatum) && Objects.equals(ausgabe, that.ausgabe)
-            && Objects.equals(belegNr, that.belegNr) && Objects.equals(text, that.text) && Objects.equals(kategorie,
-            that.kategorie) && steuerperiode.equals(that.steuerperiode);
+            && Objects.equals(belegNr, that.belegNr) && Objects.equals(text, that.text) && buchungType == that.buchungType
+            && kategorie.equals(that.kategorie) && steuerperiode.equals(that.steuerperiode);
    }
 
    @Override public int hashCode() {
-      return Objects.hash(id, buchungsdatum, einnahme, eingangsdatum, ausgabe, belegNr, text, kategorie, steuerperiode);
+      return Objects.hash(id, buchungsdatum, einnahme, eingangsdatum, ausgabe, belegNr, text, buchungType, kategorie, steuerperiode);
    }
 }

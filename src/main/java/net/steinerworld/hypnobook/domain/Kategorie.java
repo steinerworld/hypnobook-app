@@ -1,6 +1,7 @@
 package net.steinerworld.hypnobook.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,6 +39,19 @@ public class Kategorie implements Serializable {
    @Column(name = "name")
    private String name;
 
-   @Column(name = "beschreibung")
+   @Column(name = "beschreibung", length = 1024)
    private String beschreibung;
+
+   @Override public boolean equals(Object o) {
+      if (this == o)
+         return true;
+      if (o == null || getClass() != o.getClass())
+         return false;
+      Kategorie kategorie = (Kategorie) o;
+      return id.equals(kategorie.id) && name.equals(kategorie.name);
+   }
+
+   @Override public int hashCode() {
+      return Objects.hash(id, name);
+   }
 }
