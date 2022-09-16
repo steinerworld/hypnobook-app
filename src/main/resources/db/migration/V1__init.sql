@@ -9,7 +9,7 @@ CREATE TABLE buchhaltung
     ausgabe          DOUBLE PRECISION,
     beleg_nr         VARCHAR(255),
     text             VARCHAR(255),
-    kategorie_id     BIGINT NOT NULL,
+    kategorie_id     BIGINT,
     steuerperiode_id BIGINT NOT NULL,
     CONSTRAINT pk_buchhaltung PRIMARY KEY (id)
 );

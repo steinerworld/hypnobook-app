@@ -13,9 +13,12 @@ import org.hibernate.annotations.Type;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 
 @Entity @Table(name = "app_user")
-@Getter @Setter
+@Getter @Setter @Accessors(chain = true)
+@ToString
 public class AppUser {
    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "app_user_seq") @SequenceGenerator(name = "app_user_seq")
    @Column(name = "id", nullable = false) private Long id;

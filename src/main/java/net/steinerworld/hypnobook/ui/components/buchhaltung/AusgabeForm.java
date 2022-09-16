@@ -8,7 +8,7 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 
 import net.steinerworld.hypnobook.domain.Kategorie;
-
+@Deprecated
 public class AusgabeForm extends FormLayout {
 
    private TextField tfBelegNr;

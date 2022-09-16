@@ -15,6 +15,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 
 /**
  * A Kategorie.
@@ -22,7 +24,8 @@ import lombok.Setter;
 @Entity
 @Table(name = "kategorie")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Getter @Setter
+@Getter @Setter @Accessors(chain = true)
+@ToString
 public class Kategorie implements Serializable {
    private static final long serialVersionUID = 1L;
 
@@ -35,6 +38,6 @@ public class Kategorie implements Serializable {
    @Column(name = "name")
    private String name;
 
-   @Column(name = "bezeichnung")
-   private String bezeichnung;
+   @Column(name = "beschreibung")
+   private String beschreibung;
 }

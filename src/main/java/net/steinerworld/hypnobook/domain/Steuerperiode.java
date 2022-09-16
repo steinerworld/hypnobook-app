@@ -2,6 +2,7 @@ package net.steinerworld.hypnobook.domain;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +19,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 
 /**
  * A Steuerperiode.
@@ -25,7 +28,8 @@ import lombok.Setter;
 @Entity
 @Table(name = "steuerperiode")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Getter @Setter
+@Getter @Setter @Accessors(chain = true)
+@ToString
 public class Steuerperiode implements Serializable {
    private static final long serialVersionUID = 1L;
 
@@ -47,4 +51,17 @@ public class Steuerperiode implements Serializable {
    @Enumerated(EnumType.STRING)
    @Column(name = "status")
    private SteuerperiodeState status;
+
+   @Override public boolean equals(Object o) {
+      if (this == o)
+         return true;
+      if (o == null || getClass() != o.getClass())
+         return false;
+      Steuerperiode that = (Steuerperiode) o;
+      return Objects.equals(jahresbezeichnung, that.jahresbezeichnung);
+   }
+
+   @Override public int hashCode() {
+      return Objects.hash(jahresbezeichnung);
+   }
 }
