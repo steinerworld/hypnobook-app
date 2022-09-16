@@ -47,7 +47,7 @@ public class BuchungView extends VerticalLayout {
    private final BuchungRepository buchungRepository;
    private final KategorieRepository kategorieRepository;
    private final SteuerperiodeRepository periodeRepository;
-   private final BeanValidationBinder<Buchung> buchhaltungBinder = new BeanValidationBinder<>(Buchung.class);
+   private final BeanValidationBinder<Buchung> buchungBinder = new BeanValidationBinder<>(Buchung.class);
    private final Grid<Buchung> grid = new Grid<>();
 
    private Dialog ausgabeDialog;
@@ -79,7 +79,7 @@ public class BuchungView extends VerticalLayout {
       grid.setHeightFull();
       grid.addItemDoubleClickListener(event -> {
          Buchung item = event.getItem();
-         buchhaltungBinder.setBean(item);
+         buchungBinder.setBean(item);
          if (item.getBuchungType() == BuchungType.AUSGABE) {
             ausgabeDialog.open();
          } else if (item.getBuchungType() == BuchungType.EINNAHME) {
@@ -87,9 +87,6 @@ public class BuchungView extends VerticalLayout {
          } else {
             throw new MaloneyException("Weder Ausgabe noch Eingabe Typ");
          }
-
-
-         LOGGER.info("???????? {}", event);
       });
       loadGridData();
       return grid;
@@ -97,7 +94,7 @@ public class BuchungView extends VerticalLayout {
 
    private Button buildOpenDialogButton(BuchungType type, String text, Dialog dialog) {
       return new Button(text, e -> {
-         buchhaltungBinder.setBean(createNewBuchhaltung(type));
+         buchungBinder.setBean(createNewBuchhaltung(type));
          dialog.open();
       });
    }
@@ -136,7 +133,7 @@ public class BuchungView extends VerticalLayout {
       dialog.setHeaderTitle(title);
       dialog.add(form);
       Button saveButton = new Button("Buchen", e -> {
-         buchungRepository.save(buchhaltungBinder.getBean());
+         buchungRepository.save(buchungBinder.getBean());
          dialog.close();
          loadGridData();
       });
@@ -150,7 +147,7 @@ public class BuchungView extends VerticalLayout {
    private TextField buildTextComponent(FormLayout layout) {
       TextField tfText = new TextField("Text");
       layout.setColspan(tfText, 2);
-      buchhaltungBinder.forField(tfText).bind(Buchung::getText, Buchung::setText);
+      buchungBinder.forField(tfText).bind(Buchung::getText, Buchung::setText);
       return tfText;
    }
 
@@ -159,13 +156,13 @@ public class BuchungView extends VerticalLayout {
       seKategorie.setLabel("Kategorie");
       seKategorie.setItemLabelGenerator(Kategorie::getName);
       seKategorie.setItems(kategorieRepository.findAll());
-      buchhaltungBinder.forField(seKategorie).bind(Buchung::getKategorie, Buchung::setKategorie);
+      buchungBinder.forField(seKategorie).bind(Buchung::getKategorie, Buchung::setKategorie);
       return seKategorie;
    }
 
    private DatePicker buildBuchungsdatumComponent() {
       DatePicker dpBuchungsdatum = new DatePicker("Datum");
-      buchhaltungBinder.forField(dpBuchungsdatum).bind(Buchung::getBuchungsdatum, Buchung::setBuchungsdatum);
+      buchungBinder.forField(dpBuchungsdatum).bind(Buchung::getBuchungsdatum, Buchung::setBuchungsdatum);
       return dpBuchungsdatum;
    }
 
@@ -174,7 +171,7 @@ public class BuchungView extends VerticalLayout {
       Div chfSuffix = new Div();
       chfSuffix.setText("CHF");
       nfBetrag.setSuffixComponent(chfSuffix);
-      buchhaltungBinder.forField(nfBetrag).bind(Buchung::getAusgabe, Buchung::setAusgabe);
+      buchungBinder.forField(nfBetrag).bind(Buchung::getAusgabe, Buchung::setAusgabe);
       return nfBetrag;
    }
 
@@ -183,13 +180,13 @@ public class BuchungView extends VerticalLayout {
       Div chfSuffix = new Div();
       chfSuffix.setText("CHF");
       nfBetrag.setSuffixComponent(chfSuffix);
-      buchhaltungBinder.forField(nfBetrag).bind(Buchung::getEinnahme, Buchung::setEinnahme);
+      buchungBinder.forField(nfBetrag).bind(Buchung::getEinnahme, Buchung::setEinnahme);
       return nfBetrag;
    }
 
    private TextField buildBelegNrComponent() {
       TextField tfBelegNr = new TextField("Beleg-Nr.");
-      buchhaltungBinder.forField(tfBelegNr).bind(Buchung::getBelegNr, Buchung::setBelegNr);
+      buchungBinder.forField(tfBelegNr).bind(Buchung::getBelegNr, Buchung::setBelegNr);
       return tfBelegNr;
    }
 
@@ -198,13 +195,13 @@ public class BuchungView extends VerticalLayout {
       sePeriode.setLabel("Steuerperiode");
       sePeriode.setItemLabelGenerator(Steuerperiode::getJahresbezeichnung);
       sePeriode.setItems(periodeRepository.findAll());
-      buchhaltungBinder.forField(sePeriode).bind(Buchung::getSteuerperiode, Buchung::setSteuerperiode);
+      buchungBinder.forField(sePeriode).bind(Buchung::getSteuerperiode, Buchung::setSteuerperiode);
       return sePeriode;
    }
 
    private DatePicker buildZahlungseingangComponent() {
       DatePicker dpZahlungseingang = new DatePicker("Zahlungseingang");
-      buchhaltungBinder.forField(dpZahlungseingang).bind(Buchung::getEingangsdatum, Buchung::setEingangsdatum);
+      buchungBinder.forField(dpZahlungseingang).bind(Buchung::getEingangsdatum, Buchung::setEingangsdatum);
       return dpZahlungseingang;
    }
 
