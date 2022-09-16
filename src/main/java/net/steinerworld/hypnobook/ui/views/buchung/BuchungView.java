@@ -105,7 +105,7 @@ public class BuchungView extends VerticalLayout {
       FormLayout layout = new FormLayout();
       layout.setResponsiveSteps(
             new FormLayout.ResponsiveStep("0", 1),
-            new FormLayout.ResponsiveStep("500px", 4)
+            new FormLayout.ResponsiveStep("500px", 3)
       );
       if (type == BuchungType.AUSGABE) {
          layout.add(buildSteuerperiodeComponent(),
