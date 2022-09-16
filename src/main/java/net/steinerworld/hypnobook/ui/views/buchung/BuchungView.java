@@ -58,12 +58,10 @@ public class BuchungView extends VerticalLayout {
       setHeightFull();
       add(createBuchhaltungGrid());
 
-      FormLayout ausgabeForm = createBuchungForm(BuchungType.AUSGABE);
-      ausgabeDialog = createBuchungDialog("Ausgabe", ausgabeForm);
+      ausgabeDialog = createBuchungDialog("Ausgabe", createBuchungForm(BuchungType.AUSGABE));
       Button ausgabeButton = buildOpenDialogButton(BuchungType.AUSGABE, "Neue Ausgabe erfassen", ausgabeDialog);
 
-      FormLayout einnahmeForm = createBuchungForm(BuchungType.EINNAHME);
-      einnahmeDialog = createBuchungDialog("Einnahme", einnahmeForm);
+      einnahmeDialog = createBuchungDialog("Einnahme", createBuchungForm(BuchungType.EINNAHME));
       Button einnahmeButton = buildOpenDialogButton(BuchungType.EINNAHME, "Neue Einnahme erfassen", einnahmeDialog);
 
       HorizontalLayout dialogButtons = new HorizontalLayout(ausgabeButton, einnahmeButton);
