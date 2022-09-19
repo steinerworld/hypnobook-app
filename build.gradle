@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.7.3'
 	id 'io.spring.dependency-management' version '1.0.13.RELEASE'
 	id 'com.vaadin' version '23.2.0'
+	id "org.flywaydb.flyway" version "9.3.0"
 	id 'java'
 }
 
@@ -47,6 +48,15 @@ dependencyManagement {
 		mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
 	}
 }
+
+flyway {
+	url = 'jdbc:postgresql://localhost:5435/hypnobook'
+	user = 'appuser'
+	password = 'appuser'
+	locations = ['classpath:db/migration']
+}
+// we need to build classes before we can migrate
+flywayMigrate.dependsOn classes
 
 tasks.named('test') {
 	useJUnitPlatform()
