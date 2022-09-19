@@ -36,6 +36,7 @@ import net.steinerworld.hypnobook.domain.AppUser;
 import net.steinerworld.hypnobook.services.SecurityService;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNav;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNavItem;
+import net.steinerworld.hypnobook.ui.steuerperiode.SteuerperiodeView;
 import net.steinerworld.hypnobook.ui.views.about.AboutView;
 import net.steinerworld.hypnobook.ui.views.buchung.BuchungView;
 import net.steinerworld.hypnobook.ui.views.helloworld.HelloWorldView;
@@ -90,6 +91,9 @@ public class MainLayout extends AppLayout {
         }
         if (accessChecker.hasAccess(BuchungView.class)) {
             nav.addItem(new AppNavItem("Buchung", BuchungView.class, "la la-file"));
+        }
+        if (accessChecker.hasAccess(BuchungView.class)) {
+            nav.addItem(new AppNavItem("Steuerperiode", SteuerperiodeView.class, "la la-file"));
         }
 
         return nav;

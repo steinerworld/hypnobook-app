@@ -232,7 +232,7 @@ public class BuchungView extends VerticalLayout {
 
       DatePicker buchungsdatumDatePicker = new DatePicker("Datum");
       einnahmeBinder.forField(buchungsdatumDatePicker)
-            .withValidator(this::inValidPeriode, "Buchung in geschlossener oder noch nicht erfasster Steuerperiode")
+            .withValidator(this::inValidPeriode, "Das Buchungsdatum muss innerhalb der ausgewählten Steuerperiode liegen")
             .bind(Buchung::getBuchungsdatum, Buchung::setBuchungsdatum);
 
       DatePicker zahlungseingangDatePicker = new DatePicker("Zahlungseingang");
@@ -258,10 +258,8 @@ public class BuchungView extends VerticalLayout {
    }
 
    private boolean inValidPeriode(LocalDate date) {
-      return periodeRepository.findAll().stream()
-            .filter(periode -> periode.getStatus() != SteuerperiodeState.GESCHLOSSEN)
-            .filter(periode -> date.isAfter(periode.getVon()))
-            .anyMatch(periode -> date.isBefore(periode.getBis()));
+      Steuerperiode cp = currentPeriode.getBean();
+      return date.isAfter(cp.getVon()) && date.isBefore(cp.getBis()) && cp.getStatus() != SteuerperiodeState.GESCHLOSSEN;
    }
 
    private Button createAusgabeSaveButton() {
