@@ -115,7 +115,8 @@ public class BuchungView extends VerticalLayout {
 
       totalAusgabenTextField.setReadOnly(true);
       totalEinnahmenTextField.setReadOnly(true);
-      return new HorizontalLayout(periodeSelect, totalAusgabenTextField, totalEinnahmenTextField);
+      Div div = new Div(totalAusgabenTextField, totalEinnahmenTextField);
+      return new HorizontalLayout(periodeSelect, div);
    }
 
    private static ComponentRenderer<FlexLayout, Steuerperiode> createPeriodeRenderer() {
@@ -196,7 +197,7 @@ public class BuchungView extends VerticalLayout {
 
       DatePicker buchungsdatumDatePicker = new DatePicker("Datum");
       ausgabeBinder.forField(buchungsdatumDatePicker)
-            .withValidator(this::inValidPeriode, "Buchung in geschlossener oder noch nicht erfasster Steuerperiode")
+            .withValidator(this::inValidPeriode, "Buchungsdatum ist nicht in ausgewählter Steuerperiode")
             .bind(Buchung::getBuchungsdatum, Buchung::setBuchungsdatum);
 
       Select<Kategorie> kategorieSelect = new Select<>();
@@ -232,7 +233,7 @@ public class BuchungView extends VerticalLayout {
 
       DatePicker buchungsdatumDatePicker = new DatePicker("Datum");
       einnahmeBinder.forField(buchungsdatumDatePicker)
-            .withValidator(this::inValidPeriode, "Das Buchungsdatum muss innerhalb der ausgewählten Steuerperiode liegen")
+            .withValidator(this::inValidPeriode, "Buchungsdatum ist nicht in ausgewählter Steuerperiode")
             .bind(Buchung::getBuchungsdatum, Buchung::setBuchungsdatum);
 
       DatePicker zahlungseingangDatePicker = new DatePicker("Zahlungseingang");
