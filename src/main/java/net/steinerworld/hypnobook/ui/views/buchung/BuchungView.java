@@ -115,8 +115,7 @@ public class BuchungView extends VerticalLayout {
 
       totalAusgabenTextField.setReadOnly(true);
       totalEinnahmenTextField.setReadOnly(true);
-      Div div = new Div(totalAusgabenTextField, totalEinnahmenTextField);
-      return new HorizontalLayout(periodeSelect, div);
+      return new HorizontalLayout(periodeSelect, totalAusgabenTextField, totalEinnahmenTextField);
    }
 
    private static ComponentRenderer<FlexLayout, Steuerperiode> createPeriodeRenderer() {
