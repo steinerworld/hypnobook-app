@@ -150,6 +150,16 @@ public class MainLayout extends AppLayout {
         return new HorizontalLayout(sun, toggle, moon);
     }
 
+    private void changeThemeTo(String theme) {
+        ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+        if (themeList.contains(Lumo.DARK)) {
+            themeList.remove(Lumo.DARK);
+        } else {
+            themeList.add(Lumo.DARK);
+        }
+
+    }
+
 
     @Override
     protected void afterNavigation() {

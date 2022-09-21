@@ -1,4 +1,17 @@
-CREATE SEQUENCE KATEGORIE_SEQ START WITH 1000 INCREMENT BY 50;
+CREATE SEQUENCE APP_USER_SEQ START WITH 1 INCREMENT BY 1;
+CREATE TABLE app_user
+(
+    id              BIGINT NOT NULL,
+    username        VARCHAR(255),
+    name            VARCHAR(255),
+    pass            VARCHAR(255),
+    roles           VARCHAR(255),
+    theme           VARCHAR(255),
+    profile_picture bytea,
+    CONSTRAINT pk_app_user PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE KATEGORIE_SEQ START WITH 1 INCREMENT BY 1;
 CREATE TABLE kategorie
 (
     id           BIGINT NOT NULL,
@@ -7,7 +20,7 @@ CREATE TABLE kategorie
     CONSTRAINT pk_kategorie PRIMARY KEY (id)
 );
 
-CREATE SEQUENCE PERIODE_SEQ START WITH 1000 INCREMENT BY 50;
+CREATE SEQUENCE PERIODE_SEQ START WITH 1 INCREMENT BY 1;
 CREATE TABLE steuerperiode
 (
     id                BIGINT NOT NULL,
@@ -18,7 +31,7 @@ CREATE TABLE steuerperiode
     CONSTRAINT pk_steuerperiode PRIMARY KEY (id)
 );
 
-CREATE SEQUENCE IF NOT EXISTS buchung_seq START WITH 1 INCREMENT BY 50;
+CREATE SEQUENCE IF NOT EXISTS buchung_seq START WITH 1 INCREMENT BY 1;
 CREATE TABLE buchung
 (
     id               BIGINT NOT NULL,

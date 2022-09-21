@@ -35,7 +35,7 @@ public class Steuerperiode implements Serializable {
 
    @Id
    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "periode_seq")
-   @SequenceGenerator(name = "periode_seq", sequenceName = "periode_seq")
+   @SequenceGenerator(name = "periode_seq", sequenceName = "periode_seq", allocationSize = 1)
    @Column(name = "id")
    private Long id;
 

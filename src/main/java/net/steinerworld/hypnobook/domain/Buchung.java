@@ -38,7 +38,7 @@ public class Buchung implements Serializable {
 
    @Id
    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "buchung_seq")
-   @SequenceGenerator(name = "buchung_seq", sequenceName = "buchung_seq")
+   @SequenceGenerator(name = "buchung_seq", sequenceName = "buchung_seq", allocationSize = 1)
    @Column(name = "id")
    private Long id;
 

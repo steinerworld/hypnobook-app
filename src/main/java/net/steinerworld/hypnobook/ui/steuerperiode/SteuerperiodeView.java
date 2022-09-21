@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.listbox.ListBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -36,21 +38,25 @@ public class SteuerperiodeView extends HorizontalLayout {
    @PostConstruct
    public void initialize() {
       ListBox<Steuerperiode> periodeListBox = new ListBox<>();
-      periodeListBox.setRenderer(new ComponentRenderer<>(periode -> {
-         Span name = new Span(periode.getJahresbezeichnung());
-         Span range = new Span(periode.getVon() + " - " + periode.getBis());
-         range.getStyle()
-               .set("color", "var(--lumo-secondary-text-color)")
-               .set("font-size", "var(--lumo-font-size-s)");
-
-         VerticalLayout column = new VerticalLayout(name, range);
-         column.setPadding(false);
-         column.setSpacing(false);
-
-         return column;
-      }));
+      periodeListBox.setRenderer(new ComponentRenderer<>(this::buildRenderer));
       periodeListBox.setItems(periodeRepo.findAll());
 
       add(periodeListBox);
+   }
+
+   private Component buildRenderer(Steuerperiode periode) {
+      Span name = new Span(periode.getJahresbezeichnung());
+      Span range = new Span(periode.getVon() + " - " + periode.getBis());
+      range.getStyle()
+            .set("color", "var(--lumo-secondary-text-color)")
+            .set("font-size", "var(--lumo-font-size-s)");
+
+      VerticalLayout column = new VerticalLayout(name, range);
+      column.setPadding(false);
+      column.setSpacing(false);
+
+      Div div = new Div(column);
+      div.addClassName("demo");
+      return div;
    }
 }
