@@ -6,6 +6,9 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.componentfactory.ToggleButton;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -33,6 +36,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.AppUser;
+import net.steinerworld.hypnobook.repository.AppUserRepository;
 import net.steinerworld.hypnobook.services.SecurityService;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNav;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNavItem;
@@ -46,11 +50,12 @@ import net.steinerworld.hypnobook.ui.views.helloworld.HelloWorldView;
  */
 @RequiredArgsConstructor
 public class MainLayout extends AppLayout {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainLayout.class);
     private H2 viewTitle;
 
     private final SecurityService securityService;
     private final AccessAnnotationChecker accessChecker;
+    private final AppUserRepository userRepository;
 
     @PostConstruct
     public void initialize() {
@@ -127,7 +132,7 @@ public class MainLayout extends AppLayout {
             div.getElement().getStyle().set("gap", "var(--lumo-space-s)");
             userName.add(div);
             userName.getSubMenu().addItem("Sign out", e -> securityService.logout());
-            layout.add(createThemeModeToggle(), userMenu);
+            layout.add(createThemeModeToggle(user), userMenu);
         } else {
             Anchor loginLink = new Anchor("login", "Sign in");
             layout.add(loginLink);
@@ -135,29 +140,37 @@ public class MainLayout extends AppLayout {
         return layout;
     }
 
-    private Component createThemeModeToggle() {
+    private Component createThemeModeToggle(AppUser user) {
+        changeThemeTo(user.getTheme());
         Icon moon = new Icon(VaadinIcon.MOON_O);
         Icon sun = new Icon(VaadinIcon.SUN_O);
         ToggleButton toggle = new ToggleButton();
-        toggle.addValueChangeListener(e -> {
-            ThemeList themeList = UI.getCurrent().getElement().getThemeList();
-            if (themeList.contains(Lumo.DARK)) {
-                themeList.remove(Lumo.DARK);
-            } else {
-                themeList.add(Lumo.DARK);
-            }
-        });
+        boolean themeDark = Lumo.DARK.equals(user.getTheme());
+        toggle.setValue(themeDark);
+        toggle.addValueChangeListener(e -> changeThemeAndSave(user, e.getValue() ? Lumo.DARK : Lumo.LIGHT));
         return new HorizontalLayout(sun, toggle, moon);
     }
 
+    private void changeThemeAndSave(AppUser user, String theme) {
+        changeThemeTo(theme);
+        saveTheme(user, theme);
+    }
+
     private void changeThemeTo(String theme) {
+        LOGGER.info("change theme to {}", theme);
         ThemeList themeList = UI.getCurrent().getElement().getThemeList();
-        if (themeList.contains(Lumo.DARK)) {
+        if (theme.equals(Lumo.LIGHT)) {
             themeList.remove(Lumo.DARK);
         } else {
             themeList.add(Lumo.DARK);
         }
 
+    }
+
+    private void saveTheme(AppUser user, String theme) {
+        LOGGER.info("save theme {} for user {}", theme, user);
+        user.setTheme(theme);
+        userRepository.save(user);
     }
 
 
