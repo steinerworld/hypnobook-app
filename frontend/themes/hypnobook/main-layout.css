@@ -70,7 +70,7 @@ vaadin-scroller[slot="drawer"][overflow~="bottom"] {
   border-radius: 10px;
 
   background-color: var(--lumo-base-color) linear-gradient(var(--lumo-contrast-5pct), var(--lumo-contrast-5pct));
-  margin: 10px auto 0;
+  margin: 10px;
   width: 300px;
   height: 60px;
   color: var(--lumo-primary-text-color);;
@@ -80,4 +80,8 @@ vaadin-scroller[slot="drawer"][overflow~="bottom"] {
 .periode-card span {
   text-align: center;
   width: -webkit-fill-available;
+}
+
+.periode-plus-button {
+  margin-left: 30px;
 }

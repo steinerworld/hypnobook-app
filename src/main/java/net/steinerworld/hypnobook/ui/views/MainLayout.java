@@ -40,10 +40,10 @@ import net.steinerworld.hypnobook.repository.AppUserRepository;
 import net.steinerworld.hypnobook.services.SecurityService;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNav;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNavItem;
-import net.steinerworld.hypnobook.ui.steuerperiode.SteuerperiodeView;
 import net.steinerworld.hypnobook.ui.views.about.AboutView;
 import net.steinerworld.hypnobook.ui.views.buchung.BuchungView;
 import net.steinerworld.hypnobook.ui.views.helloworld.HelloWorldView;
+import net.steinerworld.hypnobook.ui.views.steuerperiode.SteuerperiodeView;
 
 /**
  * The main view is a top-level placeholder for other views.
