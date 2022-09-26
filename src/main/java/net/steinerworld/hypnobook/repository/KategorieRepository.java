@@ -1,5 +1,7 @@
 package net.steinerworld.hypnobook.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +13,5 @@ import net.steinerworld.hypnobook.domain.Kategorie;
 @SuppressWarnings("unused")
 @Repository
 public interface KategorieRepository extends JpaRepository<Kategorie, Long> {
+   List<Kategorie> findAll();
 }

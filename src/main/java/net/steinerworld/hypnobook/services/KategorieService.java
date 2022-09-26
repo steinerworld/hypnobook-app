@@ -16,4 +16,8 @@ public class KategorieService {
    public List<Kategorie> findAll() {
       return kategorieRepo.findAll();
    }
+
+   public void save(Kategorie kat) {
+      kategorieRepo.save(kat);
+   }
 }
