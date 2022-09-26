@@ -84,7 +84,6 @@ public class SteuerperiodeView extends HorizontalLayout implements BeforeEnterOb
          if (event.getValue() != null) {
             UI.getCurrent().navigate(String.format(SAMPLEPERSON_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
          } else {
-            //            clearForm();
             UI.getCurrent().navigate(SteuerperiodeView.class);
          }
       });
@@ -164,9 +163,7 @@ public class SteuerperiodeView extends HorizontalLayout implements BeforeEnterOb
          }
       });
       save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-      Button changeStatus = new Button("Aktivieren", e -> {
-         activateSteuerperiode(steuerperiode);
-      });
+      Button changeStatus = new Button("Aktivieren", e -> prepareActiveSteuerperiode(steuerperiode));
       changeStatus.addThemeVariants(ButtonVariant.LUMO_ERROR);
       binder.addStatusChangeListener(e -> {
          Optional<Steuerperiode> maybeSP = Optional.ofNullable((Steuerperiode) e.getBinder().getBean());
@@ -181,21 +178,33 @@ public class SteuerperiodeView extends HorizontalLayout implements BeforeEnterOb
       return buttonLayout;
    }
 
-   private void activateSteuerperiode(Steuerperiode periode) {
+   private void prepareActiveSteuerperiode(Steuerperiode periode) {
       Optional<Steuerperiode> maybeActive = periodeService.findActive();
       if (maybeActive.isPresent()) {
+         Steuerperiode active = maybeActive.get();
          ConfirmDialog dialog = new ConfirmDialog();
-         dialog.setHeader("Wirklich Aktivieren?");
-         dialog.setText("Du schliesst somit die Steuerperiode 'BLA'\nDas kann nichtmehr rückgängig gemacht werden!");
+         dialog.setHeader("Konsequenzen der Aktivierung von Periode " + periode.getJahresbezeichnung());
+         dialog.setText("Du schliesst somit die aktuell aktive Steuerperiode '" + active.getJahresbezeichnung()
+               + "'\nDas kann nicht mehr rückgängig gemacht werden!");
 
          dialog.setCancelable(true);
          dialog.setConfirmText("Aktivieren");
          dialog.setConfirmButtonTheme("error primary");
-         dialog.addConfirmListener(event -> LOGGER.info(">>>>>> Aktivieren"));
+         dialog.addConfirmListener(e -> saveActiveSteuerperiode(active, periode));
          dialog.open();
       } else {
          LOGGER.info("Keine aktive Steuerperiode gefunden -> einfach machen");
       }
+   }
+
+   private void saveActiveSteuerperiode(Steuerperiode current, Steuerperiode future) {
+      current.setStatus(SteuerperiodeState.GESCHLOSSEN);
+      periodeService.save(current);
+      LOGGER.info("Steuerperiode geschlossen: {}", current);
+      future.setStatus(SteuerperiodeState.AKTIV);
+      periodeService.save(future);
+      LOGGER.info("Steuerperiode aktiviert: {}", future);
+      periodeListBox.setItems(periodeService.findAll());
    }
 
    @Override public void beforeEnter(BeforeEnterEvent event) {

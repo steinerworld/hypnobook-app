@@ -16,4 +16,6 @@ import net.steinerworld.hypnobook.domain.Steuerperiode;
 @Repository
 public interface BuchungRepository extends JpaRepository<Buchung, Long> {
    List<Buchung> findBySteuerperiode(Steuerperiode periode, Sort sort);
+
+   long countAllBySteuerperiode(Steuerperiode periode);
 }

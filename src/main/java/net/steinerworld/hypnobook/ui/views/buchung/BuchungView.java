@@ -10,7 +10,6 @@ import javax.annotation.security.PermitAll;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Sort;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -41,9 +40,9 @@ import net.steinerworld.hypnobook.domain.Kategorie;
 import net.steinerworld.hypnobook.domain.Steuerperiode;
 import net.steinerworld.hypnobook.domain.SteuerperiodeState;
 import net.steinerworld.hypnobook.exceptions.MaloneyException;
-import net.steinerworld.hypnobook.repository.BuchungRepository;
-import net.steinerworld.hypnobook.repository.KategorieRepository;
-import net.steinerworld.hypnobook.repository.SteuerperiodeRepository;
+import net.steinerworld.hypnobook.services.BuchungService;
+import net.steinerworld.hypnobook.services.KategorieService;
+import net.steinerworld.hypnobook.services.SteuerperiodeService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
 
 @PermitAll
@@ -52,9 +51,9 @@ import net.steinerworld.hypnobook.ui.views.MainLayout;
 @RequiredArgsConstructor
 public class BuchungView extends VerticalLayout {
    private static final Logger LOGGER = LoggerFactory.getLogger(BuchungView.class);
-   private final BuchungRepository buchungRepository;
-   private final KategorieRepository kategorieRepository;
-   private final SteuerperiodeRepository periodeRepository;
+   private final BuchungService buchungService;
+   private final KategorieService kategorieService;
+   private final SteuerperiodeService periodeService;
    private final BeanValidationBinder<Buchung> ausgabeBinder = new BeanValidationBinder<>(Buchung.class);
    private final BeanValidationBinder<Buchung> einnahmeBinder = new BeanValidationBinder<>(Buchung.class);
    private final Grid<Buchung> grid = new Grid<>();
@@ -96,7 +95,7 @@ public class BuchungView extends VerticalLayout {
    }
 
    private void initializeCurrentSteuerperiode() {
-      currentPeriode.setBean(periodeRepository.findByStatusEquals(SteuerperiodeState.AKTIV));
+      periodeService.findActive().ifPresent(currentPeriode::setBean);
       currentPeriode.addStatusChangeListener(event -> {
          LOGGER.info("load data for current {}", currentPeriode.getBean());
          loadData();
@@ -104,7 +103,7 @@ public class BuchungView extends VerticalLayout {
    }
 
    private HorizontalLayout createOverview() {
-      List<Steuerperiode> periodeList = periodeRepository.findAll();
+      List<Steuerperiode> periodeList = periodeService.findAll();
       Select<Steuerperiode> periodeSelect = new Select<>();
       periodeSelect.setItems(periodeList);
       periodeSelect.setLabel("Steuerperiode");
@@ -202,7 +201,7 @@ public class BuchungView extends VerticalLayout {
       Select<Kategorie> kategorieSelect = new Select<>();
       kategorieSelect.setLabel("Kategorie");
       kategorieSelect.setItemLabelGenerator(Kategorie::getName);
-      kategorieSelect.setItems(kategorieRepository.findAll());
+      kategorieSelect.setItems(kategorieService.findAll());
       ausgabeBinder.forField(kategorieSelect).bind(Buchung::getKategorie, Buchung::setKategorie);
 
       TextField textTextField = new TextField("Text");
@@ -296,7 +295,7 @@ public class BuchungView extends VerticalLayout {
 
    private void loadData() {
       Steuerperiode cp = currentPeriode.getBean();
-      List<Buchung> list = buchungRepository.findBySteuerperiode(cp, Sort.by(Sort.Direction.DESC, "buchungsdatum", "id"));
+      List<Buchung> list = buchungService.findAllSortedInPeriode(cp);
       grid.setItems(list);
       double sumAusgaben = list.stream().filter(buchung -> Objects.nonNull(buchung.getAusgabe())).mapToDouble(Buchung::getAusgabe).sum();
       totalAusgabenTextField.setValue("" + sumAusgaben);
@@ -307,7 +306,7 @@ public class BuchungView extends VerticalLayout {
    }
 
    private Steuerperiode getPeriodeFromNew(Buchung item) {
-      return periodeRepository.findAll().stream()
+      return periodeService.findAll().stream()
             .filter(periode -> item.getBuchungsdatum().isAfter(periode.getVon()))
             .filter(periode -> item.getBuchungsdatum().isBefore(periode.getBis()))
             .findFirst()
@@ -316,7 +315,7 @@ public class BuchungView extends VerticalLayout {
    }
 
    private void saveBuchungAndRefresh(Buchung entity) {
-      buchungRepository.save(entity);
+      buchungService.save(entity);
       loadData();
    }
 
