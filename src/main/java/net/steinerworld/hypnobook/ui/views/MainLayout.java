@@ -98,12 +98,11 @@ public class MainLayout extends AppLayout {
         if (accessChecker.hasAccess(BuchungView.class)) {
             nav.addItem(new AppNavItem("Buchung", BuchungView.class, "la la-file"));
         }
-        if (accessChecker.hasAccess(SteuerperiodeView.class)) {
-            nav.addItem(new AppNavItem("Steuerperiode", SteuerperiodeView.class, "la la-file"));
-        }
-        if (accessChecker.hasAccess(KategorieView.class)) {
-            nav.addItem(new AppNavItem("Kategorie", KategorieView.class, "la la-file"));
-        }
+
+        AppNavItem settingNav = new AppNavItem("Einstellungen");
+        settingNav.addItem(new AppNavItem("Steuerperiode", SteuerperiodeView.class, "la la-file"));
+        settingNav.addItem(new AppNavItem("Kategorie", KategorieView.class, "la la-file"));
+        nav.addItem(settingNav);
 
         return nav;
     }
