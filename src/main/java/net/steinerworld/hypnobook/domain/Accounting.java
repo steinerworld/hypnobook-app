@@ -25,14 +25,14 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
- * A Buchung.
+ * A Accounting.
  */
 @Entity
-@Table(name = "buchung")
+@Table(name = "accounting")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Getter @Setter @Accessors(chain = true)
 @ToString
-public class Buchung implements Serializable {
+public class Accounting implements Serializable {
 
    private static final long serialVersionUID = 1L;
 
@@ -62,31 +62,31 @@ public class Buchung implements Serializable {
 
    @Enumerated(EnumType.STRING)
    @Column(name = "buchungtype")
-   private BuchungType buchungType;
+   private AccountingType accountingType;
 
    @ManyToOne()
    @JoinColumn(name = "kategorie_id", referencedColumnName = "id")
    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-   private Kategorie kategorie;
+   private Category category;
 
    @ManyToOne(optional = false)
    @JoinColumn(name = "steuerperiode_id", nullable = false, referencedColumnName = "id")
    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-   private Steuerperiode steuerperiode;
+   private TaxPeriod taxPeriod;
 
    @Override public boolean equals(Object o) {
       if (this == o)
          return true;
       if (o == null || getClass() != o.getClass())
          return false;
-      Buchung that = (Buchung) o;
+      Accounting that = (Accounting) o;
       return id.equals(that.id) && buchungsdatum.equals(that.buchungsdatum) && Objects.equals(einnahme, that.einnahme)
             && Objects.equals(eingangsdatum, that.eingangsdatum) && Objects.equals(ausgabe, that.ausgabe)
-            && Objects.equals(belegNr, that.belegNr) && Objects.equals(text, that.text) && buchungType == that.buchungType
-            && kategorie.equals(that.kategorie) && steuerperiode.equals(that.steuerperiode);
+            && Objects.equals(belegNr, that.belegNr) && Objects.equals(text, that.text) && accountingType == that.accountingType
+            && category.equals(that.category) && taxPeriod.equals(that.taxPeriod);
    }
 
    @Override public int hashCode() {
-      return Objects.hash(id, buchungsdatum, einnahme, eingangsdatum, ausgabe, belegNr, text, buchungType, kategorie, steuerperiode);
+      return Objects.hash(id, buchungsdatum, einnahme, eingangsdatum, ausgabe, belegNr, text, accountingType, category, taxPeriod);
    }
 }

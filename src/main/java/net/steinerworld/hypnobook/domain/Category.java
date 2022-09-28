@@ -20,14 +20,14 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
- * A Kategorie.
+ * A Category.
  */
 @Entity
-@Table(name = "kategorie")
+@Table(name = "category")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Getter @Setter @Accessors(chain = true)
 @ToString
-public class Kategorie implements Serializable {
+public class Category implements Serializable {
    private static final long serialVersionUID = 1L;
 
    @Id
@@ -47,8 +47,8 @@ public class Kategorie implements Serializable {
          return true;
       if (o == null || getClass() != o.getClass())
          return false;
-      Kategorie kategorie = (Kategorie) o;
-      return id.equals(kategorie.id) && name.equals(kategorie.name);
+      Category category = (Category) o;
+      return id.equals(category.id) && name.equals(category.name);
    }
 
    @Override public int hashCode() {

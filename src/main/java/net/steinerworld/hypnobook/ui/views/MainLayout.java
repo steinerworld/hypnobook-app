@@ -41,10 +41,10 @@ import net.steinerworld.hypnobook.services.SecurityService;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNav;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNavItem;
 import net.steinerworld.hypnobook.ui.views.about.AboutView;
-import net.steinerworld.hypnobook.ui.views.buchung.BuchungView;
+import net.steinerworld.hypnobook.ui.views.accounting.AccountingView;
+import net.steinerworld.hypnobook.ui.views.category.CategoryView;
 import net.steinerworld.hypnobook.ui.views.helloworld.HelloWorldView;
-import net.steinerworld.hypnobook.ui.views.kategorie.KategorieView;
-import net.steinerworld.hypnobook.ui.views.steuerperiode.SteuerperiodeView;
+import net.steinerworld.hypnobook.ui.views.taxperiod.TaxPeriodView;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -95,13 +95,13 @@ public class MainLayout extends AppLayout {
         if (accessChecker.hasAccess(AboutView.class)) {
             nav.addItem(new AppNavItem("About", AboutView.class, "la la-file"));
         }
-        if (accessChecker.hasAccess(BuchungView.class)) {
-            nav.addItem(new AppNavItem("Buchung", BuchungView.class, "la la-file"));
+        if (accessChecker.hasAccess(AccountingView.class)) {
+            nav.addItem(new AppNavItem("Accounting", AccountingView.class, "la la-file"));
         }
 
         AppNavItem settingNav = new AppNavItem("Einstellungen");
-        settingNav.addItem(new AppNavItem("Steuerperiode", SteuerperiodeView.class, "la la-file"));
-        settingNav.addItem(new AppNavItem("Kategorie", KategorieView.class, "la la-file"));
+        settingNav.addItem(new AppNavItem("TaxPeriod", TaxPeriodView.class, "la la-file"));
+        settingNav.addItem(new AppNavItem("Category", CategoryView.class, "la la-file"));
         nav.addItem(settingNav);
 
         return nav;

@@ -23,14 +23,14 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
- * A Steuerperiode.
+ * A TaxPeriod.
  */
 @Entity
-@Table(name = "steuerperiode")
+@Table(name = "tax_period")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Getter @Setter @Accessors(chain = true)
 @ToString
-public class Steuerperiode implements Serializable {
+public class TaxPeriod implements Serializable {
    private static final long serialVersionUID = 1L;
 
    @Id
@@ -50,14 +50,14 @@ public class Steuerperiode implements Serializable {
 
    @Enumerated(EnumType.STRING)
    @Column(name = "status")
-   private SteuerperiodeState status;
+   private TaxPeriodState status;
 
    @Override public boolean equals(Object o) {
       if (this == o)
          return true;
       if (o == null || getClass() != o.getClass())
          return false;
-      Steuerperiode that = (Steuerperiode) o;
+      TaxPeriod that = (TaxPeriod) o;
       return Objects.equals(jahresbezeichnung, that.jahresbezeichnung);
    }
 

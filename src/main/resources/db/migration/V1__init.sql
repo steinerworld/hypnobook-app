@@ -12,7 +12,7 @@ CREATE TABLE app_user
 );
 
 CREATE SEQUENCE KATEGORIE_SEQ START WITH 1 INCREMENT BY 1;
-CREATE TABLE kategorie
+CREATE TABLE category
 (
     id           BIGINT NOT NULL,
     name         VARCHAR(255),
@@ -32,7 +32,7 @@ CREATE TABLE steuerperiode
 );
 
 CREATE SEQUENCE IF NOT EXISTS buchung_seq START WITH 1 INCREMENT BY 1;
-CREATE TABLE buchung
+CREATE TABLE accounting
 (
     id               BIGINT NOT NULL,
     buchungsdatum    date,
@@ -47,9 +47,9 @@ CREATE TABLE buchung
     CONSTRAINT pk_buchung PRIMARY KEY (id)
 );
 
-ALTER TABLE buchung
-    ADD CONSTRAINT FK_BUCHUNG_ON_KATEGORIE FOREIGN KEY (kategorie_id) REFERENCES kategorie (id);
+ALTER TABLE accounting
+    ADD CONSTRAINT FK_BUCHUNG_ON_KATEGORIE FOREIGN KEY (kategorie_id) REFERENCES category (id);
 
-ALTER TABLE buchung
+ALTER TABLE accounting
     ADD CONSTRAINT FK_BUCHUNG_ON_STEUERPERIODE FOREIGN KEY (steuerperiode_id) REFERENCES steuerperiode (id);
 

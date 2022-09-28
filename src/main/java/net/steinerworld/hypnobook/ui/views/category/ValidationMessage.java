@@ -1,4 +1,4 @@
-package net.steinerworld.hypnobook.ui.views.kategorie;
+package net.steinerworld.hypnobook.ui.views.category;
 
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.html.Span;
