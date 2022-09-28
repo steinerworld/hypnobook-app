@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import net.steinerworld.hypnobook.domain.Buchung;
+import net.steinerworld.hypnobook.domain.Kategorie;
 import net.steinerworld.hypnobook.domain.Steuerperiode;
 
 /**
@@ -16,6 +17,8 @@ import net.steinerworld.hypnobook.domain.Steuerperiode;
 @Repository
 public interface BuchungRepository extends JpaRepository<Buchung, Long> {
    List<Buchung> findBySteuerperiode(Steuerperiode periode, Sort sort);
+
+   List<Buchung> findBySteuerperiodeAndAndKategorie(Steuerperiode periode, Kategorie kategorie);
 
    long countAllBySteuerperiode(Steuerperiode periode);
 }

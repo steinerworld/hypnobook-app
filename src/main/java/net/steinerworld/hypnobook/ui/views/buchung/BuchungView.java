@@ -3,7 +3,6 @@ package net.steinerworld.hypnobook.ui.views.buchung;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
@@ -297,10 +296,8 @@ public class BuchungView extends VerticalLayout {
       Steuerperiode cp = currentPeriode.getBean();
       List<Buchung> list = buchungService.findAllSortedInPeriode(cp);
       grid.setItems(list);
-      double sumAusgaben = list.stream().filter(buchung -> Objects.nonNull(buchung.getAusgabe())).mapToDouble(Buchung::getAusgabe).sum();
-      totalAusgabenTextField.setValue("" + sumAusgaben);
-      double sumEinnahmen = list.stream().filter(buchung -> Objects.nonNull(buchung.getEinnahme())).mapToDouble(Buchung::getEinnahme).sum();
-      totalEinnahmenTextField.setValue("" + sumEinnahmen);
+      totalAusgabenTextField.setValue("" + buchungService.sumAusgabenInPeriode(cp));
+      totalEinnahmenTextField.setValue("" + buchungService.sumEinnahmenInPeriode(cp));
       tabs.setVisible(cp.getStatus() != SteuerperiodeState.GESCHLOSSEN);
       tabContent.setVisible(cp.getStatus() != SteuerperiodeState.GESCHLOSSEN);
    }

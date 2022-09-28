@@ -123,10 +123,10 @@ public class KategorieView extends VerticalLayout {
       editor.addSaveListener(e -> editorSaveHandler(e.getItem(), grid));
       editor.addCancelListener(e -> editorCancelHandler(nameValidationMessage));
 
-      Binder<Kategorie> addKatergorieBinder = new Binder<>(Kategorie.class, false);
-      Dialog addDialog = buildAddDialog(addKatergorieBinder, grid);
+      Binder<Kategorie> addKategorieBinder = new Binder<>(Kategorie.class, false);
+      Dialog addDialog = buildAddDialog(addKategorieBinder, grid);
       Button addButton = new Button(VaadinIcon.PLUS.create(), e -> {
-         addKatergorieBinder.setBean(new Kategorie());
+         addKategorieBinder.setBean(new Kategorie());
          addDialog.open();
       });
 
