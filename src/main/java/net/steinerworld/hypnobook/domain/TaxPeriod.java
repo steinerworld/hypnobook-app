@@ -3,19 +3,19 @@ package net.steinerworld.hypnobook.domain;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -33,11 +33,10 @@ import lombok.experimental.Accessors;
 public class TaxPeriod implements Serializable {
    private static final long serialVersionUID = 1L;
 
-   @Id
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "periode_seq")
-   @SequenceGenerator(name = "periode_seq", sequenceName = "periode_seq", allocationSize = 1)
+   @Id @GeneratedValue(generator = "system-uuid")
+   @GenericGenerator(name = "system-uuid", strategy = "uuid")
    @Column(name = "id")
-   private Long id;
+   private UUID id;
 
    @Column(name = "jahresbezeichnung")
    private String jahresbezeichnung;

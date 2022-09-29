@@ -1,14 +1,15 @@
 package net.steinerworld.hypnobook.domain;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import lombok.Getter;
@@ -20,9 +21,9 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain = true)
 @ToString
 public class AppUser {
-   @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "app_user_seq")
-   @SequenceGenerator(name = "app_user_seq", allocationSize = 1)
-   @Column(name = "id", nullable = false) private Long id;
+   @Id @GeneratedValue(generator = "system-uuid")
+   @GenericGenerator(name = "system-uuid", strategy = "uuid")
+   @Column(name = "id") private UUID id;
    @Column(name = "username") private String username;
    @Column(name = "name") private String name;
    @Column(name = "pass") private String password;

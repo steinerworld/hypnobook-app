@@ -56,12 +56,12 @@ public class Balance {
          PdfWriter.getInstance(document, os);
          document.open();
 
-         document.add(new Paragraph("Geschäftsjahr" + dto.getCurrentYearCaption(), TITLE_FONT));
+         document.add(new Paragraph("Geschäftsjahr " + dto.getCurrentYearCaption(), TITLE_FONT));
 
          Paragraph adr = new Paragraph();
          adr.setSpacingBefore(10);
          adr.setFont(TEXT_FONT);
-         adr.add("Hypnose Steiner\nFabrikstrasse 6\n4556 Biberist");
+         adr.add("Hypnose Steiner\nFabrikstrasse 6\n4562 Biberist");
          document.add(adr);
 
          float[] pointColumnWidths = {3f, 1f, 1f};
