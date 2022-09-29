@@ -1,7 +1,9 @@
-package net.steinerworld.hypnobook.services;
+package net.steinerworld.hypnobook.pdf;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,31 +20,48 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-public class FinalPdfService {
+import net.steinerworld.hypnobook.dto.BalanceDto;
+
+public class Balance {
    private static final Font TITLE_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK);
    private static final Font TEXT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 11, BaseColor.BLACK);
    private static final Font TEXT_BOLD_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, BaseColor.BLACK);
    private static final Font TEXT_BIGGER_BOLD_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
    private static final Font TEXT_ITALIC_FONT = FontFactory.getFont(FontFactory.HELVETICA, 11, Font.ITALIC, BaseColor.BLACK);
-   private static final Logger LOGGER = LoggerFactory.getLogger(FinalPdfService.class);
+   private static final Logger LOGGER = LoggerFactory.getLogger(Balance.class);
 
    public static void main(String[] args) {
-      new FinalPdfService().buildPDF();
+      BalanceDto.SumByCategory c1 = new BalanceDto.SumByCategory("Miete Praxis", "853.00", "811.00");
+      BalanceDto.SumByCategory c2 = new BalanceDto.SumByCategory("Werbung/Marketing", "514.00", "456.00");
+      List<BalanceDto.SumByCategory> list = Arrays.asList(c1, c2);
+      BalanceDto dto = new BalanceDto()
+            .setCurrentYearCaption("2022")
+            .setLastYearCaption("2021")
+            .setSumTotalIngoingCurrentYear("4'794.00")
+            .setSumTotalIngoingLastYear("3'512.00")
+            .setSumTotalOutgoingCurrentYear("1'367.00")
+            .setSumTotalOutgoingLastYear("1'267.00")
+            .setResultCaption("Gewinn")
+            .setResultCurrentYear("3'427.00")
+            .setResultLastYear("2'245.00")
+            .setCategoryList(list);
+
+      new Balance().buildPDF(dto);
    }
 
-   public void buildPDF() {
+   public void buildPDF(BalanceDto dto) {
 
       try (FileOutputStream os = new FileOutputStream("test.pdf")) {
          Document document = new Document();
          PdfWriter.getInstance(document, os);
          document.open();
 
-         document.add(new Paragraph("Jahresabschluss 2022", TITLE_FONT));
+         document.add(new Paragraph("Geschäftsjahr " + dto.getCurrentYearCaption(), TITLE_FONT));
 
          Paragraph adr = new Paragraph();
          adr.setSpacingBefore(10);
          adr.setFont(TEXT_FONT);
-         adr.add("Hypnose Steiner\nFabrikstrasse 6\n4556 Biberist");
+         adr.add("Hypnose Steiner\nFabrikstrasse 6\n4562 Biberist");
          document.add(adr);
 
          float[] pointColumnWidths = {3f, 1f, 1f};
@@ -54,32 +73,31 @@ public class FinalPdfService {
 
          // Titel
          table.addCell(buildCellBoldLeft(""));
-         table.addCell(buildCellRight("2021"));
-         table.addCell(buildCellBoldRight("2022"));
+         table.addCell(buildCellRight(dto.getLastYearCaption()));
+         table.addCell(buildCellBoldRight(dto.getCurrentYearCaption()));
 
          // Einkommen
          table.addCell(buildCellTitle("Einkommen aus Geschäftsbetrieb"));
          table.addCell(buildCellBoldLeftPadding("Total Einkommen"));
-         table.addCell(buildCellRight("3'512.00"));
-         table.addCell(buildCellBoldRight("4'794.00"));
+         table.addCell(buildCellRight(dto.getSumTotalIngoingLastYear()));
+         table.addCell(buildCellBoldRight(dto.getSumTotalIngoingCurrentYear()));
 
          // Geschäftsaufwand
          table.addCell(buildCellTitle("Geschäftsaufwand"));
-         table.addCell(buildCellLeftPadding("Miete Praxis"));
-         table.addCell(buildCellRight("811.00"));
-         table.addCell(buildCellRight("853.00"));
-         table.addCell(buildCellLeftPadding("Werbung/Marketing"));
-         table.addCell(buildCellRight("456.00"));
-         table.addCell(buildCellRight("514.00"));
+         for (BalanceDto.SumByCategory cat : dto.getCategoryList()) {
+            table.addCell(buildCellLeftPadding(cat.getCategory()));
+            table.addCell(buildCellRight(cat.getSumByCategoryLastYear()));
+            table.addCell(buildCellRight(cat.getSumByCategoryCurrentYear()));
+         }
          table.addCell(buildCellBoldLeftPadding("Total Geschäftsaufwand"));
-         table.addCell(buildCellRight("1'267.00"));
-         table.addCell(buildCellBoldRight("1'367.00"));
+         table.addCell(buildCellRight(dto.getSumTotalOutgoingLastYear()));
+         table.addCell(buildCellBoldRight(dto.getSumTotalOutgoingCurrentYear()));
 
          // Total
          table.addCell(buildCellTitle("Einkommen aus selbstständiger Erwerbstätigkeit"));
-         table.addCell(buildCellBoldLeftPadding("Gewinn"));
-         table.addCell(buildCellRight("2'245.00"));
-         table.addCell(buildCellBoldRight("3'427.00"));
+         table.addCell(buildCellBoldLeftPadding(dto.getResultCaption()));
+         table.addCell(buildCellRight(dto.getResultLastYear()));
+         table.addCell(buildCellBoldRight(dto.getResultCurrentYear()));
 
          document.add(table);
 

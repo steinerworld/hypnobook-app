@@ -2,13 +2,12 @@ package net.steinerworld.hypnobook.domain;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
@@ -20,38 +19,36 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
- * A Kategorie.
+ * A Category.
  */
 @Entity
-@Table(name = "kategorie")
+@Table(name = "category")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Getter @Setter @Accessors(chain = true)
 @ToString
-public class Kategorie implements Serializable {
+public class Category implements Serializable {
    private static final long serialVersionUID = 1L;
 
-   @Id
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "kategorie_seq")
-   @SequenceGenerator(name = "kategorie_seq", sequenceName = "kategorie_seq", allocationSize = 1)
+   @Id @GeneratedValue
    @Column(name = "id")
-   private Long id;
+   private UUID id;
 
-   @Column(name = "name")
-   private String name;
+   @Column(name = "bezeichnung")
+   private String bezeichnung;
 
-   @Column(name = "beschreibung", length = 1024)
-   private String beschreibung;
+   @Column(name = "info", length = 1024)
+   private String info;
 
    @Override public boolean equals(Object o) {
       if (this == o)
          return true;
       if (o == null || getClass() != o.getClass())
          return false;
-      Kategorie kategorie = (Kategorie) o;
-      return id.equals(kategorie.id) && name.equals(kategorie.name);
+      Category category = (Category) o;
+      return id.equals(category.id) && bezeichnung.equals(category.bezeichnung);
    }
 
    @Override public int hashCode() {
-      return Objects.hash(id, name);
+      return Objects.hash(id, bezeichnung);
    }
 }

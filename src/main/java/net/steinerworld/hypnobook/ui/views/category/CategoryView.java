@@ -1,4 +1,4 @@
-package net.steinerworld.hypnobook.ui.views.kategorie;
+package net.steinerworld.hypnobook.ui.views.category;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
@@ -24,28 +24,28 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import lombok.RequiredArgsConstructor;
-import net.steinerworld.hypnobook.domain.Kategorie;
-import net.steinerworld.hypnobook.services.KategorieService;
+import net.steinerworld.hypnobook.domain.Category;
+import net.steinerworld.hypnobook.services.CategoryService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
 
 @PermitAll
-@PageTitle("Hypno Book - Kategorie")
-@Route(value = "kategorie", layout = MainLayout.class)
+@PageTitle("Hypno Book - Category")
+@Route(value = "category", layout = MainLayout.class)
 @RequiredArgsConstructor
-public class KategorieView extends VerticalLayout {
-   private static final Logger LOGGER = LoggerFactory.getLogger(KategorieView.class);
+public class CategoryView extends VerticalLayout {
+   private static final Logger LOGGER = LoggerFactory.getLogger(CategoryView.class);
 
-   private final KategorieService kategorieService;
+   private final CategoryService categoryService;
 
-   private static Grid<Kategorie> buildGrid() {
-      Grid<Kategorie> grid = new Grid<>(Kategorie.class, false);
+   private static Grid<Category> buildGrid() {
+      Grid<Category> grid = new Grid<>(Category.class, false);
       grid.setHeightFull();
       grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
       grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
       return grid;
    }
 
-   private static Button buildGridEditButton(Editor<Kategorie> editor, Kategorie kat) {
+   private static Button buildGridEditButton(Editor<Category> editor, Category kat) {
       Button editButton = new Button(VaadinIcon.EDIT.create());
       editButton.addClickListener(e -> {
          if (editor.isOpen()) {
@@ -56,34 +56,34 @@ public class KategorieView extends VerticalLayout {
       return editButton;
    }
 
-   private static TextField buildColumnEditFieldName(Binder<Kategorie> binder, ValidationMessage nameValidationMessage) {
+   private static TextField buildColumnEditFieldName(Binder<Category> binder, ValidationMessage nameValidationMessage) {
       TextField field = new TextField();
       field.setWidthFull();
       binder.forField(field)
-            .asRequired("name must not be empty")
+            .asRequired("bezeichnung must not be empty")
             .withStatusLabel(nameValidationMessage)
-            .bind(Kategorie::getName, Kategorie::setName);
+            .bind(Category::getBezeichnung, Category::setBezeichnung);
       return field;
    }
 
-   private static TextField buildColumnEditFieldInfo(Binder<Kategorie> binder) {
+   private static TextField buildColumnEditFieldInfo(Binder<Category> binder) {
       TextField field = new TextField();
       field.setWidthFull();
       binder.forField(field)
-            .bind(Kategorie::getBeschreibung, Kategorie::setBeschreibung);
+            .bind(Category::getInfo, Category::setInfo);
       return field;
    }
 
-   private static VerticalLayout buildAddDialogLayout(Binder<Kategorie> binder) {
-      TextField nameField = new TextField("Name");
+   private static VerticalLayout buildAddDialogLayout(Binder<Category> binder) {
+      TextField nameField = new TextField("Bezeichnung");
       binder.forField(nameField)
-            .asRequired("Name darf nicht leer sein!")
-            .bind(Kategorie::getName, Kategorie::setName);
+            .asRequired("Bezeichnung darf nicht leer sein!")
+            .bind(Category::getBezeichnung, Category::setBezeichnung);
       TextArea infoArea = new TextArea("Info");
       infoArea.setMaxLength(1024);
       infoArea.setValueChangeMode(ValueChangeMode.EAGER);
       infoArea.addValueChangeListener(e -> e.getSource().setHelperText(e.getValue().length() + "/" + 1024));
-      binder.forField(infoArea).bind(Kategorie::getBeschreibung, Kategorie::setBeschreibung);
+      binder.forField(infoArea).bind(Category::getInfo, Category::setInfo);
 
       VerticalLayout dialogLayout = new VerticalLayout(nameField, infoArea);
       dialogLayout.setPadding(false);
@@ -96,17 +96,17 @@ public class KategorieView extends VerticalLayout {
    @PostConstruct
    public void initialize() {
       setHeightFull();
-      Grid<Kategorie> grid = buildGrid();
+      Grid<Category> grid = buildGrid();
 
       ValidationMessage nameValidationMessage = new ValidationMessage();
 
-      Editor<Kategorie> editor = grid.getEditor();
+      Editor<Category> editor = grid.getEditor();
 
-      Grid.Column<Kategorie> nameColumn = grid.addColumn(Kategorie::getName).setHeader("Name").setWidth("200px").setFlexGrow(0);
-      Grid.Column<Kategorie> infoColumn = grid.addColumn(Kategorie::getBeschreibung).setHeader("Info").setFlexGrow(1);
-      Grid.Column<Kategorie> editColumn = grid.addComponentColumn(kat -> buildGridEditButton(editor, kat)).setWidth("100px").setFlexGrow(0);
+      Grid.Column<Category> nameColumn = grid.addColumn(Category::getBezeichnung).setHeader("Name").setWidth("200px").setFlexGrow(0);
+      Grid.Column<Category> infoColumn = grid.addColumn(Category::getInfo).setHeader("Info").setFlexGrow(1);
+      Grid.Column<Category> editColumn = grid.addComponentColumn(kat -> buildGridEditButton(editor, kat)).setWidth("100px").setFlexGrow(0);
 
-      Binder<Kategorie> binder = new Binder<>(Kategorie.class);
+      Binder<Category> binder = new Binder<>(Category.class);
       editor.setBinder(binder);
       editor.setBuffered(true);
 
@@ -123,30 +123,30 @@ public class KategorieView extends VerticalLayout {
       editor.addSaveListener(e -> editorSaveHandler(e.getItem(), grid));
       editor.addCancelListener(e -> editorCancelHandler(nameValidationMessage));
 
-      Binder<Kategorie> addKategorieBinder = new Binder<>(Kategorie.class, false);
+      Binder<Category> addKategorieBinder = new Binder<>(Category.class, false);
       Dialog addDialog = buildAddDialog(addKategorieBinder, grid);
       Button addButton = new Button(VaadinIcon.PLUS.create(), e -> {
-         addKategorieBinder.setBean(new Kategorie());
+         addKategorieBinder.setBean(new Category());
          addDialog.open();
       });
 
       add(grid, addButton, nameValidationMessage, addDialog);
-      grid.setItems(kategorieService.findAll());
+      grid.setItems(categoryService.findAll());
    }
 
-   private void editorSaveHandler(Kategorie item, Grid<Kategorie> grid) {
+   private void editorSaveHandler(Category item, Grid<Category> grid) {
       LOGGER.info("save event item: {}", item);
-      kategorieService.save(item);
-      grid.setItems(kategorieService.findAll());
+      categoryService.save(item);
+      grid.setItems(categoryService.findAll());
    }
 
    private void editorCancelHandler(ValidationMessage nameValidationMessage) {
       nameValidationMessage.setText("");
    }
 
-   private Dialog buildAddDialog(Binder<Kategorie> binder, Grid<Kategorie> grid) {
+   private Dialog buildAddDialog(Binder<Category> binder, Grid<Category> grid) {
       Dialog dialog = new Dialog();
-      dialog.setHeaderTitle("Neue Kategorie");
+      dialog.setHeaderTitle("Neue Category");
       dialog.add(buildAddDialogLayout(binder));
 
       Button saveAddButton = buildAddDialogSaveButton(dialog, binder, grid);
@@ -156,11 +156,11 @@ public class KategorieView extends VerticalLayout {
       return dialog;
    }
 
-   private Button buildAddDialogSaveButton(Dialog dialog, Binder<Kategorie> addBinder, Grid<Kategorie> grid) {
+   private Button buildAddDialogSaveButton(Dialog dialog, Binder<Category> addBinder, Grid<Category> grid) {
       Button saveButton = new Button("Hinzufügen", e -> {
-         kategorieService.save(addBinder.getBean());
+         categoryService.save(addBinder.getBean());
          dialog.close();
-         grid.setItems(kategorieService.findAll());
+         grid.setItems(categoryService.findAll());
       });
       saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
       addBinder.addStatusChangeListener(e -> saveButton.setEnabled(addBinder.isValid()));

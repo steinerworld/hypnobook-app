@@ -3,17 +3,16 @@ package net.steinerworld.hypnobook.domain;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
@@ -25,22 +24,20 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
- * A Buchung.
+ * A Accounting.
  */
 @Entity
-@Table(name = "buchung")
+@Table(name = "accounting")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Getter @Setter @Accessors(chain = true)
 @ToString
-public class Buchung implements Serializable {
+public class Accounting implements Serializable {
 
    private static final long serialVersionUID = 1L;
 
-   @Id
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "buchung_seq")
-   @SequenceGenerator(name = "buchung_seq", sequenceName = "buchung_seq", allocationSize = 1)
+   @Id @GeneratedValue
    @Column(name = "id")
-   private Long id;
+   private UUID id;
 
    @Column(name = "buchungsdatum")
    private LocalDate buchungsdatum;
@@ -61,32 +58,32 @@ public class Buchung implements Serializable {
    private String text;
 
    @Enumerated(EnumType.STRING)
-   @Column(name = "buchungtype")
-   private BuchungType buchungType;
+   @Column(name = "accounting_type")
+   private AccountingType accountingType;
 
    @ManyToOne()
-   @JoinColumn(name = "kategorie_id", referencedColumnName = "id")
+   @JoinColumn(name = "category_id", referencedColumnName = "id")
    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-   private Kategorie kategorie;
+   private Category category;
 
    @ManyToOne(optional = false)
-   @JoinColumn(name = "steuerperiode_id", nullable = false, referencedColumnName = "id")
+   @JoinColumn(name = "tax_period_id", nullable = false, referencedColumnName = "id")
    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-   private Steuerperiode steuerperiode;
+   private TaxPeriod taxPeriod;
 
    @Override public boolean equals(Object o) {
       if (this == o)
          return true;
       if (o == null || getClass() != o.getClass())
          return false;
-      Buchung that = (Buchung) o;
+      Accounting that = (Accounting) o;
       return id.equals(that.id) && buchungsdatum.equals(that.buchungsdatum) && Objects.equals(einnahme, that.einnahme)
             && Objects.equals(eingangsdatum, that.eingangsdatum) && Objects.equals(ausgabe, that.ausgabe)
-            && Objects.equals(belegNr, that.belegNr) && Objects.equals(text, that.text) && buchungType == that.buchungType
-            && kategorie.equals(that.kategorie) && steuerperiode.equals(that.steuerperiode);
+            && Objects.equals(belegNr, that.belegNr) && Objects.equals(text, that.text) && accountingType == that.accountingType
+            && category.equals(that.category) && taxPeriod.equals(that.taxPeriod);
    }
 
    @Override public int hashCode() {
-      return Objects.hash(id, buchungsdatum, einnahme, eingangsdatum, ausgabe, belegNr, text, buchungType, kategorie, steuerperiode);
+      return Objects.hash(id, buchungsdatum, einnahme, eingangsdatum, ausgabe, belegNr, text, accountingType, category, taxPeriod);
    }
 }
