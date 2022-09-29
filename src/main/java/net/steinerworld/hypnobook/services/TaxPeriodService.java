@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import net.steinerworld.hypnobook.repository.TaxPeriodRepository;
 @Service
 @RequiredArgsConstructor
 public class TaxPeriodService {
+   private static final Logger LOGGER = LoggerFactory.getLogger(TaxPeriodService.class);
    private final TaxPeriodRepository repository;
 
    public Optional<TaxPeriod> get(UUID id) {
@@ -30,5 +33,18 @@ public class TaxPeriodService {
 
    public Optional<TaxPeriod> findActive() {
       return Optional.ofNullable(repository.findByStatusEquals(TaxPeriodState.AKTIV));
+   }
+
+   public void changeActiveTaxPeriod(TaxPeriod current, TaxPeriod future) {
+      current.setStatus(TaxPeriodState.GESCHLOSSEN);
+      save(current);
+      LOGGER.info("TaxPeriod closed: {}", current);
+      future.setStatus(TaxPeriodState.AKTIV);
+      save(future);
+      LOGGER.info("TaxPeriod active: {}", future);
+   }
+
+   public void createBalanceSheet(TaxPeriod periode) {
+      LOGGER.info("Balance, ich komme");
    }
 }

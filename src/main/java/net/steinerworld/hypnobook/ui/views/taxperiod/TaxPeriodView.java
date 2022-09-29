@@ -55,7 +55,7 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
    private final String STEUERPERIODE_CREATE = "taxPeriod/create";
 
    private final DateConverter dateConverter;
-   private final TaxPeriodService periodeService;
+   private final TaxPeriodService taxService;
 
    private ListBox<TaxPeriod> periodeListBox;
    private TaxPeriod taxPeriod;
@@ -79,7 +79,7 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
    private Component createListBox() {
       periodeListBox = new ListBox<>();
       periodeListBox.setRenderer(new ComponentRenderer<>(this::buildListRenderer));
-      periodeListBox.setItems(periodeService.findAll());
+      periodeListBox.setItems(taxService.findAll());
       // when a row is selected or deselected, populate form
       periodeListBox.addValueChangeListener(event -> {
          if (event.getValue() != null) {
@@ -156,17 +156,17 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
          BinderValidationStatus<TaxPeriod> validate = binder.validate();
          if (validate.isOk()) {
             TaxPeriod bean = binder.getBean();
-            periodeService.save(bean);
-            periodeListBox.setItems(periodeService.findAll());
+            taxService.save(bean);
+            periodeListBox.setItems(taxService.findAll());
             binder.setBean(null);
          } else {
             Notification.show("Keine valide Steuerperiode");
          }
       });
       save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-      Button changeStatus = new Button("Aktivieren", e -> prepareActiveSteuerperiode(taxPeriod));
+      Button changeStatus = new Button("Aktivieren", e -> confirmChangeActiveTaxperiode(taxPeriod));
       changeStatus.addThemeVariants(ButtonVariant.LUMO_ERROR);
-      Button balancePdf = new Button("Jahresabschluss", e -> prepareBalancePdf(taxPeriod));
+      Button balancePdf = new Button("Jahresabschluss", e -> taxService.createBalanceSheet(taxPeriod));
       binder.addStatusChangeListener(e -> {
          Optional<TaxPeriod> maybeSP = Optional.ofNullable((TaxPeriod) e.getBinder().getBean());
          if (maybeSP.isPresent()) {
@@ -182,8 +182,8 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
       return buttonLayout;
    }
 
-   private void prepareActiveSteuerperiode(TaxPeriod periode) {
-      Optional<TaxPeriod> maybeActive = periodeService.findActive();
+   private void confirmChangeActiveTaxperiode(TaxPeriod periode) {
+      Optional<TaxPeriod> maybeActive = taxService.findActive();
       if (maybeActive.isPresent()) {
          TaxPeriod active = maybeActive.get();
          ConfirmDialog dialog = new ConfirmDialog();
@@ -194,25 +194,14 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
          dialog.setCancelable(true);
          dialog.setConfirmText("Aktivieren");
          dialog.setConfirmButtonTheme("error primary");
-         dialog.addConfirmListener(e -> saveActiveSteuerperiode(active, periode));
+         dialog.addConfirmListener(e -> {
+            taxService.changeActiveTaxPeriod(active, periode);
+            periodeListBox.setItems(taxService.findAll());
+         });
          dialog.open();
       } else {
          LOGGER.info("Keine aktive Steuerperiode gefunden -> einfach machen");
       }
-   }
-
-   private void saveActiveSteuerperiode(TaxPeriod current, TaxPeriod future) {
-      current.setStatus(TaxPeriodState.GESCHLOSSEN);
-      periodeService.save(current);
-      LOGGER.info("TaxPeriod closed: {}", current);
-      future.setStatus(TaxPeriodState.AKTIV);
-      periodeService.save(future);
-      LOGGER.info("TaxPeriod active: {}", future);
-      periodeListBox.setItems(periodeService.findAll());
-   }
-
-   private void prepareBalancePdf(TaxPeriod periode) {
-      LOGGER.info("creating PDF");
    }
 
    @Override public void beforeEnter(BeforeEnterEvent event) {
@@ -224,7 +213,7 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
             Optional<String> maybePid = event.getRouteParameters().get(PARAMETER_PID);
             maybePid.ifPresent(pid -> {
                UUID periodeId = UUID.fromString(pid);
-               Optional<TaxPeriod> maybePeriodeFromBackend = periodeService.get(periodeId);
+               Optional<TaxPeriod> maybePeriodeFromBackend = taxService.get(periodeId);
                if (maybePeriodeFromBackend.isPresent()) {
                   populateForm(maybePeriodeFromBackend.get());
                } else {
