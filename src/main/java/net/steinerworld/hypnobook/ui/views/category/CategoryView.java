@@ -60,9 +60,9 @@ public class CategoryView extends VerticalLayout {
       TextField field = new TextField();
       field.setWidthFull();
       binder.forField(field)
-            .asRequired("name must not be empty")
+            .asRequired("bezeichnung must not be empty")
             .withStatusLabel(nameValidationMessage)
-            .bind(Category::getName, Category::setName);
+            .bind(Category::getBezeichnung, Category::setBezeichnung);
       return field;
    }
 
@@ -70,20 +70,20 @@ public class CategoryView extends VerticalLayout {
       TextField field = new TextField();
       field.setWidthFull();
       binder.forField(field)
-            .bind(Category::getBeschreibung, Category::setBeschreibung);
+            .bind(Category::getInfo, Category::setInfo);
       return field;
    }
 
    private static VerticalLayout buildAddDialogLayout(Binder<Category> binder) {
-      TextField nameField = new TextField("Name");
+      TextField nameField = new TextField("Bezeichnung");
       binder.forField(nameField)
-            .asRequired("Name darf nicht leer sein!")
-            .bind(Category::getName, Category::setName);
+            .asRequired("Bezeichnung darf nicht leer sein!")
+            .bind(Category::getBezeichnung, Category::setBezeichnung);
       TextArea infoArea = new TextArea("Info");
       infoArea.setMaxLength(1024);
       infoArea.setValueChangeMode(ValueChangeMode.EAGER);
       infoArea.addValueChangeListener(e -> e.getSource().setHelperText(e.getValue().length() + "/" + 1024));
-      binder.forField(infoArea).bind(Category::getBeschreibung, Category::setBeschreibung);
+      binder.forField(infoArea).bind(Category::getInfo, Category::setInfo);
 
       VerticalLayout dialogLayout = new VerticalLayout(nameField, infoArea);
       dialogLayout.setPadding(false);
@@ -102,8 +102,8 @@ public class CategoryView extends VerticalLayout {
 
       Editor<Category> editor = grid.getEditor();
 
-      Grid.Column<Category> nameColumn = grid.addColumn(Category::getName).setHeader("Name").setWidth("200px").setFlexGrow(0);
-      Grid.Column<Category> infoColumn = grid.addColumn(Category::getBeschreibung).setHeader("Info").setFlexGrow(1);
+      Grid.Column<Category> nameColumn = grid.addColumn(Category::getBezeichnung).setHeader("Name").setWidth("200px").setFlexGrow(0);
+      Grid.Column<Category> infoColumn = grid.addColumn(Category::getInfo).setHeader("Info").setFlexGrow(1);
       Grid.Column<Category> editColumn = grid.addComponentColumn(kat -> buildGridEditButton(editor, kat)).setWidth("100px").setFlexGrow(0);
 
       Binder<Category> binder = new Binder<>(Category.class);

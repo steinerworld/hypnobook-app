@@ -76,7 +76,7 @@ public class AccountingView extends VerticalLayout {
          wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
          Div info = new Div();
-         info.setText(periode.getJahresbezeichnung() + " (" + periode.getStatus() + ")");
+         info.setText(periode.getGeschaeftsjahr() + " (" + periode.getStatus() + ")");
 
          Div duration = new Div();
          duration.setText(periode.getVon() + " - " + periode.getBis());
@@ -124,7 +124,7 @@ public class AccountingView extends VerticalLayout {
       periodeSelect.setItems(periodeList);
       periodeSelect.setLabel("TaxPeriod");
       periodeSelect.setRenderer(AccountingView.createPeriodeRenderer());
-      periodeSelect.setItemLabelGenerator(item -> item.getJahresbezeichnung() + " (" + item.getStatus().name() + ")");
+      periodeSelect.setItemLabelGenerator(item -> item.getGeschaeftsjahr() + " (" + item.getStatus().name() + ")");
       periodeSelect.setValue(currentPeriode.getBean());
       periodeSelect.addValueChangeListener(event -> currentPeriode.setBean(event.getValue()));
 
@@ -197,7 +197,7 @@ public class AccountingView extends VerticalLayout {
 
       Select<Category> kategorieSelect = new Select<>();
       kategorieSelect.setLabel("Category");
-      kategorieSelect.setItemLabelGenerator(Category::getName);
+      kategorieSelect.setItemLabelGenerator(Category::getBezeichnung);
       kategorieSelect.setItems(categoryService.findAll());
       ausgabeBinder.forField(kategorieSelect).bind(Accounting::getCategory, Accounting::setCategory);
 

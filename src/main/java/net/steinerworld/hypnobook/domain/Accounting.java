@@ -17,7 +17,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,8 +35,7 @@ public class Accounting implements Serializable {
 
    private static final long serialVersionUID = 1L;
 
-   @Id @GeneratedValue(generator = "system-uuid")
-   @GenericGenerator(name = "system-uuid", strategy = "uuid")
+   @Id @GeneratedValue
    @Column(name = "id")
    private UUID id;
 
@@ -60,16 +58,16 @@ public class Accounting implements Serializable {
    private String text;
 
    @Enumerated(EnumType.STRING)
-   @Column(name = "buchungtype")
+   @Column(name = "accounting_type")
    private AccountingType accountingType;
 
    @ManyToOne()
-   @JoinColumn(name = "kategorie_id", referencedColumnName = "id")
+   @JoinColumn(name = "category_id", referencedColumnName = "id")
    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
    private Category category;
 
    @ManyToOne(optional = false)
-   @JoinColumn(name = "steuerperiode_id", nullable = false, referencedColumnName = "id")
+   @JoinColumn(name = "tax_period_id", nullable = false, referencedColumnName = "id")
    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
    private TaxPeriod taxPeriod;
 

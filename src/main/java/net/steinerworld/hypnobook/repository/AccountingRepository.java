@@ -1,6 +1,7 @@
 package net.steinerworld.hypnobook.repository;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,10 +16,10 @@ import net.steinerworld.hypnobook.domain.TaxPeriod;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface AccountingRepository extends JpaRepository<Accounting, Long> {
-   List<Accounting> findBySteuerperiode(TaxPeriod periode, Sort sort);
+public interface AccountingRepository extends JpaRepository<Accounting, UUID> {
+   List<Accounting> findByTaxPeriod(TaxPeriod periode, Sort sort);
 
-   List<Accounting> findBySteuerperiodeAndAndKategorie(TaxPeriod periode, Category category);
+   List<Accounting> findByTaxPeriodAndCategory(TaxPeriod periode, Category category);
 
-   long countAllBySteuerperiode(TaxPeriod periode);
+   long countAllByTaxPeriod(TaxPeriod periode);
 }

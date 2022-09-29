@@ -2,6 +2,7 @@ package net.steinerworld.hypnobook.ui.views.taxperiod;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
@@ -25,7 +26,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.BinderValidationStatus;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -58,7 +59,7 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
 
    private ListBox<TaxPeriod> periodeListBox;
    private TaxPeriod taxPeriod;
-   private TextField jahresbezeichnung;
+   private IntegerField geschaeftsjahr;
    private DatePicker von;
    private DatePicker bis;
    private Select<TaxPeriodState> status;
@@ -107,7 +108,7 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
    }
 
    private Component buildListRenderer(TaxPeriod periode) {
-      Span name = new Span(periode.getJahresbezeichnung());
+      Span name = new Span(String.valueOf(periode.getGeschaeftsjahr()));
       Span range = new Span(dateConverter.localDateToString(periode.getVon()) + " - " + dateConverter.localDateToString(periode.getBis()));
       Span badge = createFormattedBadge(periode.getStatus());
 
@@ -123,8 +124,8 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
    private Component createEditForm() {
       binder = new BeanValidationBinder<>(TaxPeriod.class);
       FormLayout formLayout = new FormLayout();
-      jahresbezeichnung = new TextField("Jahresbezeichnung");
-      binder.forField(jahresbezeichnung).asRequired(PFLICHTFELD_TXT).bind(TaxPeriod::getJahresbezeichnung, TaxPeriod::setJahresbezeichnung);
+      geschaeftsjahr = new IntegerField("Geschäftsjahr");
+      binder.forField(geschaeftsjahr).asRequired(PFLICHTFELD_TXT).bind(TaxPeriod::getGeschaeftsjahr, TaxPeriod::setGeschaeftsjahr);
       von = new DatePicker("von");
       binder.forField(von).asRequired(PFLICHTFELD_TXT).bind(TaxPeriod::getVon, TaxPeriod::setVon);
       bis = new DatePicker("bis");
@@ -134,7 +135,7 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
       status.setItems(TaxPeriodState.values());
       status.setEnabled(false);
       binder.forField(status).bind(TaxPeriod::getStatus, TaxPeriod::setStatus);
-      formLayout.add(jahresbezeichnung, von, bis, status);
+      formLayout.add(geschaeftsjahr, von, bis, status);
 
       HorizontalLayout buttons = createButtonLayout();
       VerticalLayout panel = new VerticalLayout(formLayout, buttons);
@@ -159,22 +160,25 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
             periodeListBox.setItems(periodeService.findAll());
             binder.setBean(null);
          } else {
-            Notification.show("Keine valide TaxPeriod");
+            Notification.show("Keine valide Steuerperiode");
          }
       });
       save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
       Button changeStatus = new Button("Aktivieren", e -> prepareActiveSteuerperiode(taxPeriod));
       changeStatus.addThemeVariants(ButtonVariant.LUMO_ERROR);
+      Button balancePdf = new Button("Jahresabschluss", e -> prepareBalancePdf(taxPeriod));
       binder.addStatusChangeListener(e -> {
          Optional<TaxPeriod> maybeSP = Optional.ofNullable((TaxPeriod) e.getBinder().getBean());
          if (maybeSP.isPresent()) {
             changeStatus.setVisible(maybeSP.get().getStatus() == TaxPeriodState.ERSTELLT);
+            balancePdf.setVisible(maybeSP.get().getStatus() == TaxPeriodState.GESCHLOSSEN);
          } else {
             changeStatus.setVisible(false);
+            balancePdf.setVisible(false);
          }
       });
 
-      buttonLayout.add(save, cancel, changeStatus);
+      buttonLayout.add(save, cancel, changeStatus, balancePdf);
       return buttonLayout;
    }
 
@@ -183,8 +187,8 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
       if (maybeActive.isPresent()) {
          TaxPeriod active = maybeActive.get();
          ConfirmDialog dialog = new ConfirmDialog();
-         dialog.setHeader("Konsequenzen der Aktivierung von Periode " + periode.getJahresbezeichnung());
-         dialog.setText("Du schliesst somit die aktuell aktive TaxPeriod '" + active.getJahresbezeichnung()
+         dialog.setHeader("Konsequenzen der Aktivierung ver Steuerperiode " + periode.getGeschaeftsjahr());
+         dialog.setText("Du schliesst somit die aktuell aktive Steuerperiode '" + active.getGeschaeftsjahr()
                + "'\nDas kann nicht mehr rückgängig gemacht werden!");
 
          dialog.setCancelable(true);
@@ -193,18 +197,22 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
          dialog.addConfirmListener(e -> saveActiveSteuerperiode(active, periode));
          dialog.open();
       } else {
-         LOGGER.info("Keine aktive TaxPeriod gefunden -> einfach machen");
+         LOGGER.info("Keine aktive Steuerperiode gefunden -> einfach machen");
       }
    }
 
    private void saveActiveSteuerperiode(TaxPeriod current, TaxPeriod future) {
       current.setStatus(TaxPeriodState.GESCHLOSSEN);
       periodeService.save(current);
-      LOGGER.info("TaxPeriod geschlossen: {}", current);
+      LOGGER.info("TaxPeriod closed: {}", current);
       future.setStatus(TaxPeriodState.AKTIV);
       periodeService.save(future);
-      LOGGER.info("TaxPeriod aktiviert: {}", future);
+      LOGGER.info("TaxPeriod active: {}", future);
       periodeListBox.setItems(periodeService.findAll());
+   }
+
+   private void prepareBalancePdf(TaxPeriod periode) {
+      LOGGER.info("creating PDF");
    }
 
    @Override public void beforeEnter(BeforeEnterEvent event) {
@@ -215,7 +223,7 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
          } else if (action.equals("edit")) {
             Optional<String> maybePid = event.getRouteParameters().get(PARAMETER_PID);
             maybePid.ifPresent(pid -> {
-               long periodeId = Long.parseLong(pid);
+               UUID periodeId = UUID.fromString(pid);
                Optional<TaxPeriod> maybePeriodeFromBackend = periodeService.get(periodeId);
                if (maybePeriodeFromBackend.isPresent()) {
                   populateForm(maybePeriodeFromBackend.get());

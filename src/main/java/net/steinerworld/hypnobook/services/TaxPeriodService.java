@@ -2,6 +2,7 @@ package net.steinerworld.hypnobook.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import net.steinerworld.hypnobook.repository.TaxPeriodRepository;
 public class TaxPeriodService {
    private final TaxPeriodRepository repository;
 
-   public Optional<TaxPeriod> get(Long id) {
+   public Optional<TaxPeriod> get(UUID id) {
       return repository.findById(id);
    }
 

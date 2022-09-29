@@ -9,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import lombok.Getter;
@@ -21,8 +20,7 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain = true)
 @ToString
 public class AppUser {
-   @Id @GeneratedValue(generator = "system-uuid")
-   @GenericGenerator(name = "system-uuid", strategy = "uuid")
+   @Id @GeneratedValue
    @Column(name = "id") private UUID id;
    @Column(name = "username") private String username;
    @Column(name = "name") private String name;

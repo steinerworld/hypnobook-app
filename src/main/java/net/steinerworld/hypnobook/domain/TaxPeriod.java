@@ -15,7 +15,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -33,13 +32,12 @@ import lombok.experimental.Accessors;
 public class TaxPeriod implements Serializable {
    private static final long serialVersionUID = 1L;
 
-   @Id @GeneratedValue(generator = "system-uuid")
-   @GenericGenerator(name = "system-uuid", strategy = "uuid")
+   @Id @GeneratedValue
    @Column(name = "id")
    private UUID id;
 
-   @Column(name = "jahresbezeichnung")
-   private String jahresbezeichnung;
+   @Column(name = "geschaeftsjahr")
+   private int geschaeftsjahr;
 
    @Column(name = "von")
    private LocalDate von;
@@ -57,10 +55,10 @@ public class TaxPeriod implements Serializable {
       if (o == null || getClass() != o.getClass())
          return false;
       TaxPeriod that = (TaxPeriod) o;
-      return Objects.equals(jahresbezeichnung, that.jahresbezeichnung);
+      return Objects.equals(geschaeftsjahr, that.geschaeftsjahr);
    }
 
    @Override public int hashCode() {
-      return Objects.hash(jahresbezeichnung);
+      return Objects.hash(geschaeftsjahr);
    }
 }

@@ -18,7 +18,7 @@ public class AccountingService {
    private final AccountingRepository buchungRepo;
 
    public List<Accounting> findAllSortedInPeriode(TaxPeriod periode) {
-      return buchungRepo.findBySteuerperiode(periode, Sort.by(Sort.Direction.DESC, "buchungsdatum", "id"));
+      return buchungRepo.findByTaxPeriod(periode, Sort.by(Sort.Direction.DESC, "buchungsdatum", "id"));
    }
 
    public double sumAusgabenInPeriode(TaxPeriod periode) {
@@ -36,7 +36,7 @@ public class AccountingService {
    }
 
    public double sumAusgabeInPeriodeAndKategorie(TaxPeriod periode, Category kat) {
-      return buchungRepo.findBySteuerperiodeAndAndKategorie(periode, kat).stream()
+      return buchungRepo.findByTaxPeriodAndCategory(periode, kat).stream()
             .filter(accounting -> Objects.nonNull(accounting.getAusgabe()))
             .mapToDouble(Accounting::getAusgabe)
             .sum();
