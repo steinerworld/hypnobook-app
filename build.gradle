@@ -1,68 +1,68 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.3'
-	id 'io.spring.dependency-management' version '1.0.13.RELEASE'
-	id 'com.vaadin' version '23.2.0'
-	id "org.flywaydb.flyway" version "9.3.0"
-	id 'java'
+   id 'org.springframework.boot' version '2.7.3'
+   id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+   id 'com.vaadin' version '23.2.0'
+   id "org.flywaydb.flyway" version "9.3.0"
+   id 'java'
 }
 
 group = 'net.steinerworld'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = '11'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+   compileOnly {
+      extendsFrom annotationProcessor
+   }
 }
 
 repositories {
-	mavenCentral()
-	maven { url "${vaadinAddonsUrl}" }
+   mavenCentral()
+   maven { url "${vaadinAddonsUrl}" }
 }
 
 ext {
-	set('vaadinVersion', "23.2.0")
+   set('vaadinVersion', "23.2.0")
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'com.vaadin:vaadin-spring-boot-starter'
-	implementation 'com.vaadin:vaadin-core'
-	implementation 'org.flywaydb:flyway-core:9.3.0'
-	implementation 'com.itextpdf:itextpdf:5.5.13.3'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+   implementation 'org.springframework.boot:spring-boot-starter-validation'
+   implementation 'org.springframework.boot:spring-boot-starter-security'
+   implementation 'com.vaadin:vaadin-spring-boot-starter'
+   implementation 'com.vaadin:vaadin-core'
+   implementation 'org.flywaydb:flyway-core:9.3.0'
+   implementation 'com.itextpdf:itextpdf:5.5.13.3'
+   compileOnly 'org.projectlombok:lombok'
+   developmentOnly 'org.springframework.boot:spring-boot-devtools'
+   runtimeOnly 'org.postgresql:postgresql'
+   annotationProcessor 'org.projectlombok:lombok'
+   testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	// addon
-	implementation 'com.vaadin.componentfactory:togglebutton:2.0.0'
+   // addon
+   implementation 'com.vaadin.componentfactory:togglebutton:2.0.0'
 
 }
 
 dependencyManagement {
-	imports {
-		mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
-	}
+   imports {
+      mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
+   }
 }
 
 vaadin {
-	productionMode = true
+   productionMode = false
 }
 
 flyway {
-	url = 'jdbc:postgresql://localhost:5435/hypnobook'
-	user = 'appuser'
-	password = 'appuser'
-	locations = ['classpath:db/migration']
+   url = 'jdbc:postgresql://localhost:5435/hypnobook'
+   user = 'appuser'
+   password = 'appuser'
+   locations = ['classpath:db/migration']
 }
 // we need to build classes before we can migrate
 flywayMigrate.dependsOn classes
 
 tasks.named('test') {
-	useJUnitPlatform()
+   useJUnitPlatform()
 }

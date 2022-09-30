@@ -70,6 +70,27 @@ public class AccountingView extends VerticalLayout {
    private Button saveAusgabeButton;
    private Button saveEinnahmeButton;
 
+   @PostConstruct
+   public void initialize() {
+      setHeightFull();
+      initializeCurrentSteuerperiode();
+
+      add(createOverview());
+
+      add(createBuchhaltungGrid());
+
+      add(createBuchungTab(), tabContent);
+      ausgabeForm = createAusgabeForm();
+      einnahmeForm = createEinnahmeForm();
+      saveAusgabeButton = createAusgabeSaveButton();
+      saveEinnahmeButton = createEinnahmeSaveButton();
+
+      tabs.setSelectedTab(ausgabeTab);
+      ausgabeBinder.setBean(newBuchhaltung(AccountingType.AUSGABE));
+      tabContent.add(ausgabeForm, saveAusgabeButton);
+      loadData();
+   }
+
    private static ComponentRenderer<FlexLayout, TaxPeriod> createPeriodeRenderer() {
       return new ComponentRenderer<>(periode -> {
          FlexLayout wrapper = new FlexLayout();
@@ -95,27 +116,6 @@ public class AccountingView extends VerticalLayout {
          LOGGER.info("load data for current {}", currentPeriode.getBean());
          loadData();
       });
-   }
-
-   @PostConstruct
-   public void initialize() {
-      setHeightFull();
-      initializeCurrentSteuerperiode();
-
-      add(createOverview());
-
-      add(createBuchhaltungGrid());
-
-      add(createBuchungTab(), tabContent);
-      ausgabeForm = createAusgabeForm();
-      einnahmeForm = createEinnahmeForm();
-      saveAusgabeButton = createAusgabeSaveButton();
-      saveEinnahmeButton = createEinnahmeSaveButton();
-
-      tabs.setSelectedTab(ausgabeTab);
-      ausgabeBinder.setBean(newBuchhaltung(AccountingType.AUSGABE));
-      tabContent.add(ausgabeForm, saveAusgabeButton);
-      loadData();
    }
 
    private HorizontalLayout createOverview() {
