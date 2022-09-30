@@ -15,10 +15,10 @@ import net.steinerworld.hypnobook.repository.AccountingRepository;
 @Service
 @RequiredArgsConstructor
 public class AccountingService {
-   private final AccountingRepository buchungRepo;
+   private final AccountingRepository accountRepo;
 
    public List<Accounting> findAllSortedInPeriode(TaxPeriod periode) {
-      return buchungRepo.findByTaxPeriod(periode, Sort.by(Sort.Direction.DESC, "buchungsdatum", "id"));
+      return accountRepo.findByTaxPeriod(periode, Sort.by(Sort.Direction.DESC, "buchungsdatum", "id"));
    }
 
    public double sumAusgabenInPeriode(TaxPeriod periode) {
@@ -35,14 +35,14 @@ public class AccountingService {
             .sum();
    }
 
-   public double sumAusgabeInPeriodeAndKategorie(TaxPeriod periode, Category kat) {
-      return buchungRepo.findByTaxPeriodAndCategory(periode, kat).stream()
+   public double sumAusgabeInTaxPeriodAndCategory(TaxPeriod periode, Category kat) {
+      return accountRepo.findByTaxPeriodAndCategory(periode, kat).stream()
             .filter(accounting -> Objects.nonNull(accounting.getAusgabe()))
             .mapToDouble(Accounting::getAusgabe)
             .sum();
    }
 
    public void save(Accounting accounting) {
-      buchungRepo.save(accounting);
+      accountRepo.save(accounting);
    }
 }

@@ -5,10 +5,12 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 @Getter @Setter
 @Accessors(chain = true)
+@ToString
 public class BalanceDto {
    private String currentYearCaption;
    private String lastYearCaption;
@@ -25,6 +27,7 @@ public class BalanceDto {
    @Getter @Setter
    @Accessors(chain = true)
    @AllArgsConstructor
+   @ToString
    public static class SumByCategory {
       private String category;
       private String sumByCategoryCurrentYear;

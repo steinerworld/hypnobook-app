@@ -1,5 +1,6 @@
 package net.steinerworld.hypnobook.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,6 @@ import net.steinerworld.hypnobook.domain.TaxPeriodState;
 @Repository
 public interface TaxPeriodRepository extends JpaRepository<TaxPeriod, UUID> {
    TaxPeriod findByStatusEquals(TaxPeriodState status);
+
+   Optional<TaxPeriod> findByGeschaeftsjahr(int jahr);
 }

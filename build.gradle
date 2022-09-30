@@ -50,6 +50,10 @@ dependencyManagement {
 	}
 }
 
+vaadin {
+	productionMode = true
+}
+
 flyway {
 	url = 'jdbc:postgresql://localhost:5435/hypnobook'
 	user = 'appuser'

@@ -1,12 +1,13 @@
-package net.steinerworld.hypnobook.pdf;
+package net.steinerworld.hypnobook.services;
 
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.text.DecimalFormat;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -20,38 +21,71 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import lombok.RequiredArgsConstructor;
+import net.steinerworld.hypnobook.domain.Category;
+import net.steinerworld.hypnobook.domain.TaxPeriod;
 import net.steinerworld.hypnobook.dto.BalanceDto;
+import net.steinerworld.hypnobook.exceptions.MaloneyException;
 
-public class Balance {
+@Service
+@RequiredArgsConstructor
+public class BalanceSheetService {
+   private static final Logger LOGGER = LoggerFactory.getLogger(BalanceSheetService.class);
+   private static final DecimalFormat DF = new DecimalFormat("#,##0.00");
    private static final Font TITLE_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK);
    private static final Font TEXT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 11, BaseColor.BLACK);
    private static final Font TEXT_BOLD_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, BaseColor.BLACK);
    private static final Font TEXT_BIGGER_BOLD_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
    private static final Font TEXT_ITALIC_FONT = FontFactory.getFont(FontFactory.HELVETICA, 11, Font.ITALIC, BaseColor.BLACK);
-   private static final Logger LOGGER = LoggerFactory.getLogger(Balance.class);
+   private static final String EMPTY = "";
 
-   public static void main(String[] args) {
-      BalanceDto.SumByCategory c1 = new BalanceDto.SumByCategory("Miete Praxis", "853.00", "811.00");
-      BalanceDto.SumByCategory c2 = new BalanceDto.SumByCategory("Werbung/Marketing", "514.00", "456.00");
-      List<BalanceDto.SumByCategory> list = Arrays.asList(c1, c2);
+   private final AccountingService accountingService;
+
+   public BalanceDto createDto(TaxPeriod tp, Optional<TaxPeriod> maybeLast) {
+      int currJahr = tp.getGeschaeftsjahr();
+      double currIngoing = accountingService.sumEinnahmenInPeriode(tp);
+      double currOutgoing = accountingService.sumAusgabenInPeriode(tp);
+      double currResult = currIngoing - currOutgoing;
+      String resultCaption = currResult < 0 ? "Verlust" : "Gewinn";
+
       BalanceDto dto = new BalanceDto()
-            .setCurrentYearCaption("2022")
-            .setLastYearCaption("2021")
-            .setSumTotalIngoingCurrentYear("4'794.00")
-            .setSumTotalIngoingLastYear("3'512.00")
-            .setSumTotalOutgoingCurrentYear("1'367.00")
-            .setSumTotalOutgoingLastYear("1'267.00")
-            .setResultCaption("Gewinn")
-            .setResultCurrentYear("3'427.00")
-            .setResultLastYear("2'245.00")
-            .setCategoryList(list);
+            .setCurrentYearCaption(String.valueOf(currJahr))
+            .setSumTotalIngoingCurrentYear(DF.format(currIngoing))
+            .setSumTotalOutgoingCurrentYear(DF.format(currOutgoing))
+            .setResultCaption(resultCaption)
+            .setResultCurrentYear(DF.format(currResult));
+      LOGGER.info("current tax-period is set");
 
-      new Balance().buildPDF(dto);
+      maybeLast.ifPresent(ltp -> {
+         int lastJahr = ltp.getGeschaeftsjahr();
+         double lastIngoing = accountingService.sumEinnahmenInPeriode(ltp);
+         double lastOutgoing = accountingService.sumAusgabenInPeriode(ltp);
+         double lastResult = lastIngoing - lastOutgoing;
+         dto.setLastYearCaption(String.valueOf(lastJahr))
+               .setSumTotalIngoingLastYear(DF.format(lastIngoing))
+               .setSumTotalOutgoingLastYear(DF.format(lastOutgoing))
+               .setResultLastYear(DF.format(lastResult));
+         LOGGER.info("last tax-period is set");
+      });
+      LOGGER.info("created dto is {}", dto);
+      return dto;
    }
 
-   public void buildPDF(BalanceDto dto) {
+   public BalanceDto.SumByCategory createCatSummary(Category cat, TaxPeriod tp, Optional<TaxPeriod> maybeLast) {
+      BalanceDto.SumByCategory item;
+      double sumCat = accountingService.sumAusgabeInTaxPeriodAndCategory(tp, cat);
+      if (maybeLast.isPresent()) {
+         double sumLast = accountingService.sumAusgabeInTaxPeriodAndCategory(maybeLast.get(), cat);
+         item = new BalanceDto.SumByCategory(cat.getBezeichnung(), DF.format(sumCat), DF.format(sumLast));
+      } else {
+         item = new BalanceDto.SumByCategory(cat.getBezeichnung(), DF.format(sumCat), EMPTY);
+      }
+      LOGGER.info("category: {}", item);
+      return item;
+   }
 
-      try (FileOutputStream os = new FileOutputStream("test.pdf")) {
+   public ByteArrayOutputStream streamBalancePdfSheet(BalanceDto dto) {
+      try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
          Document document = new Document();
          PdfWriter.getInstance(document, os);
          document.open();
@@ -72,7 +106,7 @@ public class Balance {
          table.setSpacingAfter(40);
 
          // Titel
-         table.addCell(buildCellBoldLeft(""));
+         table.addCell(buildCellBoldLeft(EMPTY));
          table.addCell(buildCellRight(dto.getLastYearCaption()));
          table.addCell(buildCellBoldRight(dto.getCurrentYearCaption()));
 
@@ -101,6 +135,7 @@ public class Balance {
 
          document.add(table);
 
+         // Unterschrift Felder
          document.add(new Paragraph("Geschäftsinhaberin: Karin Steiner", TEXT_FONT));
 
          PdfPTable footerTable = new PdfPTable(2);
@@ -111,12 +146,11 @@ public class Balance {
          footerTable.addCell(buildCellItalicBorderTop("Unterschrift"));
          document.add(footerTable);
 
-
-
          document.close();
-         LOGGER.info("done");
+         LOGGER.info("pdf create done stream it");
+         return os;
       } catch (DocumentException | IOException e) {
-         throw new RuntimeException(e);
+         throw new MaloneyException("cannot create balance pdf sheet", e);
       }
    }
 
