@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
@@ -23,9 +22,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.BinderValidationStatus;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -35,7 +32,6 @@ import com.vaadin.flow.router.Route;
 import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.Accounting;
 import net.steinerworld.hypnobook.domain.AccountingType;
-import net.steinerworld.hypnobook.domain.Category;
 import net.steinerworld.hypnobook.domain.TaxPeriod;
 import net.steinerworld.hypnobook.domain.TaxPeriodState;
 import net.steinerworld.hypnobook.exceptions.MaloneyException;
@@ -53,8 +49,8 @@ public class AccountingView extends VerticalLayout {
    private final AccountingService accountingService;
    private final CategoryService categoryService;
    private final TaxPeriodService periodeService;
-   private final BeanValidationBinder<Accounting> ausgabeBinder = new BeanValidationBinder<>(Accounting.class);
-   private final BeanValidationBinder<Accounting> einnahmeBinder = new BeanValidationBinder<>(Accounting.class);
+   private final Binder<Accounting> ausgabeBinder = new Binder<>(Accounting.class);
+   private final Binder<Accounting> ingoingBinder = new Binder<>(Accounting.class);
    private final Grid<Accounting> grid = new Grid<>();
    private final Binder<TaxPeriod> currentPeriode = new Binder<>(TaxPeriod.class);
    private final TextField totalAusgabenTextField = new TextField("Total Ausgaben");
@@ -80,14 +76,14 @@ public class AccountingView extends VerticalLayout {
       add(createBuchhaltungGrid());
 
       add(createBuchungTab(), tabContent);
-      ausgabeForm = createAusgabeForm();
-      einnahmeForm = createEinnahmeForm();
+      //      ausgabeForm = createAusgabeForm();
+      //      einnahmeForm = createEinnahmeForm();
       saveAusgabeButton = createAusgabeSaveButton();
       saveEinnahmeButton = createEinnahmeSaveButton();
 
       tabs.setSelectedTab(ausgabeTab);
       ausgabeBinder.setBean(newBuchhaltung(AccountingType.AUSGABE));
-      tabContent.add(ausgabeForm, saveAusgabeButton);
+      //      tabContent.add(ausgabeForm, saveAusgabeButton);
       loadData();
    }
 
@@ -147,7 +143,7 @@ public class AccountingView extends VerticalLayout {
                tabs.setSelectedTab(ausgabeTab);
                ausgabeBinder.setBean(item);
             } else if (item.getAccountingType() == AccountingType.EINNAHME) {
-               tabs.setSelectedTab(einnahmeTab);
+               tabs.setsSelectedTab(einnahmeTab);
                einnahmeBinder.setBean(item);
             } else {
                throw new MaloneyException("Weder Ausgabe noch Eingabe Typ");
@@ -160,94 +156,96 @@ public class AccountingView extends VerticalLayout {
    }
 
    private Tabs createBuchungTab() {
+      IngoingBooking in = new IngoingBooking();
+      OutgoingBooking out = new OutgoingBooking(categoryService.findAll());
       tabs.add(ausgabeTab, einnahmeTab);
       tabs.addSelectedChangeListener(event -> {
          Tab tab = event.getSelectedTab();
          tabContent.removeAll();
          if (tab.equals(ausgabeTab)) {
             ausgabeBinder.setBean(newBuchhaltung(AccountingType.AUSGABE));
-            tabContent.add(ausgabeForm, saveAusgabeButton);
+            tabContent.add(out, saveAusgabeButton);
          } else if (tab.equals(einnahmeTab)) {
             einnahmeBinder.setBean(newBuchhaltung(AccountingType.EINNAHME));
-            tabContent.add(einnahmeForm, saveEinnahmeButton);
+            tabContent.add(in, saveEinnahmeButton);
          }
       });
       return tabs;
    }
 
-   private FormLayout createAusgabeForm() {
-      FormLayout layout = createFormlayout();
+   //   private FormLayout createAusgabeForm() {
+   //      FormLayout layout = createFormlayout();
+   //
+   //      TextField belegNrTextField = new TextField("Beleg-Nr.");
+   //      ausgabeBinder.forField(belegNrTextField)
+   //            .asRequired("Ohne Beleg-Nr. geht es nicht")
+   //            .bind(Accounting::getBelegNr, Accounting::setBelegNr);
+   //
+   //      NumberField betragNumberField = new NumberField("Betrag in CHF");
+   //      Div chfSuffix = new Div();
+   //      chfSuffix.setText("CHF");
+   //      betragNumberField.setSuffixComponent(chfSuffix);
+   //      ausgabeBinder.forField(betragNumberField)
+   //            .bind(Accounting::getAusgabe, Accounting::setAusgabe);
+   //
+   //      DatePicker buchungsdatumDatePicker = new DatePicker("Datum");
+   //      ausgabeBinder.forField(buchungsdatumDatePicker)
+   //            .withValidator(this::inValidPeriode, "Buchungsdatum ist nicht in ausgewählter TaxPeriod")
+   //            .bind(Accounting::getBuchungsdatum, Accounting::setBuchungsdatum);
+   //
+   //      Select<Category> kategorieSelect = new Select<>();
+   //      kategorieSelect.setLabel("Category");
+   //      kategorieSelect.setItemLabelGenerator(Category::getBezeichnung);
+   //      kategorieSelect.setItems(categoryService.findAll());
+   //      ausgabeBinder.forField(kategorieSelect).bind(Accounting::getCategory, Accounting::setCategory);
+   //
+   //      TextField textTextField = new TextField("Text");
+   //      layout.setColspan(textTextField, 2);
+   //      ausgabeBinder.forField(textTextField)
+   //            .asRequired("Bitte Verwendungszweck angeben")
+   //            .bind(Accounting::getText, Accounting::setText);
+   //
+   //      layout.add(belegNrTextField, betragNumberField, buchungsdatumDatePicker, kategorieSelect, textTextField);
+   //      return layout;
+   //   }
 
-      TextField belegNrTextField = new TextField("Beleg-Nr.");
-      ausgabeBinder.forField(belegNrTextField)
-            .asRequired("Ohne Beleg-Nr. geht es nicht")
-            .bind(Accounting::getBelegNr, Accounting::setBelegNr);
-
-      NumberField betragNumberField = new NumberField("Betrag in CHF");
-      Div chfSuffix = new Div();
-      chfSuffix.setText("CHF");
-      betragNumberField.setSuffixComponent(chfSuffix);
-      ausgabeBinder.forField(betragNumberField)
-            .bind(Accounting::getAusgabe, Accounting::setAusgabe);
-
-      DatePicker buchungsdatumDatePicker = new DatePicker("Datum");
-      ausgabeBinder.forField(buchungsdatumDatePicker)
-            .withValidator(this::inValidPeriode, "Buchungsdatum ist nicht in ausgewählter TaxPeriod")
-            .bind(Accounting::getBuchungsdatum, Accounting::setBuchungsdatum);
-
-      Select<Category> kategorieSelect = new Select<>();
-      kategorieSelect.setLabel("Category");
-      kategorieSelect.setItemLabelGenerator(Category::getBezeichnung);
-      kategorieSelect.setItems(categoryService.findAll());
-      ausgabeBinder.forField(kategorieSelect).bind(Accounting::getCategory, Accounting::setCategory);
-
-      TextField textTextField = new TextField("Text");
-      layout.setColspan(textTextField, 2);
-      ausgabeBinder.forField(textTextField)
-            .asRequired("Bitte Verwendungszweck angeben")
-            .bind(Accounting::getText, Accounting::setText);
-
-      layout.add(belegNrTextField, betragNumberField, buchungsdatumDatePicker, kategorieSelect, textTextField);
-      return layout;
-   }
-
-   private FormLayout createEinnahmeForm() {
-      FormLayout layout = createFormlayout();
-
-      TextField belegNrTextField = new TextField("Beleg-Nr.");
-      einnahmeBinder.forField(belegNrTextField)
-            .asRequired("Ohne Beleg-Nr. geht es nicht")
-            .bind(Accounting::getBelegNr, Accounting::setBelegNr);
-
-      NumberField betragNumerField = new NumberField("Betrag in CHF");
-      Div chfSuffix = new Div();
-      chfSuffix.setText("CHF");
-      betragNumerField.setSuffixComponent(chfSuffix);
-      einnahmeBinder.forField(betragNumerField)
-            .bind(Accounting::getEinnahme, Accounting::setEinnahme);
-
-      DatePicker buchungsdatumDatePicker = new DatePicker("Datum");
-      einnahmeBinder.forField(buchungsdatumDatePicker)
-            .withValidator(this::inValidPeriode, "Buchungsdatum ist nicht in ausgewählter TaxPeriod")
-            .bind(Accounting::getBuchungsdatum, Accounting::setBuchungsdatum);
-
-      DatePicker zahlungseingangDatePicker = new DatePicker("Zahlungseingang");
-      einnahmeBinder.forField(zahlungseingangDatePicker).bind(Accounting::getEingangsdatum, Accounting::setEingangsdatum);
-
-      TextField textTextField = new TextField("Text");
-      layout.setColspan(textTextField, 2);
-      einnahmeBinder.forField(textTextField)
-            .asRequired("Woher stammt die Einnahme?")
-            .bind(Accounting::getText, Accounting::setText);
-
-      layout.add(belegNrTextField, betragNumerField, buchungsdatumDatePicker, zahlungseingangDatePicker, textTextField);
-      return layout;
-   }
+   //   private FormLayout createEinnahmeForm() {
+   //      FormLayout layout = createFormlayout();
+   //
+   //      TextField belegNrTextField = new TextField("Beleg-Nr.");
+   //      einnahmeBinder.forField(belegNrTextField)
+   //            .asRequired("Ohne Beleg-Nr. geht es nicht")
+   //            .bind(Accounting::getBelegNr, Accounting::setBelegNr);
+   //
+   //      NumberField betragNumerField = new NumberField("Betrag in CHF");
+   //      Div chfSuffix = new Div();
+   //      chfSuffix.setText("CHF");
+   //      betragNumerField.setSuffixComponent(chfSuffix);
+   //      einnahmeBinder.forField(betragNumerField)
+   //            .bind(Accounting::getEinnahme, Accounting::setEinnahme);
+   //
+   //      DatePicker buchungsdatumDatePicker = new DatePicker("Datum");
+   //      einnahmeBinder.forField(buchungsdatumDatePicker)
+   //            .withValidator(this::inValidPeriode, "Buchungsdatum ist nicht in ausgewählter TaxPeriod")
+   //            .bind(Accounting::getBuchungsdatum, Accounting::setBuchungsdatum);
+   //
+   //      DatePicker zahlungseingangDatePicker = new DatePicker("Zahlungseingang");
+   //      einnahmeBinder.forField(zahlungseingangDatePicker).bind(Accounting::getEingangsdatum, Accounting::setEingangsdatum);
+   //
+   //      TextField textTextField = new TextField("Text");
+   //      layout.setColspan(textTextField, 2);
+   //      einnahmeBinder.forField(textTextField)
+   //            .asRequired("Woher stammt die Einnahme?")
+   //            .bind(Accounting::getText, Accounting::setText);
+   //
+   //      layout.add(belegNrTextField, betragNumerField, buchungsdatumDatePicker, zahlungseingangDatePicker, textTextField);
+   //      return layout;
+   //   }
 
    private FormLayout createFormlayout() {
       FormLayout layout = new FormLayout();
       layout.setResponsiveSteps(
-            new FormLayout.ResponsiveStep("0", 1),
+            new FormLayout.ResponsiveStep("100px", 1),
             new FormLayout.ResponsiveStep("500px", 3)
       );
       return layout;
@@ -283,7 +281,7 @@ public class AccountingView extends VerticalLayout {
             saveBuchungAndRefresh(bean);
             einnahmeBinder.setBean(newBuchhaltung(bean.getAccountingType()));
          } else {
-            Notification.show("Keine valide Accounting");
+            Notification.show("Keine valide Buchung");
          }
       });
       einnahmeBinder.addStatusChangeListener(e -> button.setEnabled(einnahmeBinder.isValid()));
