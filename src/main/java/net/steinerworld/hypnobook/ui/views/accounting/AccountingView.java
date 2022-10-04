@@ -36,6 +36,7 @@ import net.steinerworld.hypnobook.domain.TaxPeriodState;
 import net.steinerworld.hypnobook.exceptions.MaloneyException;
 import net.steinerworld.hypnobook.services.AccountingService;
 import net.steinerworld.hypnobook.services.CategoryService;
+import net.steinerworld.hypnobook.services.ConverterService;
 import net.steinerworld.hypnobook.services.TaxPeriodService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
 
@@ -48,6 +49,7 @@ public class AccountingView extends VerticalLayout {
    private final AccountingService accountingService;
    private final CategoryService categoryService;
    private final TaxPeriodService periodeService;
+   private final ConverterService converterService;
    private final Binder<Accounting> outgoingBinder = new Binder<>(Accounting.class);
    private final Binder<Accounting> ingoingBinder = new Binder<>(Accounting.class);
    private final Binder<TaxPeriod> taxBinder = new Binder<>(TaxPeriod.class);
@@ -78,8 +80,8 @@ public class AccountingView extends VerticalLayout {
 
       BiFunction<TextField, TextField, StatusChangeListener> totals = (totalAusField, totalEinField) -> e -> {
          TaxPeriod tax = taxBinder.getBean();
-         totalAusField.setValue("" + accountingService.sumAusgabenInPeriode(tax));
-         totalEinField.setValue("" + accountingService.sumEinnahmenInPeriode(tax));
+         totalAusField.setValue(converterService.doubleToChf(accountingService.sumAusgabenInPeriode(tax)));
+         totalEinField.setValue(converterService.doubleToChf(accountingService.sumEinnahmenInPeriode(tax)));
       };
 
       taxBinder.addStatusChangeListener(totals.apply(totalAusgabenTextField, totalEinnahmenTextField));
@@ -145,9 +147,11 @@ public class AccountingView extends VerticalLayout {
    private void addBuchungTabs() {
       IngoingBooking in = new IngoingBooking().withBinder(ingoingBinder);
       in.getBuchenButton().addClickListener(e -> saveAccounting(ingoingBinder));
+      in.getCancelButton().addClickListener(e -> ingoingBinder.setBean(newBuchhaltung(AccountingType.EINNAHME)));
 
       OutgoingBooking out = new OutgoingBooking(categoryService.findAll()).withBinder(outgoingBinder);
       out.getBuchenButton().addClickListener(e -> saveAccounting(outgoingBinder));
+      out.getCancelButton().addClickListener(e -> outgoingBinder.setBean(newBuchhaltung(AccountingType.AUSGABE)));
 
       Div content = new Div();
       Tab inTab = new Tab("Einnahmen");
@@ -165,6 +169,9 @@ public class AccountingView extends VerticalLayout {
       });
       outgoingBinder.addStatusChangeListener(e -> tabs.setSelectedTab(outTab));
       ingoingBinder.addStatusChangeListener(e -> tabs.setSelectedTab(inTab));
+
+      taxBinder.addStatusChangeListener(event -> content.setEnabled(taxBinder.getBean().getStatus() != TaxPeriodState.GESCHLOSSEN));
+
       add(tabs, content);
    }
 
@@ -182,6 +189,7 @@ public class AccountingView extends VerticalLayout {
    private Accounting newBuchhaltung(AccountingType type) {
       return new Accounting()
             .setAccountingType(type)
+            .setBelegNr(accountingService.getNextBelegNr(type))
             .setTaxPeriod(taxBinder.getBean())
             .setBuchungsdatum(LocalDate.now(ZoneId.systemDefault()));
    }

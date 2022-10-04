@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.Accounting;
+import net.steinerworld.hypnobook.domain.AccountingType;
 import net.steinerworld.hypnobook.domain.Category;
 import net.steinerworld.hypnobook.domain.TaxPeriod;
 import net.steinerworld.hypnobook.repository.AccountingRepository;
@@ -44,5 +45,10 @@ public class AccountingService {
 
    public void save(Accounting accounting) {
       accountRepo.save(accounting);
+   }
+
+   public String getNextBelegNr(AccountingType type) {
+      Long nr = accountRepo.getNextBelegNr();
+      return String.format("%s%06d", type.getBelegPrefix(), nr);
    }
 }

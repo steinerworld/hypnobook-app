@@ -30,7 +30,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.IntegerField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.BinderValidationStatus;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -43,7 +43,7 @@ import com.vaadin.flow.server.StreamResource;
 import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.TaxPeriod;
 import net.steinerworld.hypnobook.domain.TaxPeriodState;
-import net.steinerworld.hypnobook.services.DateConverter;
+import net.steinerworld.hypnobook.services.ConverterService;
 import net.steinerworld.hypnobook.services.TaxPeriodService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
 
@@ -56,19 +56,15 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
    private static final String PARAMETER_PID = "pid";
    private static final String PARAMETER_ACTION = "action";
    private static final String PFLICHTFELD_TXT = "Pflichtfeld";
-   private final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "taxPeriod/edit/%s";
-   private final String STEUERPERIODE_CREATE = "taxPeriod/create";
+   private static final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "taxPeriod/edit/%s";
+   private static final String STEUERPERIODE_CREATE = "taxPeriod/create";
 
-   private final DateConverter dateConverter;
+   private final ConverterService converterService;
    private final TaxPeriodService taxService;
+   private final Binder<TaxPeriod> taxBinder = new Binder<>(TaxPeriod.class);
 
    private ListBox<TaxPeriod> periodeListBox;
-   private TaxPeriod taxPeriod;
-   private IntegerField geschaeftsjahr;
-   private DatePicker von;
-   private DatePicker bis;
-   private Select<TaxPeriodState> status;
-   private BeanValidationBinder<TaxPeriod> binder;
+
 
    private static TaxPeriod createNew() {
       return new TaxPeriod().setStatus(TaxPeriodState.ERSTELLT);
@@ -114,7 +110,7 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
 
    private Component buildListRenderer(TaxPeriod periode) {
       Span name = new Span(String.valueOf(periode.getGeschaeftsjahr()));
-      Span range = new Span(dateConverter.localDateToString(periode.getVon()) + " - " + dateConverter.localDateToString(periode.getBis()));
+      Span range = new Span(converterService.localDateToString(periode.getVon()) + " - " + converterService.localDateToString(periode.getBis()));
       Span badge = createFormattedBadge(periode.getStatus());
 
       VerticalLayout column = new VerticalLayout(name, range, badge);
@@ -127,25 +123,34 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
    }
 
    private Component createEditForm() {
-      binder = new BeanValidationBinder<>(TaxPeriod.class);
-      FormLayout formLayout = new FormLayout();
-      geschaeftsjahr = new IntegerField("Geschäftsjahr");
-      binder.forField(geschaeftsjahr).asRequired(PFLICHTFELD_TXT).bind(TaxPeriod::getGeschaeftsjahr, TaxPeriod::setGeschaeftsjahr);
-      von = new DatePicker("von");
-      binder.forField(von).asRequired(PFLICHTFELD_TXT).bind(TaxPeriod::getVon, TaxPeriod::setVon);
-      bis = new DatePicker("bis");
-      binder.forField(bis).asRequired(PFLICHTFELD_TXT).bind(TaxPeriod::getBis, TaxPeriod::setBis);
-      status = new Select<>();
+      IntegerField geschaeftsjahr = new IntegerField("Geschäftsjahr");
+      taxBinder.forField(geschaeftsjahr)
+            .asRequired(PFLICHTFELD_TXT)
+            .bind(TaxPeriod::getGeschaeftsjahr, TaxPeriod::setGeschaeftsjahr);
+
+      DatePicker von = new DatePicker("von");
+      taxBinder.forField(von)
+            .asRequired(PFLICHTFELD_TXT)
+            .bind(TaxPeriod::getVon, TaxPeriod::setVon);
+
+      DatePicker bis = new DatePicker("bis");
+      taxBinder.forField(bis)
+            .asRequired(PFLICHTFELD_TXT)
+            .bind(TaxPeriod::getBis, TaxPeriod::setBis);
+
+      Select<TaxPeriodState> status = new Select<>();
       status.setLabel("Status");
       status.setItems(TaxPeriodState.values());
       status.setEnabled(false);
-      binder.forField(status).bind(TaxPeriod::getStatus, TaxPeriod::setStatus);
-      formLayout.add(geschaeftsjahr, von, bis, status);
+      taxBinder.forField(status)
+            .bind(TaxPeriod::getStatus, TaxPeriod::setStatus);
+
+      FormLayout formLayout = new FormLayout(geschaeftsjahr, von, bis, status);
 
       HorizontalLayout buttons = createButtonLayout();
       VerticalLayout panel = new VerticalLayout(formLayout, buttons);
       panel.setVisible(false);
-      binder.addStatusChangeListener(event -> panel.setVisible(Objects.nonNull(event.getBinder().getBean())));
+      taxBinder.addStatusChangeListener(event -> panel.setVisible(Objects.nonNull(event.getBinder().getBean())));
       return panel;
    }
 
@@ -153,26 +158,29 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
       HorizontalLayout buttonLayout = new HorizontalLayout();
 
       Button cancel = new Button("Cancel", e -> {
-         binder.setBean(null);
+         taxBinder.setBean(null);
          periodeListBox.setValue(null);
       });
       cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
       Button save = new Button("Save", e -> {
-         BinderValidationStatus<TaxPeriod> validate = binder.validate();
+         BinderValidationStatus<TaxPeriod> validate = taxBinder.validate();
          if (validate.isOk()) {
-            TaxPeriod bean = binder.getBean();
+            TaxPeriod bean = taxBinder.getBean();
             taxService.save(bean);
             periodeListBox.setItems(taxService.findAll());
-            binder.setBean(null);
+            taxBinder.setBean(null);
          } else {
             Notification.show("Keine valide Steuerperiode");
          }
       });
       save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-      Button changeStatus = new Button("Aktivieren", e -> confirmChangeActiveTaxperiode(taxPeriod));
+
+      Button changeStatus = new Button("Aktivieren", e -> confirmChangeActiveTaxperiode(taxBinder.getBean()));
       changeStatus.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
       Anchor balancePdf = buildAnchorForTaxSheet();
-      binder.addStatusChangeListener(e -> {
+
+      taxBinder.addStatusChangeListener(e -> {
          Optional<TaxPeriod> maybeSP = Optional.ofNullable((TaxPeriod) e.getBinder().getBean());
          if (maybeSP.isPresent()) {
             changeStatus.setVisible(maybeSP.get().getStatus() == TaxPeriodState.ERSTELLT);
@@ -189,7 +197,7 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
 
    private Anchor buildAnchorForTaxSheet() {
       Anchor anchor = new Anchor(new StreamResource("Jahresabschluss.pdf", (InputStreamFactory) () -> {
-         ByteArrayOutputStream os = taxService.streamBalanceSheet(taxPeriod);
+         ByteArrayOutputStream os = taxService.streamBalanceSheet(taxBinder.getBean());
          return new ByteArrayInputStream(os.toByteArray());
       }), "");
       anchor.getElement().setAttribute("download", true);
@@ -241,9 +249,8 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
       });
    }
 
-   private void populateForm(TaxPeriod value) {
-      this.taxPeriod = value;
-      binder.setBean(this.taxPeriod);
+   private void populateForm(TaxPeriod tax) {
+      taxBinder.setBean(tax);
    }
 
 }

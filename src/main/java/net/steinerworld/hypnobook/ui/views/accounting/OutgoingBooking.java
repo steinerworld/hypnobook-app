@@ -2,7 +2,7 @@ package net.steinerworld.hypnobook.ui.views.accounting;
 
 import java.util.List;
 
-import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.binder.Binder;
 
@@ -20,9 +20,8 @@ public class OutgoingBooking extends AbstractBooking<OutgoingBooking> {
       kategorieField.setItemLabelGenerator(Category::getBezeichnung);
       kategorieField.setItems(catList);
 
-      FormLayout layout = createFormLayout();
-      layout.add(belegNrField, betragField, buchungsdatumField, kategorieField, textField);
-      add(layout, buchenButton);
+      Component[] comps = {belegNrField, betragField, buchungsdatumField, kategorieField, textField};
+      addFormLayoutAndButtons(comps);
    }
 
    @Override public OutgoingBooking withBinder(Binder<Accounting> binder) {

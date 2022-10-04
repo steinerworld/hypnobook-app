@@ -2,9 +2,9 @@ package net.steinerworld.hypnobook.ui.views.accounting;
 
 import java.time.LocalDate;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.data.binder.Binder;
 
 import net.steinerworld.hypnobook.domain.Accounting;
@@ -17,9 +17,8 @@ public class IngoingBooking extends AbstractBooking<IngoingBooking> {
    public IngoingBooking() {
       super();
 
-      FormLayout layout = createFormLayout();
-      layout.add(belegNrField, betragField, buchungsdatumField, zahlungseingangCheck, zahlungsdatumField, textField);
-      add(layout, buchenButton);
+      Component[] comps = {belegNrField, betragField, buchungsdatumField, zahlungseingangCheck, zahlungsdatumField, textField};
+      addFormLayoutAndButtons(comps);
    }
 
    @Override public IngoingBooking withBinder(Binder<Accounting> binder) {

@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.data.renderer.NumberRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -16,7 +17,7 @@ public class JournalGrid extends Grid<Accounting> {
 
 
    public JournalGrid() {
-
+      addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
       setSelectionMode(SelectionMode.SINGLE);
       setAllRowsVisible(true);
       addColumn(buchungsdatumColumnRenderer())
@@ -32,7 +33,7 @@ public class JournalGrid extends Grid<Accounting> {
             .setWidth("150px")
             .setFlexGrow(0);
       addColumn(Accounting::getBelegNr).setHeader("Beleg-Nr.")
-            .setAutoWidth(true)
+            .setWidth("140px")
             .setFlexGrow(0);
       addColumn(buchungstextColumnRenderer()).setHeader("Buchungstext")
             .setAutoWidth(true)
@@ -42,18 +43,19 @@ public class JournalGrid extends Grid<Accounting> {
 
    private static Renderer<Accounting> buchungsdatumColumnRenderer() {
       return LitRenderer.<Accounting>of("<vaadin-vertical-layout>"
-                  + "    <span style=\"font-size: var(--lumo-font-size-s); color: var(--lumo-secondary-text-color);\">"
+                  + "    <span style=\"font-size: var(--lumo-font-size-xs); color: ${item.color};\">"
                   + "      ${item.einzahlung}"
                   + "    </span>"
                   + "    <span style=\"line-height: var(--lumo-line-height-m);\"> "
                   + "      ${item.buchungsdatum}"
                   + "    </span>"
                   + " </vaadin-vertical-layout>")
+            .withProperty("color", JournalGrid::einzahlungColorFormatter)
             .withProperty("buchungsdatum", ac -> DATE_FORMAT.format(ac.getBuchungsdatum()))
-            .withProperty("einzahlung", JournalGrid::einzahlungFormatter);
+            .withProperty("einzahlung", JournalGrid::einzahlungTextFormatter);
    }
 
-   private static String einzahlungFormatter(Accounting ac) {
+   private static String einzahlungTextFormatter(Accounting ac) {
       if (ac.getAccountingType() == AccountingType.EINNAHME) {
          if (ac.getEingangsdatum() == null) {
             return "Zahlung ausstehend";
@@ -65,9 +67,21 @@ public class JournalGrid extends Grid<Accounting> {
       }
    }
 
+   private static String einzahlungColorFormatter(Accounting ac) {
+      if (ac.getAccountingType() == AccountingType.EINNAHME) {
+         if (ac.getEingangsdatum() == null) {
+            return "var(--lumo-error-color)";
+         } else {
+            return "var(--lumo-secondary-text-color)";
+         }
+      } else {
+         return "var(--lumo-secondary-text-color)";
+      }
+   }
+
    private static Renderer<Accounting> buchungstextColumnRenderer() {
       return LitRenderer.<Accounting>of("<vaadin-vertical-layout>"
-                  + "    <span style=\"font-size: var(--lumo-font-size-s); color: var(--lumo-secondary-text-color);\">"
+                  + "    <span style=\"font-size: var(--lumo-font-size-xs); color: var(--lumo-secondary-text-color);\">"
                   + "      ${item.category}"
                   + "    </span>"
                   + "    <span style=\"line-height: var(--lumo-line-height-m);\"> "

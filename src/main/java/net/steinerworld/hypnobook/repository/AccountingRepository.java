@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import net.steinerworld.hypnobook.domain.Accounting;
@@ -22,4 +23,7 @@ public interface AccountingRepository extends JpaRepository<Accounting, UUID> {
    List<Accounting> findByTaxPeriodAndCategory(TaxPeriod periode, Category category);
 
    long countAllByTaxPeriod(TaxPeriod periode);
+
+   @Query(value = "SELECT nextval('booking_sequence')", nativeQuery = true)
+   Long getNextBelegNr();
 }
