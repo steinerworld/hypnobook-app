@@ -3,6 +3,7 @@ package net.steinerworld.hypnobook.ui.views.accounting;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
@@ -22,6 +23,7 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.StatusChangeListener;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -73,11 +75,17 @@ public class AccountingView extends VerticalLayout {
       TextField totalEinnahmenTextField = new TextField("Total Einnahmen");
       totalAusgabenTextField.setReadOnly(true);
       totalEinnahmenTextField.setReadOnly(true);
-      taxBinder.addStatusChangeListener(e -> {
+
+      BiFunction<TextField, TextField, StatusChangeListener> totals = (totalAusField, totalEinField) -> e -> {
          TaxPeriod tax = taxBinder.getBean();
-         totalAusgabenTextField.setValue("" + accountingService.sumAusgabenInPeriode(tax));
-         totalEinnahmenTextField.setValue("" + accountingService.sumEinnahmenInPeriode(tax));
-      });
+         totalAusField.setValue("" + accountingService.sumAusgabenInPeriode(tax));
+         totalEinField.setValue("" + accountingService.sumEinnahmenInPeriode(tax));
+      };
+
+      taxBinder.addStatusChangeListener(totals.apply(totalAusgabenTextField, totalEinnahmenTextField));
+      ingoingBinder.addStatusChangeListener(totals.apply(totalAusgabenTextField, totalEinnahmenTextField));
+      outgoingBinder.addStatusChangeListener(totals.apply(totalAusgabenTextField, totalEinnahmenTextField));
+
       periodeService.findActive().ifPresent(tax -> {
          taxBinder.setBean(tax);
          periodeSelect.setValue(tax);
@@ -106,8 +114,8 @@ public class AccountingView extends VerticalLayout {
    }
 
    private void addJournal() {
-      Journal journal = new Journal();
-      journal.addItemDoubleClickListener(event -> {
+      JournalGrid grid = new JournalGrid();
+      grid.addItemDoubleClickListener(event -> {
          if (taxBinder.getBean().getStatus() != TaxPeriodState.GESCHLOSSEN) {
             Accounting item = event.getItem();
             if (item.getAccountingType() == AccountingType.AUSGABE) {
@@ -121,11 +129,11 @@ public class AccountingView extends VerticalLayout {
             Notification.show("TaxPeriod geschlossen! Keine Bearbeitung möglich");
          }
       });
-      taxBinder.addStatusChangeListener(e -> loadAccountingData(journal));
-      ingoingBinder.addStatusChangeListener(e -> loadAccountingData(journal));
-      outgoingBinder.addStatusChangeListener(e -> loadAccountingData(journal));
+      taxBinder.addStatusChangeListener(e -> loadAccountingData(grid));
+      ingoingBinder.addStatusChangeListener(e -> loadAccountingData(grid));
+      outgoingBinder.addStatusChangeListener(e -> loadAccountingData(grid));
 
-      add(journal);
+      add(grid);
    }
 
    private void loadAccountingData(Grid<Accounting> grid) {
