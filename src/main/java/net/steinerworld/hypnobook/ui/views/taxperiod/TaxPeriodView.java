@@ -109,7 +109,7 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
    }
 
    private Component buildListRenderer(TaxPeriod periode) {
-      Span name = new Span(String.valueOf(periode.getGeschaeftsjahr()));
+      Span name = new Span("Geschäftsjahr " + periode.getGeschaeftsjahr());
       Span range = new Span(converterService.localDateToString(periode.getVon()) + " - " + converterService.localDateToString(periode.getBis()));
       Span badge = createFormattedBadge(periode.getStatus());
 
