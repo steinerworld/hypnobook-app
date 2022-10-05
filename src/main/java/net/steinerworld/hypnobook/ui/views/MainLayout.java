@@ -43,6 +43,7 @@ import net.steinerworld.hypnobook.ui.components.appnav.AppNavItem;
 import net.steinerworld.hypnobook.ui.views.about.AboutView;
 import net.steinerworld.hypnobook.ui.views.accounting.AccountingView;
 import net.steinerworld.hypnobook.ui.views.category.CategoryView;
+import net.steinerworld.hypnobook.ui.views.dashboard.DashboardView;
 import net.steinerworld.hypnobook.ui.views.helloworld.HelloWorldView;
 import net.steinerworld.hypnobook.ui.views.taxperiod.TaxPeriodView;
 
@@ -95,6 +96,7 @@ public class MainLayout extends AppLayout {
         if (accessChecker.hasAccess(AboutView.class)) {
             nav.addItem(new AppNavItem("About", AboutView.class, "la la-file"));
         }
+        nav.addItem(new AppNavItem("Übersicht", DashboardView.class, "la la-file"));
         if (accessChecker.hasAccess(AccountingView.class)) {
             nav.addItem(new AppNavItem("Accounting", AccountingView.class, "la la-file"));
         }
