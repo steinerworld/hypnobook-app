@@ -3,7 +3,9 @@ package net.steinerworld.hypnobook.ui.views.dashboard;
 import javax.annotation.security.PermitAll;
 
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -19,19 +21,24 @@ public class DashboardView extends VerticalLayout {
       setHeightFull();
       setWidthFull();
 
-      Label title = new Label("1. Quartal");
+      Span title = new Span("1. Quartal 2022");
       title.setClassName("ov-title");
 
-      Label subtitle = new Label("Jan. - Mrz.");
+      Span subtitle = new Span("Jan. - Mrz.");
       subtitle.setClassName("ov-subtitle");
 
-      Label inMoney = new Label("3'256.35");
+      Span inMoney = new Span("3'256.35");
       inMoney.setClassName("ov-in-money");
 
-      Label outMoney = new Label("495.00");
+      Span outMoney = new Span("495.00");
       outMoney.setClassName("ov-out-money");
 
-      Div div = new Div(title, subtitle, inMoney, outMoney);
+      Icon upIcon = new Icon(VaadinIcon.ARROW_UP);
+
+      //      VerticalLayout vl = new VerticalLayout(title, subtitle, inMoney, outMoney);
+      //      HorizontalLayout hl = new HorizontalLayout(vl, upIcon);
+
+      Div div = new Div(title, subtitle, inMoney, outMoney, upIcon);
       div.setClassName("ov-card");
       add(div);
    }
