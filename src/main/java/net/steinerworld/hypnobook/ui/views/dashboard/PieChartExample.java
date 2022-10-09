@@ -1,5 +1,7 @@
 package net.steinerworld.hypnobook.ui.views.dashboard;
 
+import java.util.Map;
+
 import com.github.appreciated.apexcharts.ApexChartsBuilder;
 import com.github.appreciated.apexcharts.config.builder.ChartBuilder;
 import com.github.appreciated.apexcharts.config.builder.LegendBuilder;
@@ -10,13 +12,13 @@ import com.github.appreciated.apexcharts.config.responsive.builder.OptionsBuilde
 
 public class PieChartExample extends ApexChartsBuilder {
 
-   public PieChartExample() {
+   public PieChartExample(Map<String, Double> sums) {
       withChart(ChartBuilder.get().withType(Type.PIE).build())
-            .withLabels("Team A", "Team B", "Team C", "Team D", "Team E")
+            .withLabels(sums.keySet().toArray(String[]::new))
             .withLegend(LegendBuilder.get()
                   .withPosition(Position.RIGHT)
                   .build())
-            .withSeries(44.0, 55.0, 13.0, 43.0, 22.0)
+            .withSeries(sums.values().toArray(Double[]::new))
             .withResponsive(ResponsiveBuilder.get()
                   .withBreakpoint(480.0)
                   .withOptions(OptionsBuilder.get()

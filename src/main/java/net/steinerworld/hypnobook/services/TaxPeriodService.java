@@ -3,6 +3,7 @@ package net.steinerworld.hypnobook.services;
 import java.io.ByteArrayOutputStream;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import com.vaadin.flow.component.notification.Notification;
 
 import lombok.RequiredArgsConstructor;
+import net.steinerworld.hypnobook.domain.Accounting;
+import net.steinerworld.hypnobook.domain.Category;
 import net.steinerworld.hypnobook.domain.TaxPeriod;
 import net.steinerworld.hypnobook.domain.TaxPeriodState;
 import net.steinerworld.hypnobook.dto.BalanceDto;
@@ -46,7 +49,6 @@ public class TaxPeriodService {
       return Optional.ofNullable(taxRepository.findByStatusEquals(TaxPeriodState.AKTIV));
    }
 
-
    public void changeActiveTaxPeriod(TaxPeriod current, TaxPeriod future) {
       current.setStatus(TaxPeriodState.GESCHLOSSEN);
       save(current);
@@ -71,5 +73,16 @@ public class TaxPeriodService {
       balanceDto.setCategoryList(catList);
 
       return balanceService.streamBalancePdfSheet(balanceDto);
+   }
+
+   public Map<String, Double> sumByTaxAndCats(TaxPeriod tax) {
+      return catService.findAll().stream()
+            .collect(Collectors.toMap(Category::getBezeichnung, cat -> accountingService.sumAusgabeInTaxPeriodAndCategory(tax, cat)));
+   }
+
+   public void sumByTaxAndMonth(TaxPeriod tax) {
+      List<Accounting> list = accountingService.findAllSortedInPeriode(tax);
+
+
    }
 }
