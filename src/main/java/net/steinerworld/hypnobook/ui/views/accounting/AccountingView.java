@@ -41,7 +41,7 @@ import net.steinerworld.hypnobook.services.TaxPeriodService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
 
 @PermitAll
-@PageTitle("Hypno Book - Accounting")
+@PageTitle("Buchungen")
 @Route(value = "accounting", layout = MainLayout.class)
 @RequiredArgsConstructor
 public class AccountingView extends VerticalLayout {

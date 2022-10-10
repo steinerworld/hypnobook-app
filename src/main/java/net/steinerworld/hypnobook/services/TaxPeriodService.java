@@ -53,6 +53,10 @@ public class TaxPeriodService {
       return Optional.ofNullable(taxRepository.findByStatusEquals(TaxPeriodState.AKTIV));
    }
 
+   public Optional<TaxPeriod> findByBusinessYear(int year) {
+      return taxRepository.findByGeschaeftsjahr(year);
+   }
+
    public void changeActiveTaxPeriod(TaxPeriod current, TaxPeriod future) {
       current.setStatus(TaxPeriodState.GESCHLOSSEN);
       save(current);
@@ -69,7 +73,7 @@ public class TaxPeriodService {
          throw new MaloneyException("Nur für geschlossene Stuerperioden");
       }
 
-      Optional<TaxPeriod> maybeLast = taxRepository.findByGeschaeftsjahr(periode.getGeschaeftsjahr() - 1);
+      Optional<TaxPeriod> maybeLast = findByBusinessYear(periode.getGeschaeftsjahr() - 1);
       BalanceDto balanceDto = balanceService.createDto(periode, maybeLast);
       List<BalanceDto.SumByCategory> catList = catService.findAll().stream()
             .map(cat -> balanceService.createCatSummary(cat, periode, maybeLast))

@@ -85,3 +85,29 @@ vaadin-scroller[slot="drawer"][overflow~="bottom"] {
 .periode-plus-button {
   margin-left: 30px;
 }
+
+.overview-title {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  border: none;
+  font: normal 2em/1 "Aclonica", Helvetica, sans-serif;
+  color: #565656;
+  text-align: center;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  text-shadow: 4px 4px 6px rgba(0,0,0,0.5) ;
+}
+
+.overview-subtitle {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  border: none;
+  font: normal 1.4em/1 "Aclonica", Helvetica, sans-serif;
+  color: #565656;
+  text-align: center;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  text-shadow: 4px 4px 6px rgba(0,0,0,0.5) ;
+}

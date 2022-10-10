@@ -29,7 +29,7 @@ import net.steinerworld.hypnobook.services.CategoryService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
 
 @PermitAll
-@PageTitle("Hypno Book - Category")
+@PageTitle("Kategorien")
 @Route(value = "category", layout = MainLayout.class)
 @RequiredArgsConstructor
 public class CategoryView extends VerticalLayout {
