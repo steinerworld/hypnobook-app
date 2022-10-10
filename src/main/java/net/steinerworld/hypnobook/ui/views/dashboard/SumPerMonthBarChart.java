@@ -1,5 +1,8 @@
 package net.steinerworld.hypnobook.ui.views.dashboard;
 
+import java.text.DateFormatSymbols;
+import java.util.List;
+
 import com.github.appreciated.apexcharts.ApexChartsBuilder;
 import com.github.appreciated.apexcharts.config.builder.ChartBuilder;
 import com.github.appreciated.apexcharts.config.builder.DataLabelsBuilder;
@@ -13,8 +16,19 @@ import com.github.appreciated.apexcharts.config.plotoptions.builder.BarBuilder;
 import com.github.appreciated.apexcharts.config.yaxis.builder.TitleBuilder;
 import com.github.appreciated.apexcharts.helper.Series;
 
-public class VerticalBarChartExample extends ApexChartsBuilder {
-   public VerticalBarChartExample() {
+public class SumPerMonthBarChart extends ApexChartsBuilder {
+
+   public SumPerMonthBarChart(List<Double> ingoing, List<Double> outgoing) {
+      Series<Double> inSerie = new Series<>();
+      inSerie.setName("Einnahmen");
+      inSerie.setData(ingoing.toArray(Double[]::new));
+
+      Series<Double> outSerie = new Series<>();
+      outSerie.setName("Ausgaben");
+      outSerie.setData(outgoing.toArray(Double[]::new));
+
+      String[] months = new DateFormatSymbols().getShortMonths();
+
       withChart(ChartBuilder.get()
             .withType(Type.BAR)
             .build())
@@ -31,15 +45,13 @@ public class VerticalBarChartExample extends ApexChartsBuilder {
                   .withWidth(2.0)
                   .withColors("transparent")
                   .build())
-            .withSeries(new Series<>("Net Profit", "44", "55", "57", "56", "61", "58", "63", "60", "66"),
-                  new Series<>("Revenue", "76", "85", "101", "98", "87", "105", "91", "114", "94"),
-                  new Series<>("Free Cash Flow", "35", "41", "36", "26", "45", "48", "52", "53", "41"))
+            .withSeries(inSerie, outSerie)
             .withYaxis(YAxisBuilder.get()
                   .withTitle(TitleBuilder.get()
-                        .withText("Franken")
+                        .withText("CHF")
                         .build())
                   .build())
-            .withXaxis(XAxisBuilder.get().withCategories("Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct").build())
+            .withXaxis(XAxisBuilder.get().withCategories(months).build())
             .withFill(FillBuilder.get()
                   .withOpacity(1.0).build());
    }

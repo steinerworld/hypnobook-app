@@ -2,6 +2,8 @@ package net.steinerworld.hypnobook.services;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DecimalFormat;
+import java.time.Month;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +18,7 @@ import com.vaadin.flow.component.notification.Notification;
 
 import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.Accounting;
+import net.steinerworld.hypnobook.domain.AccountingType;
 import net.steinerworld.hypnobook.domain.Category;
 import net.steinerworld.hypnobook.domain.TaxPeriod;
 import net.steinerworld.hypnobook.domain.TaxPeriodState;
@@ -28,6 +31,7 @@ import net.steinerworld.hypnobook.repository.TaxPeriodRepository;
 public class TaxPeriodService {
    private static final Logger LOGGER = LoggerFactory.getLogger(TaxPeriodService.class);
    private static final DecimalFormat DF = new DecimalFormat("#,##0.00");
+
    private final TaxPeriodRepository taxRepository;
    private final AccountingService accountingService;
    private final CategoryService catService;
@@ -80,9 +84,22 @@ public class TaxPeriodService {
             .collect(Collectors.toMap(Category::getBezeichnung, cat -> accountingService.sumAusgabeInTaxPeriodAndCategory(tax, cat)));
    }
 
-   public void sumByTaxAndMonth(TaxPeriod tax) {
-      List<Accounting> list = accountingService.findAllSortedInPeriode(tax);
-
-
+   public List<Double> outgoingSumPerMonthByTax(TaxPeriod tax) {
+      List<Double> monthList = Arrays.stream(Month.values()).map(m -> 0.0).collect(Collectors.toList());
+      accountingService.findAllSortedInPeriode(tax).stream()
+            .filter(ac -> ac.getAccountingType() == AccountingType.AUSGABE)
+            .collect(Collectors.groupingBy(ac -> ac.getBuchungsdatum().getMonthValue(), Collectors.summingDouble(Accounting::getAusgabe)))
+            .forEach((monthNr, sum) -> monthList.set(monthNr - 1, sum));
+      return monthList;
    }
+
+   public List<Double> ingoingSumPerMonthByTax(TaxPeriod tax) {
+      List<Double> monthList = Arrays.stream(Month.values()).map(m -> 0.0).collect(Collectors.toList());
+      accountingService.findAllSortedInPeriode(tax).stream()
+            .filter(ac -> ac.getAccountingType() == AccountingType.EINNAHME)
+            .collect(Collectors.groupingBy(ac -> ac.getBuchungsdatum().getMonthValue(), Collectors.summingDouble(Accounting::getEinnahme)))
+            .forEach((monthNr, sum) -> monthList.set(monthNr - 1, sum));
+      return monthList;
+   }
+
 }

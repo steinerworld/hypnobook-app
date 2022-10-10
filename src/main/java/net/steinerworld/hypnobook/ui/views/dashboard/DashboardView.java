@@ -1,5 +1,6 @@
 package net.steinerworld.hypnobook.ui.views.dashboard;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import lombok.RequiredArgsConstructor;
+import net.steinerworld.hypnobook.domain.TaxPeriod;
 import net.steinerworld.hypnobook.services.TaxPeriodService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
 
@@ -31,29 +33,31 @@ public class DashboardView extends VerticalLayout {
       LOGGER.info(">>>> CHART");
       setSizeFull();
 
-      addBarChart();
-      addPieChart();
+      taxService.findActive().ifPresent(tax -> {
+         addBarChart(tax);
+         addPieChart(tax);
+      });
    }
 
-   private void addBarChart() {
-      VerticalBarChartExample example = new VerticalBarChartExample();
+   private void addBarChart(TaxPeriod tax) {
+      LOGGER.info("create inOutBar for {}", tax);
+      List<Double> inSum = taxService.ingoingSumPerMonthByTax(tax);
+      List<Double> outSum = taxService.outgoingSumPerMonthByTax(tax);
+      SumPerMonthBarChart example = new SumPerMonthBarChart(inSum, outSum);
       Div div = new Div(example.build());
       div.setWidth("50%");
       add(div);
    }
 
-   private void addPieChart() {
-      taxService.findActive().ifPresent(tax -> {
-         LOGGER.info("create CatPie for {}", tax);
-         Map<String, Double> realSums = taxService.sumByTaxAndCats(tax).entrySet().stream()
-               .filter(entry -> entry.getValue() > 0)
-               .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+   private void addPieChart(TaxPeriod tax) {
+      LOGGER.info("create CatPie for {}", tax);
+      Map<String, Double> realSums = taxService.sumByTaxAndCats(tax).entrySet().stream()
+            .filter(entry -> entry.getValue() > 0)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-         PieChartExample example = new PieChartExample(realSums);
-         Div div = new Div(example.build());
-         div.setWidth("50%");
-         add(div);
-      });
-
+      SumPerCategoryPieChart example = new SumPerCategoryPieChart(realSums);
+      Div div = new Div(example.build());
+      div.setWidth("50%");
+      add(div);
    }
 }

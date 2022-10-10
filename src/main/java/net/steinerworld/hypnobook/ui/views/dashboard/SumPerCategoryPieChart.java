@@ -10,9 +10,9 @@ import com.github.appreciated.apexcharts.config.chart.Type;
 import com.github.appreciated.apexcharts.config.legend.Position;
 import com.github.appreciated.apexcharts.config.responsive.builder.OptionsBuilder;
 
-public class PieChartExample extends ApexChartsBuilder {
+public class SumPerCategoryPieChart extends ApexChartsBuilder {
 
-   public PieChartExample(Map<String, Double> sums) {
+   public SumPerCategoryPieChart(Map<String, Double> sums) {
       withChart(ChartBuilder.get().withType(Type.PIE).build())
             .withLabels(sums.keySet().toArray(String[]::new))
             .withLegend(LegendBuilder.get()
