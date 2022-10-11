@@ -29,6 +29,7 @@ import com.vaadin.flow.router.RouteAlias;
 
 import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.TaxPeriod;
+import net.steinerworld.hypnobook.domain.TaxPeriodState;
 import net.steinerworld.hypnobook.services.AccountingService;
 import net.steinerworld.hypnobook.services.TaxPeriodService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
@@ -99,14 +100,17 @@ public class DashboardView extends VerticalLayout {
       titleLayout.setJustifyContentMode(JustifyContentMode.CENTER);
       titleLayout.setAlignItems(Alignment.CENTER);
 
+      // Total Einnahmen
       double ingoing = accountingService.sumEinnahmenInPeriode(tax);
       Span inBadge = new Span(createBadgeIcon(VaadinIcon.ARROW_RIGHT), new Span(DF.format(ingoing)));
       inBadge.getElement().getThemeList().add("badge success");
 
+      // Total Ausgaben
       double outgoing = accountingService.sumAusgabenInPeriode(tax);
       Span outBadge = new Span(createBadgeIcon(VaadinIcon.ARROW_LEFT), new Span(DF.format(outgoing)));
       outBadge.getElement().getThemeList().add("badge error");
 
+      // Differenz
       double diff = ingoing - outgoing;
       Span diffBadge = new Span();
       if (diff < 0) {
@@ -120,7 +124,18 @@ public class DashboardView extends VerticalLayout {
          diffBadge.getElement().getThemeList().add("badge primary");
       }
 
-      titleLayout.add(inBadge, outBadge, diffBadge);
+      // Status der Steuerperiode
+      TaxPeriodState taxStatus = tax.getStatus();
+      Span taxStatusBadge = new Span(taxStatus.getCaption());
+      if (taxStatus == TaxPeriodState.GESCHLOSSEN) {
+         taxStatusBadge.getElement().getThemeList().add("badge error");
+      } else if (taxStatus == TaxPeriodState.AKTIV) {
+         taxStatusBadge.getElement().getThemeList().add("badge success");
+      } else {
+         taxStatusBadge.getElement().getThemeList().add("badge");
+      }
+
+      titleLayout.add(inBadge, outBadge, diffBadge, taxStatusBadge);
       add(titleLayout);
    }
 
@@ -131,7 +146,6 @@ public class DashboardView extends VerticalLayout {
    }
 
    private void addBarChart(TaxPeriod tax) {
-      LOGGER.info("create inOutBar for {}", tax);
       Span subTitle = new Span("Ein- und Ausgaben pro Monat");
       subTitle.setClassName("overview-subtitle");
 
@@ -144,7 +158,6 @@ public class DashboardView extends VerticalLayout {
    }
 
    private void addPieChart(TaxPeriod tax) {
-      LOGGER.info("create CatPie for {}", tax);
       Span subTitle = new Span("Ausgaben pro Kategorie");
       subTitle.setClassName("overview-subtitle");
 

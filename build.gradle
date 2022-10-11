@@ -67,3 +67,10 @@ flywayMigrate.dependsOn classes
 tasks.named('test') {
    useJUnitPlatform()
 }
+
+jar {
+   manifest {
+      attributes("Implementation-Title": "Hypno",
+            "Implementation-Version": archiveVersion)
+   }
+}
