@@ -1,6 +1,7 @@
 package net.steinerworld.hypnobook.ui.views.dashboard;
 
 import java.text.DateFormatSymbols;
+import java.util.Arrays;
 import java.util.List;
 
 import com.github.appreciated.apexcharts.ApexChartsBuilder;
@@ -31,6 +32,7 @@ public class SumPerMonthBarChart extends ApexChartsBuilder {
 
       withChart(ChartBuilder.get()
             .withType(Type.BAR)
+            .withForeColor("var(--lumo-body-text-color)")
             .build())
             .withPlotOptions(PlotOptionsBuilder.get()
                   .withBar(BarBuilder.get()
@@ -51,7 +53,9 @@ public class SumPerMonthBarChart extends ApexChartsBuilder {
                         .withText("CHF")
                         .build())
                   .build())
-            .withXaxis(XAxisBuilder.get().withCategories(months).build())
+            .withXaxis(XAxisBuilder.get()
+                  .withCategories(Arrays.copyOf(months, months.length - 1))
+                  .build())
             .withFill(FillBuilder.get()
                   .withOpacity(1.0).build());
    }

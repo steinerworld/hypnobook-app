@@ -13,7 +13,10 @@ import com.github.appreciated.apexcharts.config.responsive.builder.OptionsBuilde
 public class SumPerCategoryPieChart extends ApexChartsBuilder {
 
    public SumPerCategoryPieChart(Map<String, Double> sums) {
-      withChart(ChartBuilder.get().withType(Type.PIE).build())
+      withChart(ChartBuilder.get()
+            .withType(Type.PIE)
+            .withForeColor("var(--lumo-body-text-color)")
+            .build())
             .withLabels(sums.keySet().toArray(String[]::new))
             .withLegend(LegendBuilder.get()
                   .withPosition(Position.RIGHT)
