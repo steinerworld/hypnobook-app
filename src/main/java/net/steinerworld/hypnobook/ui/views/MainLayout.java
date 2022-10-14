@@ -43,7 +43,7 @@ import net.steinerworld.hypnobook.ui.components.appnav.AppNavItem;
 import net.steinerworld.hypnobook.ui.views.about.AboutView;
 import net.steinerworld.hypnobook.ui.views.accounting.AccountingView;
 import net.steinerworld.hypnobook.ui.views.category.CategoryView;
-import net.steinerworld.hypnobook.ui.views.helloworld.HelloWorldView;
+import net.steinerworld.hypnobook.ui.views.dashboard.DashboardView;
 import net.steinerworld.hypnobook.ui.views.taxperiod.TaxPeriodView;
 
 /**
@@ -89,21 +89,19 @@ public class MainLayout extends AppLayout {
         // AppNav is not yet an official component.
         // For documentation, visit https://github.com/vaadin/vcf-nav#readme
         AppNav nav = new AppNav();
-        if (accessChecker.hasAccess(HelloWorldView.class)) {
-            nav.addItem(new AppNavItem("Hello World", HelloWorldView.class, "la la-globe"));
-        }
-        if (accessChecker.hasAccess(AboutView.class)) {
-            nav.addItem(new AppNavItem("About", AboutView.class, "la la-file"));
+        if (accessChecker.hasAccess(DashboardView.class)) {
+            nav.addItem(new AppNavItem("Übersicht", DashboardView.class, "la la-file"));
         }
         if (accessChecker.hasAccess(AccountingView.class)) {
-            nav.addItem(new AppNavItem("Accounting", AccountingView.class, "la la-file"));
+            nav.addItem(new AppNavItem("Buchung", AccountingView.class, "la la-file"));
         }
-
         AppNavItem settingNav = new AppNavItem("Einstellungen");
-        settingNav.addItem(new AppNavItem("TaxPeriod", TaxPeriodView.class, "la la-file"));
-        settingNav.addItem(new AppNavItem("Category", CategoryView.class, "la la-file"));
+        settingNav.addItem(new AppNavItem("Steuerperiode", TaxPeriodView.class, "la la-file"));
+        settingNav.addItem(new AppNavItem("Kategorie", CategoryView.class, "la la-file"));
         nav.addItem(settingNav);
-
+        if (accessChecker.hasAccess(AboutView.class)) {
+            nav.addItem(new AppNavItem("Info", AboutView.class, "la la-file"));
+        }
         return nav;
     }
 

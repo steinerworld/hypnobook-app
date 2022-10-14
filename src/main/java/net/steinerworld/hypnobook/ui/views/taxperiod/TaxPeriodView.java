@@ -48,7 +48,7 @@ import net.steinerworld.hypnobook.services.TaxPeriodService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
 
 @PermitAll
-@PageTitle("Hypno Book - TaxPeriod")
+@PageTitle("Steuerperiode")
 @Route(value = "taxPeriod/:action?/:pid?", layout = MainLayout.class)
 @RequiredArgsConstructor
 public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserver {
