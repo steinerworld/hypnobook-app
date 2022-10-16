@@ -1,10 +1,21 @@
 package net.steinerworld.hypnobook.ui.views.accounting;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.data.renderer.NumberRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -13,8 +24,16 @@ import net.steinerworld.hypnobook.domain.Accounting;
 import net.steinerworld.hypnobook.domain.AccountingType;
 
 public class JournalGrid extends Grid<Accounting> {
+   private static final Logger LOGGER = LoggerFactory.getLogger(JournalGrid.class);
    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
+
+   public interface RemoveListener {
+      void remove(Accounting accounting);
+   }
+
+
+   private final List<RemoveListener> removeListenerList = new ArrayList<>();
 
    public JournalGrid() {
       addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
@@ -32,13 +51,39 @@ public class JournalGrid extends Grid<Accounting> {
             .setHeader("Ausgabe")
             .setWidth("150px")
             .setFlexGrow(0);
-      addColumn(Accounting::getBelegNr).setHeader("Beleg-Nr.")
+      addColumn(Accounting::getBelegNr)
+            .setHeader("Beleg-Nr.")
             .setWidth("140px")
             .setFlexGrow(0);
-      addColumn(buchungstextColumnRenderer()).setHeader("Buchungstext")
+      addColumn(buchungstextColumnRenderer())
+            .setHeader("Buchungstext")
             .setAutoWidth(true)
             .setFlexGrow(1);
+      addColumn(new ComponentRenderer<>(Button::new, (button, account) -> {
+         button.addThemeVariants(ButtonVariant.LUMO_ICON,
+               ButtonVariant.LUMO_ERROR,
+               ButtonVariant.LUMO_TERTIARY);
+         button.addClickListener(e -> removeAccounting(account));
+         button.setIcon(new Icon(VaadinIcon.TRASH));
+      }))
+            .setWidth("80px")
+            .setFlexGrow(0);
       setHeightFull();
+   }
+
+   public void addRemoveListener(RemoveListener listener) {
+      removeListenerList.add(listener);
+   }
+
+   private void removeAccounting(Accounting account) {
+      ConfirmDialog dialog = new ConfirmDialog();
+      dialog.setHeader("Buchung löschen");
+      dialog.setText("Die Buchung " + account.getBelegNr() + " wirklich löschen?");
+      dialog.setCancelable(true);
+      dialog.setRejectable(false);
+      dialog.setConfirmText("Löschen");
+      dialog.addConfirmListener(event -> removeListenerList.forEach(rl -> rl.remove(account)));
+      dialog.open();
    }
 
    private static Renderer<Accounting> buchungsdatumColumnRenderer() {
