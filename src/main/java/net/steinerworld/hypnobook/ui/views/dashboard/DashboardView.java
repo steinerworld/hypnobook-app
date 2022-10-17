@@ -49,7 +49,6 @@ public class DashboardView extends VerticalLayout {
 
    @PostConstruct
    public void initialize() {
-      LOGGER.info(">>>> CHART");
       setSizeFull();
       setAlignItems(Alignment.CENTER);
 
@@ -58,8 +57,7 @@ public class DashboardView extends VerticalLayout {
          removeAll();
          addTitle(tax);
          addSummary(tax);
-         addBarChart(tax);
-         addPieChart(tax);
+         addCharts(tax);
       });
 
       taxService.findActive().ifPresent(taxBinder::setBean);
@@ -94,58 +92,20 @@ public class DashboardView extends VerticalLayout {
    }
 
    private void addSummary(TaxPeriod tax) {
-      HorizontalLayout titleLayout = new HorizontalLayout();
-      titleLayout.setPadding(true);
-      titleLayout.setWidthFull();
-      titleLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-      titleLayout.setAlignItems(Alignment.CENTER);
-
-      // Total Einnahmen
-      double ingoing = accountingService.sumEinnahmenInPeriode(tax);
-      Span inBadge = new Span(createBadgeIcon(VaadinIcon.ARROW_RIGHT), new Span(DF.format(ingoing)));
-      inBadge.getElement().getThemeList().add("badge success");
-
-      // Total Ausgaben
-      double outgoing = accountingService.sumAusgabenInPeriode(tax);
-      Span outBadge = new Span(createBadgeIcon(VaadinIcon.ARROW_LEFT), new Span(DF.format(outgoing)));
-      outBadge.getElement().getThemeList().add("badge error");
-
-      // Differenz
-      double diff = ingoing - outgoing;
-      Span diffBadge = new Span();
-      if (diff < 0) {
-         diffBadge.add(createBadgeIcon(VaadinIcon.ARROW_DOWN), new Span(DF.format(diff)));
-         diffBadge.getElement().getThemeList().add("badge error primary");
-      } else if (diff > 0) {
-         diffBadge.add(createBadgeIcon(VaadinIcon.ARROW_UP), new Span(DF.format(diff)));
-         diffBadge.getElement().getThemeList().add("badge success primary");
-      } else {
-         diffBadge.add(createBadgeIcon(VaadinIcon.CIRCLE_THIN), new Span(DF.format(diff)));
-         diffBadge.getElement().getThemeList().add("badge primary");
-      }
-
-      // Status der Steuerperiode
       TaxPeriodState taxStatus = tax.getStatus();
-      Span taxStatusBadge = new Span(taxStatus.getCaption());
-      if (taxStatus == TaxPeriodState.GESCHLOSSEN) {
-         taxStatusBadge.getElement().getThemeList().add("badge error");
-      } else if (taxStatus == TaxPeriodState.AKTIV) {
-         taxStatusBadge.getElement().getThemeList().add("badge success");
-      } else {
-         taxStatusBadge.getElement().getThemeList().add("badge");
-      }
-
-      titleLayout.add(inBadge, outBadge, diffBadge, taxStatusBadge);
-      add(titleLayout);
+      double ingoing = accountingService.sumEinnahmenInPeriode(tax);
+      double outgoing = accountingService.sumAusgabenInPeriode(tax);
+      add(new TaxSummary(taxStatus, ingoing, outgoing));
    }
 
-   private Icon createBadgeIcon(VaadinIcon vaadinIcon) {
-      Icon icon = vaadinIcon.create();
-      icon.getStyle().set("padding", "var(--lumo-space-xs");
-      return icon;
+   private void addCharts(TaxPeriod tax) {
+      HorizontalLayout layout = new HorizontalLayout();
+      layout.setSizeFull();
+      layout.add(createBarChart(tax), createPieChart(tax));
+      add(layout);
    }
 
-   private void addBarChart(TaxPeriod tax) {
+   private VerticalLayout createBarChart(TaxPeriod tax) {
       Span subTitle = new Span("Ein- und Ausgaben pro Monat");
       subTitle.setClassName("overview-subtitle");
 
@@ -153,11 +113,13 @@ public class DashboardView extends VerticalLayout {
       List<Double> outSum = taxService.outgoingSumPerMonthByTax(tax);
       SumPerMonthBarChart example = new SumPerMonthBarChart(inSum, outSum);
       Div div = new Div(example.build());
-      div.setWidth("50%");
-      add(subTitle, div);
+      div.setWidth("100%");
+      VerticalLayout layout = new VerticalLayout(subTitle, div);
+      layout.setAlignItems(Alignment.CENTER);
+      return layout;
    }
 
-   private void addPieChart(TaxPeriod tax) {
+   private VerticalLayout createPieChart(TaxPeriod tax) {
       Span subTitle = new Span("Ausgaben pro Kategorie");
       subTitle.setClassName("overview-subtitle");
 
@@ -167,7 +129,9 @@ public class DashboardView extends VerticalLayout {
 
       SumPerCategoryPieChart example = new SumPerCategoryPieChart(realSums);
       Div div = new Div(example.build());
-      div.setWidth("50%");
-      add(subTitle, div);
+      div.setWidth("100%");
+      VerticalLayout layout = new VerticalLayout(subTitle, div);
+      layout.setAlignItems(Alignment.CENTER);
+      return layout;
    }
 }
