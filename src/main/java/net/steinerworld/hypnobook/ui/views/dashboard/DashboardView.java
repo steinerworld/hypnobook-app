@@ -1,6 +1,8 @@
 package net.steinerworld.hypnobook.ui.views.dashboard;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
@@ -26,6 +30,8 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.server.InputStreamFactory;
+import com.vaadin.flow.server.StreamResource;
 
 import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.TaxPeriod;
@@ -49,17 +55,16 @@ public class DashboardView extends VerticalLayout {
 
    @PostConstruct
    public void initialize() {
-      LOGGER.info(">>>> CHART");
       setSizeFull();
       setAlignItems(Alignment.CENTER);
 
       taxBinder.addStatusChangeListener(event -> {
-         TaxPeriod tax = taxBinder.getBean();
          removeAll();
+         TaxPeriod tax = taxBinder.getBean();
          addTitle(tax);
          addSummary(tax);
-         addBarChart(tax);
-         addPieChart(tax);
+         addCharts(tax);
+         addActionButtons(tax);
       });
 
       taxService.findActive().ifPresent(taxBinder::setBean);
@@ -145,7 +150,14 @@ public class DashboardView extends VerticalLayout {
       return icon;
    }
 
-   private void addBarChart(TaxPeriod tax) {
+   private void addCharts(TaxPeriod tax) {
+      HorizontalLayout layout = new HorizontalLayout();
+      layout.setWidthFull();
+      layout.add(createBarChart(tax), createPieChart(tax));
+      add(layout);
+   }
+
+   private VerticalLayout createBarChart(TaxPeriod tax) {
       Span subTitle = new Span("Ein- und Ausgaben pro Monat");
       subTitle.setClassName("overview-subtitle");
 
@@ -153,11 +165,13 @@ public class DashboardView extends VerticalLayout {
       List<Double> outSum = taxService.outgoingSumPerMonthByTax(tax);
       SumPerMonthBarChart example = new SumPerMonthBarChart(inSum, outSum);
       Div div = new Div(example.build());
-      div.setWidth("50%");
-      add(subTitle, div);
+      div.setWidth("100%");
+      VerticalLayout layout = new VerticalLayout(subTitle, div);
+      layout.setAlignItems(Alignment.CENTER);
+      return layout;
    }
 
-   private void addPieChart(TaxPeriod tax) {
+   private VerticalLayout createPieChart(TaxPeriod tax) {
       Span subTitle = new Span("Ausgaben pro Kategorie");
       subTitle.setClassName("overview-subtitle");
 
@@ -167,7 +181,56 @@ public class DashboardView extends VerticalLayout {
 
       SumPerCategoryPieChart example = new SumPerCategoryPieChart(realSums);
       Div div = new Div(example.build());
-      div.setWidth("50%");
-      add(subTitle, div);
+      div.setWidth("100%");
+      VerticalLayout layout = new VerticalLayout(subTitle, div);
+      layout.setAlignItems(Alignment.CENTER);
+      return layout;
    }
+
+   private void addActionButtons(TaxPeriod tax) {
+      HorizontalLayout layout = new HorizontalLayout();
+
+      Button activateTaxButton = new Button("Aktivieren", e -> confirmChangeActiveTaxperiode(taxBinder.getBean()));
+      activateTaxButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
+      Anchor balancePdf = buildAnchorForTaxSheet();
+
+      activateTaxButton.setVisible(tax.getStatus() != TaxPeriodState.AKTIV);
+      balancePdf.setVisible(tax.getStatus() == TaxPeriodState.GESCHLOSSEN);
+
+      layout.add(activateTaxButton, balancePdf);
+      add(layout);
+   }
+
+   private Anchor buildAnchorForTaxSheet() {
+      Anchor anchor = new Anchor(new StreamResource("Jahresabschluss.pdf", (InputStreamFactory) () -> {
+         ByteArrayOutputStream os = taxService.streamBalanceSheet(taxBinder.getBean());
+         return new ByteArrayInputStream(os.toByteArray());
+      }), "");
+      anchor.getElement().setAttribute("download", true);
+      anchor.add(new Button("Download Jahresabschluss"));
+      return anchor;
+   }
+
+   private void confirmChangeActiveTaxperiode(TaxPeriod periode) {
+      Optional<TaxPeriod> maybeActive = taxService.findActive();
+      if (maybeActive.isPresent()) {
+         TaxPeriod active = maybeActive.get();
+         ConfirmDialog dialog = new ConfirmDialog();
+         dialog.setHeader("Aktivierung der Steuerperiode " + periode.getGeschaeftsjahr());
+         dialog.setText("Die aktuell aktive Steuerperiode '" + active.getGeschaeftsjahr() + "' wird geschlossen.");
+
+         dialog.setCancelable(true);
+         dialog.setConfirmText("Aktivieren");
+         dialog.setConfirmButtonTheme("error primary");
+         dialog.addConfirmListener(e -> {
+            taxService.changeActiveTaxPeriod(active, periode);
+            taxService.findActive().ifPresent(taxBinder::setBean);
+         });
+         dialog.open();
+      } else {
+         LOGGER.info("Keine aktive Steuerperiode gefunden -> einfach machen");
+      }
+   }
+
 }

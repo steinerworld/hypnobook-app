@@ -131,6 +131,11 @@ public class AccountingView extends VerticalLayout {
             Notification.show("TaxPeriod geschlossen! Keine Bearbeitung möglich");
          }
       });
+      grid.addRemoveListener(acc -> {
+         accountingService.delete(acc);
+         loadAccountingData(grid);
+         Notification.show("Buchung wurde gelöscht");
+      });
       taxBinder.addStatusChangeListener(e -> loadAccountingData(grid));
       ingoingBinder.addStatusChangeListener(e -> loadAccountingData(grid));
       outgoingBinder.addStatusChangeListener(e -> loadAccountingData(grid));

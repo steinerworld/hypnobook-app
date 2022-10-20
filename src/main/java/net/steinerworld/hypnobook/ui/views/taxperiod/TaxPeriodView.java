@@ -1,7 +1,5 @@
 package net.steinerworld.hypnobook.ui.views.taxperiod;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,10 +14,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
@@ -37,8 +33,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.InputStreamFactory;
-import com.vaadin.flow.server.StreamResource;
 
 import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.TaxPeriod;
@@ -175,56 +169,8 @@ public class TaxPeriodView extends HorizontalLayout implements BeforeEnterObserv
       });
       save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-      Button changeStatus = new Button("Aktivieren", e -> confirmChangeActiveTaxperiode(taxBinder.getBean()));
-      changeStatus.addThemeVariants(ButtonVariant.LUMO_ERROR);
-
-      Anchor balancePdf = buildAnchorForTaxSheet();
-
-      taxBinder.addStatusChangeListener(e -> {
-         Optional<TaxPeriod> maybeSP = Optional.ofNullable((TaxPeriod) e.getBinder().getBean());
-         if (maybeSP.isPresent()) {
-            changeStatus.setVisible(maybeSP.get().getStatus() == TaxPeriodState.ERSTELLT);
-            balancePdf.setVisible(maybeSP.get().getStatus() == TaxPeriodState.GESCHLOSSEN);
-         } else {
-            changeStatus.setVisible(false);
-            balancePdf.setVisible(false);
-         }
-      });
-
-      buttonLayout.add(save, cancel, changeStatus, balancePdf);
+      buttonLayout.add(save, cancel);
       return buttonLayout;
-   }
-
-   private Anchor buildAnchorForTaxSheet() {
-      Anchor anchor = new Anchor(new StreamResource("Jahresabschluss.pdf", (InputStreamFactory) () -> {
-         ByteArrayOutputStream os = taxService.streamBalanceSheet(taxBinder.getBean());
-         return new ByteArrayInputStream(os.toByteArray());
-      }), "");
-      anchor.getElement().setAttribute("download", true);
-      anchor.add(new Button("Download Jahresabschluss"));
-      return anchor;
-   }
-
-   private void confirmChangeActiveTaxperiode(TaxPeriod periode) {
-      Optional<TaxPeriod> maybeActive = taxService.findActive();
-      if (maybeActive.isPresent()) {
-         TaxPeriod active = maybeActive.get();
-         ConfirmDialog dialog = new ConfirmDialog();
-         dialog.setHeader("Konsequenzen der Aktivierung ver Steuerperiode " + periode.getGeschaeftsjahr());
-         dialog.setText("Du schliesst somit die aktuell aktive Steuerperiode '" + active.getGeschaeftsjahr()
-               + "'\nDas kann nicht mehr rückgängig gemacht werden!");
-
-         dialog.setCancelable(true);
-         dialog.setConfirmText("Aktivieren");
-         dialog.setConfirmButtonTheme("error primary");
-         dialog.addConfirmListener(e -> {
-            taxService.changeActiveTaxPeriod(active, periode);
-            periodeListBox.setItems(taxService.findAll());
-         });
-         dialog.open();
-      } else {
-         LOGGER.info("Keine aktive Steuerperiode gefunden -> einfach machen");
-      }
    }
 
    @Override public void beforeEnter(BeforeEnterEvent event) {

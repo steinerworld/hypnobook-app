@@ -5,7 +5,7 @@ flyway:
 
 spring:
   datasource:
-    url: jdbc:postgresql://10.12.0.1:5435/hypnobook
+    url: jdbc:postgresql://localhost:5435/hypnobook
     password: appuser
     username: appuser
     ucm:
@@ -31,4 +31,4 @@ vaadin:
     launch-browser: true
     # To improve the performance during development.
     # For more information https://vaadin.com/docs/flow/spring/tutorial-spring-configuration.html#special-configuration-parameters
-    whitelisted-packages: com.vaadin,org.vaadin,dev.hilla,ch.martinelli.wstage22.vaadin
+    whitelisted-packages: com.vaadin, org.vaadin, dev.hilla, net.steinerworld.hypnobook

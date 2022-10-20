@@ -12,7 +12,6 @@ import com.vaadin.flow.spring.security.VaadinWebSecurity;
 
 import net.steinerworld.hypnobook.ui.views.login.LoginView;
 
-
 @EnableWebSecurity
 @Configuration
 public class WebSecurityConfig extends VaadinWebSecurity {

@@ -3,6 +3,8 @@ package net.steinerworld.hypnobook.services;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ import net.steinerworld.hypnobook.repository.AccountingRepository;
 @Service
 @RequiredArgsConstructor
 public class AccountingService {
+   private static final Logger LOGGER = LoggerFactory.getLogger(AccountingService.class);
    private final AccountingRepository accountRepo;
 
    public List<Accounting> findAllSortedInPeriode(TaxPeriod periode) {
@@ -45,6 +48,11 @@ public class AccountingService {
 
    public void save(Accounting accounting) {
       accountRepo.save(accounting);
+   }
+
+   public void delete(Accounting accounting) {
+      LOGGER.info("delete {}", accounting);
+      accountRepo.delete(accounting);
    }
 
    public String getNextBelegNr(AccountingType type) {
