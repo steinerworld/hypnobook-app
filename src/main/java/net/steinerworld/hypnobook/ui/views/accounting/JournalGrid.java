@@ -32,7 +32,6 @@ public class JournalGrid extends Grid<Accounting> {
       void remove(Accounting accounting);
    }
 
-
    private final List<RemoveListener> removeListenerList = new ArrayList<>();
 
    public JournalGrid() {
