@@ -37,8 +37,8 @@ public abstract class AbstractBooking<T> extends Div {
    }
 
    public T withBinder(Binder<Accounting> binder) {
+      belegNrField.setHelperText("leer lassen damit automatisch eine Beleg-Nr generiert wird");
       binder.forField(belegNrField)
-            .asRequired("Ohne Beleg-Nr. geht es nicht")
             .bind(Accounting::getBelegNr, Accounting::setBelegNr);
       binder.forField(buchungsdatumField)
             .withValidator(date -> inValidPeriode(date, binder.getBean()), "Buchungsdatum ist nicht in ausgewählter Steuerperiode")

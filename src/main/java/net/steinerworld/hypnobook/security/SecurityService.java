@@ -1,4 +1,4 @@
-package net.steinerworld.hypnobook.services;
+package net.steinerworld.hypnobook.security;
 
 import java.util.Optional;
 
@@ -6,7 +6,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
@@ -15,10 +15,9 @@ import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.AppUser;
 import net.steinerworld.hypnobook.repository.AppUserRepository;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class SecurityService {
-
    private static final String LOGOUT_SUCCESS_URL = "/";
    private final AppUserRepository appUserRepository;
 

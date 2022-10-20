@@ -10,7 +10,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import lombok.RequiredArgsConstructor;
-import net.steinerworld.hypnobook.services.SecurityService;
+import net.steinerworld.hypnobook.security.SecurityService;
 
 @PageTitle("Login")
 @Route(value = "login")

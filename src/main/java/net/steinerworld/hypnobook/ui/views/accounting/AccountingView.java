@@ -181,11 +181,14 @@ public class AccountingView extends VerticalLayout {
    }
 
    private void saveAccounting(Binder binder) {
+      Accounting acc = (Accounting) binder.getBean();
+      if (acc.getBelegNr() == null || acc.getBelegNr().isBlank()) {
+         acc.setBelegNr(accountingService.getNextBelegNr(acc.getAccountingType()));
+      }
       if (binder.validate().isOk()) {
-         Accounting bean = (Accounting) binder.getBean();
-         accountingService.save(bean);
-         binder.setBean(newBuchhaltung(bean.getAccountingType()));
-         LOGGER.info("save accounting: {}", bean);
+         accountingService.save(acc);
+         binder.setBean(newBuchhaltung(acc.getAccountingType()));
+         LOGGER.info("save accounting: {}", acc);
       } else {
          Notification.show("Keine valide Accounting");
       }
@@ -194,7 +197,6 @@ public class AccountingView extends VerticalLayout {
    private Accounting newBuchhaltung(AccountingType type) {
       return new Accounting()
             .setAccountingType(type)
-            .setBelegNr(accountingService.getNextBelegNr(type))
             .setTaxPeriod(taxBinder.getBean())
             .setBuchungsdatum(LocalDate.now(ZoneId.systemDefault()));
    }

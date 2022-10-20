@@ -37,7 +37,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.AppUser;
 import net.steinerworld.hypnobook.repository.AppUserRepository;
-import net.steinerworld.hypnobook.services.SecurityService;
+import net.steinerworld.hypnobook.security.SecurityService;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNav;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNavItem;
 import net.steinerworld.hypnobook.ui.views.about.AboutView;
