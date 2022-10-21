@@ -1,13 +1,13 @@
 package net.steinerworld.hypnobook;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+
 class ApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void shouldShowSimpleAssertion() {
+		Assertions.assertEquals(1, 1);
 	}
-
 }
