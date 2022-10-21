@@ -4,8 +4,9 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh './gradlew build'
-                archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
+                script {
+                    sh './gradlew clean build test --no-daemon'
+                }
             }
         }
         stage('Test') {
