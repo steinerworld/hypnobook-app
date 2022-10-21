@@ -4,7 +4,7 @@ node {
       echo "BRANCH: ${env.BRANCH_NAME}"
 
       // Buildstatus in Stash auf INPROGRESS setzen
-      step([$class: 'StashNotifier']) // Buildstatus in Stash auf INPROGRESS setzen
+      //step([$class: 'StashNotifier']) // Buildstatus in Stash auf INPROGRESS setzen
 
       stage("Clean & Checkout") {
          checkout scm
@@ -37,6 +37,6 @@ Build-Run       : ${env.BUILD_URL}
       emailext body: msgBody, recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: msgSubject
    } finally {
       // Buildstatus in Stash auf SUCCESS oder FAILURE setzen. Abhängig von currentBuild.result
-      step([$class: 'StashNotifier'])
+      //step([$class: 'StashNotifier'])
    }
 }
