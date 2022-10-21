@@ -2,17 +2,25 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Prepaire') {
             steps {
                 script {
                     sh 'chmod +x gradlew'
-                    sh './gradlew clean build test --no-daemon'
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                script {
+                    sh './gradlew clean build'
                 }
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing..'
+                script {
+                    sh './gradlew test'
+                }
             }
         }
         stage('Deploy') {
