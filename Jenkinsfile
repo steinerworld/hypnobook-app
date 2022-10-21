@@ -3,19 +3,14 @@ node {
       def gradleWrapper = "./gradlew --refresh-dependencies --stacktrace -PbranchName=${env.BRANCH_NAME} -PtagName=${env.TAG_NAME} -PbuildNr=${env.BUILD_NUMBER}"
       echo "BRANCH: ${env.BRANCH_NAME}"
 
-      // Buildstatus in Stash auf INPROGRESS setzen
-      //step([$class: 'StashNotifier']) // Buildstatus in Stash auf INPROGRESS setzen
-
       stage("Clean & Checkout") {
          checkout scm
          sh 'git clean -dxf'
       }
 
       stage("Compile & Test") {
-         try {
+         withGradle {
             sh "${gradleWrapper} clean build check"
-         } finally {
-            junit '**/build/reports/test/*.xml'
          }
       }
 
