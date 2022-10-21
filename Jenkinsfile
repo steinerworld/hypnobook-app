@@ -16,6 +16,13 @@ pipeline {
                 }
             }
         }
+        stage('Build Vaadin Frontend') {
+            steps {
+                script {
+                    sh './gradlew vaadinClean vaadinPrepareFrontend vaadinBuildFrontend'
+                }
+            }
+        }
         stage('Test') {
             steps {
                 script {
