@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        ARCHIVA = credentials('jenkins-user-for-mavel-artifact-repository')
+    }
+
     stages {
         stage('Prepaire') {
             steps {
@@ -23,16 +27,16 @@ pipeline {
                 }
             }
         }
-        stage('Test') {
+        stage('Test & check') {
             steps {
                 script {
-                    sh './gradlew test'
+                    sh './gradlew test check'
                 }
             }
         }
-        stage('Deploy') {
+        stage('Publishing') {
             steps {
-                echo 'Deploying....'
+                sh './gradlew publish'
             }
         }
     }
