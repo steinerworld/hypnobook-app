@@ -83,7 +83,7 @@ publishing {
       maven(MavenPublication) {
          groupId group
          from components.java
-         artifact("$buildDir/libs/hypnobook-0.9.0.jar")
+         artifact("$buildDir/libs/hypnobook-0.9.0-plain.jar")
       }
    }
 
