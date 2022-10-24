@@ -6,11 +6,42 @@ plugins {
    id 'java'
    id 'idea'
    id 'maven-publish'
+   id 'com.bmuschko.docker-spring-boot-application' version '8.1.0'
 }
 
 group = 'net.steinerworld'
-version = '0.9.0'
+version = getVersion()
 sourceCompatibility = '11'
+
+def getVersion() {
+   String buildNr = getBuildNr()
+   String branchName = getBranchName()
+   String tagName = getTagName()
+   String ver = "${MAJOR_VERSION}.${MINOR_VERSION}."
+   if (tagName != null) {
+      ver = tagName
+   } else if (buildNr == null || branchName == null) {
+      ver += "local"
+   } else if ("master".equals(branchName)) {
+      ver += buildNr
+   } else {
+      ver += branchName.replace('/', '-') + "-" + buildNr
+   }
+   println "determined version: $ver"
+   return ver;
+}
+
+def getBranchName() {
+   return project.hasProperty('branchName') ? project.property('branchName') : null
+}
+
+def getTagName() {
+   return project.hasProperty('tagName') ? project.property('tagName') : null
+}
+
+def getBuildNr() {
+   return project.hasProperty('buildNr') ? project.property('buildNr') : null
+}
 
 configurations {
    compileOnly {
@@ -72,8 +103,9 @@ tasks.named('test') {
 
 jar {
    manifest {
-      attributes("Implementation-Title": "Hypno",
-            "Implementation-Version": archiveVersion)
+      attributes("Implementation-Title": "Hypno-Book",
+            "Implementation-Version": version,
+            "Main-Class": "net.steinerworld.hypnobook.Application")
    }
 }
 
@@ -83,7 +115,7 @@ publishing {
       maven(MavenPublication) {
          groupId group
          from components.java
-         artifact("$buildDir/libs/hypnobook-0.9.0-plain.jar")
+         artifact("$buildDir/libs/hypnobook-" + version + ".jar")
       }
    }
 
@@ -92,9 +124,27 @@ publishing {
          url 'https://maven.steinerworld.net/repository/maven-releases/'
 
          credentials {
-            username System.getenv('ARCHIVA_USR')
-            password System.getenv('ARCHIVA_PSW')
+            username System.getenv('REPO_USR')
+            password System.getenv('REPO_PSW')
          }
+      }
+   }
+}
+
+docker {
+   springBootApplication {
+      baseImage = 'azul/zulu-openjdk-alpine:11-latest'
+      ports = [9090, 8080]
+      images = ["steinerworld/hypnobook:${version}"]
+      jvmArgs = ['-Dspring.profiles.active=production', '-Xmx2048m']
+      vaadin {
+         productionMode = true
+      }
+      registryCredentials {
+         url = 'https://index.docker.io/v1/'
+         username = System.getenv('DOCKER_USR')
+         password = System.getenv('DOCKER_PSW')
+         email = 'michael@steinerworld.net'
       }
    }
 }

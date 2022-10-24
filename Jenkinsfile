@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        ARCHIVA = credentials('jenkins-user-for-mavel-artifact-repository')
+        REPO = credentials('jenkins-user-for-mavel-artifact-repository')
+        def gradleWrapper = "./gradlew --refresh-dependencies --stacktrace -PbranchName=${env.BRANCH_NAME} -PtagName=${env.TAG_NAME} -PbuildNr=${env.BUILD_NUMBER}"
     }
 
     stages {
@@ -13,30 +14,23 @@ pipeline {
                 }
             }
         }
-        stage('Build') {
-            steps {
-                script {
-                    sh './gradlew clean build'
-                }
-            }
-        }
         stage('Build Vaadin Frontend') {
             steps {
                 script {
-                    sh './gradlew vaadinClean vaadinPrepareFrontend vaadinBuildFrontend'
+                    sh "${gradleWrapper} clean vaadinClean vaadinPrepareFrontend vaadinBuildFrontend build"
                 }
             }
         }
         stage('Test & check') {
             steps {
                 script {
-                    sh './gradlew test check'
+                    sh "${gradleWrapper} test check"
                 }
             }
         }
         stage('Publishing') {
             steps {
-                sh './gradlew publish'
+                sh "${gradleWrapper} publish"
             }
         }
     }
