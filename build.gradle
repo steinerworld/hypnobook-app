@@ -18,7 +18,7 @@ def getVersion() {
    String branchName = getBranchName()
    String tagName = getTagName()
    String ver = "${MAJOR_VERSION}.${MINOR_VERSION}."
-   if (tagName != null) {
+   if (tagName != null && !tagName.equals("null")) {
       ver = tagName
    } else if (buildNr == null || branchName == null) {
       ver += "local"
