@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        REPO = credentials('jenkins-user-for-mavel-artifact-repository')
         def gradleWrapper = "./gradlew --refresh-dependencies --stacktrace -PbranchName=${env.BRANCH_NAME} -PtagName=${env.TAG_NAME} -PbuildNr=${env.BUILD_NUMBER}"
     }
 
@@ -29,6 +28,9 @@ pipeline {
             }
         }
         stage('Publishing') {
+            environment {
+                REPO = credentials('user-maven-repository')
+            }
             steps {
                 sh "${gradleWrapper} publish"
             }
