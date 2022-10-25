@@ -13,7 +13,7 @@ pipeline {
                 }
             }
         }
-        stage('Build Vaadin Frontend') {
+        stage('Build Frontend & Backend') {
             steps {
                 script {
                     sh "${GRADLE_WRAPPER} clean vaadinClean vaadinPrepareFrontend vaadinBuildFrontend build"
@@ -27,13 +27,40 @@ pipeline {
                 }
             }
         }
-        stage('Publishing') {
+        stage('Publishing jar to Maven-Repo') {
             environment {
                 REPO = credentials('user-maven-repository')
             }
             steps {
-                sh "${GRADLE_WRAPPER} publish"
+                script {
+                    sh "${GRADLE_WRAPPER} publish"
+                }
             }
         }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "${GRADLE_WRAPPER} dockerBuildImage"
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            environment {
+                DOCKER = credentials('user-docker-hub')
+            }
+            steps {
+                script {
+                    sh "${GRADLE_WRAPPER} dockerPushImage"
+                }
+            }
+        }
+        stage('Deploy Image') {
+            steps {
+                script {
+                    sh "echo doIt...."
+                }
+            }
+        }
+
     }
 }

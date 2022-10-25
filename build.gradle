@@ -141,7 +141,7 @@ docker {
          productionMode = true
       }
       registryCredentials {
-         url = 'https://index.docker.io/v1/'
+         url = "${dockerHubRepository}"
          username = System.getenv('DOCKER_USR')
          password = System.getenv('DOCKER_PSW')
          email = 'michael@steinerworld.net'
