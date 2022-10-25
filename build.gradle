@@ -140,14 +140,11 @@ docker {
       vaadin {
          productionMode = true
       }
-      registryCredentials {
-//         url = "${dockerHubRepository}"
-//         username = System.getenv('DOCKER_USR')
-//         password = System.getenv('DOCKER_PSW')
-         url = 'https://index.docker.io/v1/'
-         username = 'steinerworld'
-         password = 'i009Grande'
-         email = 'michael@steinerworld.net'
-      }
+//      registryCredentials {
+//         url = 'https://index.docker.io/v1/'
+//         username = 'steinerworld'
+//         password = 'i009Grande'
+//         email = 'michael@steinerworld.net'
+//      }
    }
 }

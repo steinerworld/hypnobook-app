@@ -43,7 +43,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "${GRADLE_WRAPPER} dockerBuildImage"
+                    sh "${GRADLE_WRAPPER} dockerBuildImage -DdockerServerUrl=unix:///var/run/docker.sock"
                 }
             }
         }
@@ -53,7 +53,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "${GRADLE_WRAPPER} dockerPushImage"
+                    sh "${GRADLE_WRAPPER} dockerPushImage -DdockerServerUrl=unix:///var/run/docker.sock"
                 }
             }
         }
