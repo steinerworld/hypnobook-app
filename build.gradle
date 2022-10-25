@@ -140,11 +140,11 @@ docker {
       vaadin {
          productionMode = true
       }
-//      registryCredentials {
-//         url = 'https://index.docker.io/v1/'
-//         username = 'steinerworld'
-//         password = 'i009Grande'
-//         email = 'michael@steinerworld.net'
-//      }
+      registryCredentials {
+         url = 'docker.io'
+         username = 'steinerworld'
+         password = 'i009Grande'
+         email = 'michael@steinerworld.net'
+      }
    }
 }
