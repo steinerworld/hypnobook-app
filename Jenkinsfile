@@ -43,7 +43,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "set DOCKER_HOST=10.12.0.1:2375"
+                    sh "export DOCKER_HOST=10.12.0.1:2375"
                     sh "${GRADLE_WRAPPER} dockerBuildImage"
                 }
             }
