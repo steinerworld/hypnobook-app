@@ -38,9 +38,6 @@ pipeline {
             }
         }
         stage('Build Docker Image') {
-            environment {
-                DOCKER = credentials('user-docker-hub')
-            }
             steps {
                 script {
                     sh "${GRADLE_WRAPPER} dockerBuildImage"

@@ -124,8 +124,8 @@ publishing {
          url 'https://maven.steinerworld.net/repository/maven-releases/'
 
          credentials {
-            username System.getenv('REPO_USR')
-            password System.getenv('REPO_PSW')
+            username = System.getenv('REPO_USR')
+            password = System.getenv('REPO_PSW')
          }
       }
    }
@@ -142,8 +142,8 @@ docker {
       }
       registryCredentials {
          url = 'docker.io'
-         username = 'steinerworld'
-         password = 'i009Grande'
+         username = System.getenv('DOCKER_USR')
+         password = System.getenv('DOCKER_PSW')
          email = 'michael@steinerworld.net'
       }
    }
