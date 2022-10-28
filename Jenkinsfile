@@ -11,11 +11,8 @@ pipeline {
                 sh 'chmod +x gradlew'
                 script {
                     def props = readProperties  file: 'gradle.properties'
-                    def major = props.MAJOR_VERSION
-                    def minor = props.MINOR_VERSION
-                    def patch = props.PATCH_VERSION
-                    def buildnr = ${env.BUILD_NUMBER}
-                    currentBuild.description = "version: " + ${major} + "." + ${minor} + "." + ${patch} + "+" + ${buildnr}
+                    def ver = "${props.MAJOR_VERSION}.${props.MINOR_VERSION}.${props.PATCH_VERSION}+${env.BUILD_NUMBER}"
+                    currentBuild.description = "Version: $ver"
                 }
             }
         }
