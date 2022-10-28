@@ -3,11 +3,6 @@ pipeline {
 
     environment {
         GRADLE_WRAPPER = "./gradlew --refresh-dependencies --stacktrace -PbranchName=${env.BRANCH_NAME} -PtagName=${env.TAG_NAME} -PbuildNr=${env.BUILD_NUMBER}"
-        props = readProperties file: 'gradle.properties'
-        cptSpecVersion = props.serverRequiresSpecVersion
-        cptClientVersion = props.cptClientVersionInUse
-        cptInterfaceVersion = props.cptInterfaceVersion
-        currentBuild.description = "CPT Spec: $cptSpecVersion<br/>CPT Client: $cptClientVersion<br/>CPT Interface: $cptInterfaceVersion"
     }
 
     stages {
