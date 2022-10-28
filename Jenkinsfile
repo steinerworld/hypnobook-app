@@ -54,10 +54,10 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Image') {
+        stage('Deploy HypnoBook') {
             steps {
                 script {
-                    sh "echo doIt...."
+                    sh "ssh grande@10.12.0.1 'cd /docker/addons/hypno/; docker-compose up -d'"
                 }
             }
         }
