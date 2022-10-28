@@ -9,14 +9,14 @@ pipeline {
         stage('Prepaire') {
             steps {
                 sh 'chmod +x gradlew'
-            }
-            script {
-                def props = readProperties  file: 'gradle.properties'
-                def major = props.MAJOR_VERSION
-                def minor = props.MINOR_VERSION
-                def patch = props.PATCH_VERSION
-                def buildnr = ${env.BUILD_NUMBER}
-                currentBuild.description = "version: $major.$minor.$tatch+$buildnr"
+                script {
+                    def props = readProperties  file: 'gradle.properties'
+                    def major = props.MAJOR_VERSION
+                    def minor = props.MINOR_VERSION
+                    def patch = props.PATCH_VERSION
+                    def buildnr = ${env.BUILD_NUMBER}
+                    currentBuild.description = "version: $major.$minor.$tatch+$buildnr"
+                }
             }
         }
         stage('Build Frontend & Backend') {
