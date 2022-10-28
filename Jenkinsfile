@@ -3,12 +3,25 @@ pipeline {
 
     environment {
         GRADLE_WRAPPER = "./gradlew --refresh-dependencies --stacktrace -PbranchName=${env.BRANCH_NAME} -PtagName=${env.TAG_NAME} -PbuildNr=${env.BUILD_NUMBER}"
+        props = readProperties file: 'gradle.properties'
+        cptSpecVersion = props.serverRequiresSpecVersion
+        cptClientVersion = props.cptClientVersionInUse
+        cptInterfaceVersion = props.cptInterfaceVersion
+        currentBuild.description = "CPT Spec: $cptSpecVersion<br/>CPT Client: $cptClientVersion<br/>CPT Interface: $cptInterfaceVersion"
     }
 
     stages {
         stage('Prepaire') {
             steps {
                 sh 'chmod +x gradlew'
+            }
+            script {
+                def props = readProperties  file: 'gradle.properties'
+                def major = props.MAJOR_VERSION
+                def minor = props.MINOR_VERSION
+                def patch = props.PATCH_VERSION
+                def buildnr = ${env.BUILD_NUMBER}
+                currentBuild.description = "version: $major.$minor.$tatch+$buildnr"
             }
         }
         stage('Build Frontend & Backend') {
