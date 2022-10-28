@@ -8,23 +8,17 @@ pipeline {
     stages {
         stage('Prepaire') {
             steps {
-                script {
-                    sh 'chmod +x gradlew'
-                }
+                sh 'chmod +x gradlew'
             }
         }
         stage('Build Frontend & Backend') {
             steps {
-                script {
-                    sh "${GRADLE_WRAPPER} clean vaadinClean vaadinPrepareFrontend vaadinBuildFrontend build"
-                }
+                sh "${GRADLE_WRAPPER} clean vaadinClean vaadinPrepareFrontend vaadinBuildFrontend build"
             }
         }
         stage('Test & check') {
             steps {
-                script {
-                    sh "${GRADLE_WRAPPER} test check"
-                }
+                sh "${GRADLE_WRAPPER} test check"
             }
         }
         stage('Publishing jar to Maven-Repo') {
@@ -35,9 +29,7 @@ pipeline {
                 REPO = credentials('user-maven-repository')
             }
             steps {
-                script {
-                    sh "${GRADLE_WRAPPER} publish"
-                }
+                sh "${GRADLE_WRAPPER} publish"
             }
         }
         stage('Build Docker Image') {
@@ -45,9 +37,7 @@ pipeline {
                 buildingTag()
             }
             steps {
-                script {
-                    sh "${GRADLE_WRAPPER} dockerBuildImage"
-                }
+                sh "${GRADLE_WRAPPER} dockerBuildImage"
             }
         }
         stage('Push Docker Image') {
@@ -58,9 +48,7 @@ pipeline {
                 DOCKER = credentials('user-docker-hub')
             }
             steps {
-                script {
-                    sh "${GRADLE_WRAPPER} dockerPushImage"
-                }
+                sh "${GRADLE_WRAPPER} dockerPushImage"
             }
         }
         stage('Deploy HypnoBook') {
@@ -68,9 +56,7 @@ pipeline {
                 buildingTag()
             }
             steps {
-                script {
-                    sh "ssh grande@10.12.0.1 'cd /docker/addons/hypno/; docker-compose up -d'"
-                }
+                sh "ssh grande@10.12.0.1 'cd /docker/addons/hypno/; docker-compose up -d'"
             }
         }
     }
