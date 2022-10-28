@@ -17,15 +17,15 @@ def getVersion() {
    String buildNr = getBuildNr()
    String branchName = getBranchName()
    String tagName = getTagName()
-   String ver = "${MAJOR_VERSION}.${MINOR_VERSION}."
+   String ver = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
    if (tagName != null && !tagName.equals("null")) {
       ver = tagName
    } else if (buildNr == null || branchName == null) {
-      ver += "local"
+      ver += "+local"
    } else if ("master".equals(branchName)) {
-      ver += buildNr
+      ver += "+" + buildNr
    } else {
-      ver += branchName.replace('/', '-') + "-" + buildNr
+      ver += "+" + buildNr + "." + branchName.replace('/', '-')
    }
    println "determined version: $ver"
    return ver;
@@ -141,7 +141,7 @@ docker {
          productionMode = true
       }
       registryCredentials {
-         url = 'docker.io'
+         url = '${dockerHubRepository}'
          username = System.getenv('DOCKER_USR')
          password = System.getenv('DOCKER_PSW')
          email = 'michael@steinerworld.net'

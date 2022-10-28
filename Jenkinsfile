@@ -28,6 +28,9 @@ pipeline {
             }
         }
         stage('Publishing jar to Maven-Repo') {
+            when {
+                buildingTag()
+            }
             environment {
                 REPO = credentials('user-maven-repository')
             }
@@ -38,6 +41,9 @@ pipeline {
             }
         }
         stage('Build Docker Image') {
+            when {
+                buildingTag()
+            }
             steps {
                 script {
                     sh "${GRADLE_WRAPPER} dockerBuildImage"
@@ -45,6 +51,9 @@ pipeline {
             }
         }
         stage('Push Docker Image') {
+            when {
+                buildingTag()
+            }
             environment {
                 DOCKER = credentials('user-docker-hub')
             }
@@ -55,12 +64,14 @@ pipeline {
             }
         }
         stage('Deploy HypnoBook') {
+            when {
+                buildingTag()
+            }
             steps {
                 script {
                     sh "ssh grande@10.12.0.1 'cd /docker/addons/hypno/; docker-compose up -d'"
                 }
             }
         }
-
     }
 }
