@@ -15,7 +15,7 @@ pipeline {
                     def minor = props.MINOR_VERSION
                     def patch = props.PATCH_VERSION
                     def buildnr = ${env.BUILD_NUMBER}
-                    currentBuild.description = "version: $major.$minor.$tatch+$buildnr"
+                    currentBuild.description = "version: ${major}.${minor}.${patch}+${buildnr}"
                 }
             }
         }
