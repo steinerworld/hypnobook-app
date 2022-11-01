@@ -119,7 +119,12 @@ task updateVersion {
       var.setProperty("MINOR_VERSION", minor)
       var.setProperty("PATCH_VERSION", patch)
       var.store(myfile.newWriter(), null)
-      println 'gradle.properties updated'
+      println '********************************************'
+      println '********************************************'
+      println 'please check the \'gradle.properties\' file!'
+      println 'New version is \'' + major + '.' + minor + '.' patch +'\''
+      println '********************************************'
+      println '********************************************'
    } else {
       println 'this is not a tag-build: gradle.properties not updated'
    }
