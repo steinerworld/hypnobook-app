@@ -47,7 +47,7 @@ pipeline {
                 DOCKER = credentials('user-docker-hub')
             }
             steps {
-                sh "${GRADLE_WRAPPER} dockerPushImage versionInfoFile"
+                sh "${GRADLE_WRAPPER} dockerPushImage"
             }
         }
         stage('Deploy HypnoBook') {
