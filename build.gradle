@@ -109,6 +109,21 @@ jar {
    }
 }
 
+task updateVersion {
+   if (getTagName() != null && !getTagName().equals("null")) {
+      def (major, minor, patch) = getTagName().tokenize('.')
+      def var = new Properties()
+      File myfile = file("gradle.properties");
+      var.load(myfile.newDataInputStream())
+      var.setProperty("MAJOR_VERSION", major)
+      var.setProperty("MINOR_VERSION", minor)
+      var.setProperty("PATCH_VERSION", patch)
+      var.store(myfile.newWriter(), null)
+      println 'gradle.properties updated'
+   } else {
+      println 'this is not a tag-build: gradle.properties not updated'
+   }
+}
 
 publishing {
    publications {

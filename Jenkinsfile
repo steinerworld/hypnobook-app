@@ -9,6 +9,7 @@ pipeline {
         stage('Prepaire') {
             steps {
                 sh 'chmod +x gradlew'
+                sh "${GRADLE_WRAPPER} updateVersion"
                 script {
                     def props = readProperties  file: 'gradle.properties'
                     def ver = "${props.MAJOR_VERSION}.${props.MINOR_VERSION}.${props.PATCH_VERSION}+${env.BUILD_NUMBER}"
