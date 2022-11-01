@@ -36,7 +36,9 @@ import com.vaadin.flow.server.StreamResource;
 import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.TaxPeriod;
 import net.steinerworld.hypnobook.domain.TaxPeriodState;
+import net.steinerworld.hypnobook.dto.JournalDto;
 import net.steinerworld.hypnobook.services.AccountingService;
+import net.steinerworld.hypnobook.services.JournalSheetService;
 import net.steinerworld.hypnobook.services.TaxPeriodService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
 
@@ -50,6 +52,7 @@ public class DashboardView extends VerticalLayout {
    private static final DecimalFormat DF = new DecimalFormat("#,##0.00");
    private final TaxPeriodService taxService;
    private final AccountingService accountingService;
+   private final JournalSheetService journalSheetService;
 
    private final Binder<TaxPeriod> taxBinder = new Binder<>(TaxPeriod.class);
 
@@ -193,22 +196,36 @@ public class DashboardView extends VerticalLayout {
       Button activateTaxButton = new Button("Aktivieren", e -> confirmChangeActiveTaxperiode(taxBinder.getBean()));
       activateTaxButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
-      Anchor balancePdf = buildAnchorForTaxSheet();
+      Anchor balancePdf = buildAnchorForBalanceSheet();
+      Anchor journalPdf = buildAnchorForJournalSheet();
 
       activateTaxButton.setVisible(tax.getStatus() != TaxPeriodState.AKTIV);
       balancePdf.setVisible(tax.getStatus() == TaxPeriodState.GESCHLOSSEN);
 
-      layout.add(activateTaxButton, balancePdf);
+      layout.add(activateTaxButton, balancePdf, journalPdf);
       add(layout);
    }
 
-   private Anchor buildAnchorForTaxSheet() {
-      Anchor anchor = new Anchor(new StreamResource("Jahresabschluss.pdf", (InputStreamFactory) () -> {
+   private Anchor buildAnchorForBalanceSheet() {
+      String fileName = String.format("Jahresabschluss_%d.pdf", taxBinder.getBean().getGeschaeftsjahr());
+      Anchor anchor = new Anchor(new StreamResource(fileName, (InputStreamFactory) () -> {
          ByteArrayOutputStream os = taxService.streamBalanceSheet(taxBinder.getBean());
          return new ByteArrayInputStream(os.toByteArray());
       }), "");
       anchor.getElement().setAttribute("download", true);
       anchor.add(new Button("Download Jahresabschluss"));
+      return anchor;
+   }
+
+   private Anchor buildAnchorForJournalSheet() {
+      String fileName = String.format("Journal_%d.pdf", taxBinder.getBean().getGeschaeftsjahr());
+      Anchor anchor = new Anchor(new StreamResource(fileName, (InputStreamFactory) () -> {
+         JournalDto dto = journalSheetService.createDto(taxBinder.getBean());
+         ByteArrayOutputStream os = journalSheetService.streamJournalPDF(dto);
+         return new ByteArrayInputStream(os.toByteArray());
+      }), "");
+      anchor.getElement().setAttribute("download", true);
+      anchor.add(new Button("Download Journal"));
       return anchor;
    }
 
