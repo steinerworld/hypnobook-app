@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -21,12 +22,15 @@ public class AboutView extends VerticalLayout {
     public void initialize() {
         setSpacing(false);
 
-        Image img = new Image("images/empty-plant.png", "placeholder plant");
+        String row = AboutView.class.getPackage().getImplementationVersion();
+        String version = row == null ? "" : row;
+        add(new H2("Hypno-Book " + version));
+        Image img = new Image("images/AlterEgoFull.jpeg", "Alter Ego");
         img.setWidth("200px");
         add(img);
 
-        add(new H2("This place intentionally left empty"));
-        add(new Paragraph("It’s a place where you can grow your own UI 🤗"));
+        add(new H4("Developed with love by steinerworld in 2022"));
+        add(new Paragraph("I wish you a successful future for your company Hypnose Steiner. \uD83D\uDC98"));
 
         setSizeFull();
         setJustifyContentMode(JustifyContentMode.CENTER);
