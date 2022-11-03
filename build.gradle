@@ -17,7 +17,7 @@ def getVersion() {
    String buildNr = getBuildNr()
    String branchName = getBranchName()
    String tagName = getTagName()
-   String ver = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
+   String ver = "${MAJOR_VERSION}.${MINOR_VERSION}"
    if (tagName != null && !tagName.equals("null")) {
       ver = tagName
    } else if (buildNr == null || branchName == null) {
@@ -101,11 +101,22 @@ tasks.named('test') {
    useJUnitPlatform()
 }
 
-jar {
+bootJar {
    manifest {
-      attributes("Implementation-Title": "Hypno-Book",
-            "Implementation-Version": version,
-            "Main-Class": "net.steinerworld.hypnobook.Application")
+      attributes(
+            'Main-Class': 'org.springframework.boot.loader.JarLauncher',
+            'Start-Class': 'net.steinerworld.hypnobook.Application',
+            'Spring-Boot-Version': '2.7.3',
+            'Spring-Boot-Classes': 'BOOT-INF/classes/',
+            'Spring-Boot-Lib': 'BOOT-INF/lib/',
+            'Spring-Boot-Classpath-Index': 'BOOT-INF/classpath.idx',
+            'Spring-Boot-Layers-Index': 'BOOT-INF/layers.idx',
+            'Build-date': new Date(),
+            'Name': 'steinerworld/hypnobook',
+            'Implementation-Title': 'Hypno Book',
+            'Implementation-Version': version,
+            'Implementation-Vendor': 'Steinerworld'
+      )
    }
 }
 
