@@ -64,7 +64,7 @@ dependencies {
    implementation 'org.springframework.boot:spring-boot-starter-security'
    implementation 'com.vaadin:vaadin-spring-boot-starter'
    implementation 'com.vaadin:vaadin-core'
-   implementation 'org.flywaydb:flyway-core:9.4.0'
+   implementation 'org.flywaydb:flyway-core:9.6.0'
    implementation 'com.itextpdf:itextpdf:5.5.13.3'
    implementation 'com.github.appreciated:apexcharts:23.0.0'
    compileOnly 'org.projectlombok:lombok'
