@@ -120,26 +120,14 @@ bootJar {
    }
 }
 
-//task updateVersion {
-//   if (getTagName() != null && !getTagName().equals("null")) {
-//      def (major, minor, patch) = getTagName().tokenize('.')
-//      def var = new Properties()
-//      File myfile = file("gradle.properties");
-//      var.load(myfile.newDataInputStream())
-//      var.setProperty("MAJOR_VERSION", major)
-//      var.setProperty("MINOR_VERSION", minor)
-//      var.setProperty("PATCH_VERSION", patch)
-//      var.store(myfile.newWriter(), null)
-//      println '********************************************'
-//      println '********************************************'
-//      println 'please check the \'gradle.properties\' file!'
-//      println 'New version is ' + major + '.' + minor + '.' patch
-//      println '********************************************'
-//      println '********************************************'
-//   } else {
-//      println 'this is not a tag-build: gradle.properties not updated'
-//   }
-//}
+tasks.create('currentVersion') {
+   outputs.file('version.txt')
+   inputs.property('version', project.version)
+
+   doLast {
+      project.file('version.txt') << project.version
+   }
+}
 
 publishing {
    publications {
