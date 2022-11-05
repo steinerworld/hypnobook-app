@@ -1,9 +1,5 @@
 package net.steinerworld.hypnobook.ui.views.about;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 
@@ -18,47 +14,38 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import lombok.RequiredArgsConstructor;
+import net.steinerworld.hypnobook.services.VersionService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
 
 
 @PermitAll
 @PageTitle("About")
 @Route(value = "about", layout = MainLayout.class)
+@RequiredArgsConstructor
 public class AboutView extends VerticalLayout {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AboutView.class);
+   private static final Logger LOGGER = LoggerFactory.getLogger(AboutView.class);
 
-    @PostConstruct
-    public void initialize() {
-        setSpacing(false);
+   private final VersionService versionService;
 
-        add(new H2("Hypno-Book"));
-        add(new Paragraph(getFormattedBuildInfo()));
+   @PostConstruct
+   public void initialize() {
+      setSpacing(false);
 
-        Image img = new Image("images/AlterEgoFull.jpeg", "Alter Ego");
-        img.setWidth("200px");
-        add(img);
+      add(new H2("Hypno-Book"));
+      add(new Paragraph(versionService.getPresentation()));
 
-        add(new H4("Developed with pleasure by steinerworld in 2022"));
-        add(new Paragraph("for my beloved wife and her business 'Hypnose Steiner'. \uD83D\uDC98"));
+      Image img = new Image("images/AlterEgoFull.jpeg", "Alter Ego");
+      img.setWidth("200px");
+      add(img);
 
-        setSizeFull();
-        setJustifyContentMode(JustifyContentMode.CENTER);
-        setDefaultHorizontalComponentAlignment(Alignment.CENTER);
-        getStyle().set("text-align", "center");
-    }
+      add(new H4("Developed with pleasure by steinerworld in 2022"));
+      add(new Paragraph("for my beloved wife and her business 'Hypnose Steiner'. \uD83D\uDC98"));
 
-    private String getFormattedBuildInfo() {
-        try (InputStream stream = getClass().getResourceAsStream("/version.txt")) {
-            if (stream != null) {
-                String[] row = new String(stream.readAllBytes()).split(";");
-                return String.format("Version %s - built at %s", row[0], LocalDateTime.parse(row[1]));
-            } else {
-                return "dev version - build on the fly";
-            }
-        } catch (IOException e) {
-            LOGGER.info("cannot read version file", e);
-            return "E: dev version - build on the fly";
-        }
-    }
+      setSizeFull();
+      setJustifyContentMode(JustifyContentMode.CENTER);
+      setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+      getStyle().set("text-align", "center");
+   }
 
 }

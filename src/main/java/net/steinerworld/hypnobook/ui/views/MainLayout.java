@@ -38,6 +38,7 @@ import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.AppUser;
 import net.steinerworld.hypnobook.repository.AppUserRepository;
 import net.steinerworld.hypnobook.security.SecurityService;
+import net.steinerworld.hypnobook.services.VersionService;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNav;
 import net.steinerworld.hypnobook.ui.components.appnav.AppNavItem;
 import net.steinerworld.hypnobook.ui.views.about.AboutView;
@@ -57,6 +58,7 @@ public class MainLayout extends AppLayout {
     private final SecurityService securityService;
     private final AccessAnnotationChecker accessChecker;
     private final AppUserRepository userRepository;
+    private final VersionService versionService;
 
     @PostConstruct
     public void initialize() {
@@ -76,9 +78,10 @@ public class MainLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
-        H1 appName = new H1("Hypno Book");
+        H1 appName = new H1("Hypno Book " + versionService.getVersion());
         appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
         Header header = new Header(appName);
+
 
         Scroller scroller = new Scroller(createNavigation());
 

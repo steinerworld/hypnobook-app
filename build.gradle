@@ -125,7 +125,7 @@ tasks.create('currentVersion') {
    inputs.property('version', project.version)
 
    doLast {
-      project.file("$buildDir/resources/main/version.txt") << "${project.version};" + new Date()
+      project.file("$buildDir/resources/main/version.txt") << "${project.version};" + new Date().format("dd.MM.yyyy HH:mm")
    }
 }
 
