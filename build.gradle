@@ -101,31 +101,31 @@ tasks.named('test') {
    useJUnitPlatform()
 }
 
-bootJar {
-   manifest {
-      attributes(
-            'Main-Class': 'org.springframework.boot.loader.JarLauncher',
-            'Start-Class': 'net.steinerworld.hypnobook.Application',
-            'Spring-Boot-Version': '2.7.3',
-            'Spring-Boot-Classes': 'BOOT-INF/classes/',
-            'Spring-Boot-Lib': 'BOOT-INF/lib/',
-            'Spring-Boot-Classpath-Index': 'BOOT-INF/classpath.idx',
-            'Spring-Boot-Layers-Index': 'BOOT-INF/layers.idx',
-            'Build-date': new Date(),
-            'Name': 'steinerworld/hypnobook',
-            'Implementation-Title': 'Hypno Book',
-            'Implementation-Version': version,
-            'Implementation-Vendor': 'Steinerworld'
-      )
-   }
-}
+//bootJar {
+//   manifest {
+//      attributes(
+//            'Main-Class': 'org.springframework.boot.loader.JarLauncher',
+//            'Start-Class': 'net.steinerworld.hypnobook.Application',
+//            'Spring-Boot-Version': '2.7.3',
+//            'Spring-Boot-Classes': 'BOOT-INF/classes/',
+//            'Spring-Boot-Lib': 'BOOT-INF/lib/',
+//            'Spring-Boot-Classpath-Index': 'BOOT-INF/classpath.idx',
+//            'Spring-Boot-Layers-Index': 'BOOT-INF/layers.idx',
+//            'Build-date': new Date(),
+//            'Name': 'steinerworld/hypnobook',
+//            'Implementation-Title': 'Hypno Book',
+//            'Implementation-Version': version,
+//            'Implementation-Vendor': 'Steinerworld'
+//      )
+//   }
+//}
 
 tasks.create('currentVersion') {
-   outputs.file('version.txt')
+   outputs.file("$buildDir/resources/main/version.txt")
    inputs.property('version', project.version)
 
    doLast {
-      project.file('version.txt') << project.version
+      project.file("$buildDir/resources/main/version.txt") << "${project.version};" + new Date()
    }
 }
 

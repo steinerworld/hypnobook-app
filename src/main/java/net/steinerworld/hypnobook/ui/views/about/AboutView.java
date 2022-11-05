@@ -2,11 +2,13 @@ package net.steinerworld.hypnobook.ui.views.about;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
-import java.util.jar.Manifest;
+import java.time.LocalDateTime;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
@@ -16,7 +18,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import net.steinerworld.hypnobook.exceptions.MaloneyException;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
 
 
@@ -24,6 +25,8 @@ import net.steinerworld.hypnobook.ui.views.MainLayout;
 @PageTitle("About")
 @Route(value = "about", layout = MainLayout.class)
 public class AboutView extends VerticalLayout {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AboutView.class);
+
     @PostConstruct
     public void initialize() {
         setSpacing(false);
@@ -45,16 +48,16 @@ public class AboutView extends VerticalLayout {
     }
 
     private String getFormattedBuildInfo() {
-        InputStream stream = getClass().getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF");
-        try {
-            Manifest manifest = new Manifest(stream);
-            String rowBuildDate = manifest.getMainAttributes().getValue("Build-date");
-            String rowVersion = AboutView.class.getPackage().getImplementationVersion();
-            String version = Objects.requireNonNullElse(rowVersion, "for development");
-            String build = Objects.requireNonNullElse(rowBuildDate, "now build");
-            return String.format("Version %s - %s", version, build);
+        try (InputStream stream = getClass().getResourceAsStream("/version.txt")) {
+            if (stream != null) {
+                String[] row = new String(stream.readAllBytes()).split(";");
+                return String.format("Version %s - built at %s", row[0], LocalDateTime.parse(row[1]));
+            } else {
+                return "dev version - build on the fly";
+            }
         } catch (IOException e) {
-            throw new MaloneyException("cannot read the manifest", e);
+            LOGGER.info("cannot read version file", e);
+            return "E: dev version - build on the fly";
         }
     }
 

@@ -22,7 +22,7 @@ pipeline {
         }
         stage('Build Frontend & Backend') {
             steps {
-                sh "${GRADLE_WRAPPER} clean vaadinClean vaadinPrepareFrontend vaadinBuildFrontend build"
+                sh "${GRADLE_WRAPPER} clean vaadinClean currentVersion vaadinPrepareFrontend vaadinBuildFrontend build"
             }
         }
         stage('Test & check') {
