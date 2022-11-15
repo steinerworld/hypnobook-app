@@ -5,14 +5,14 @@
  * This file will be overwritten on every run. Any custom changes should be made to vite.config.ts
  */
 import path from 'path';
-import { readFileSync, existsSync, writeFileSync } from 'fs';
+import {existsSync, readFileSync, writeFileSync} from 'fs';
 import * as net from 'net';
 
-import { processThemeResources } from './build/plugins/application-theme-plugin/theme-handle';
-import { rewriteCssUrls } from './build/plugins/theme-loader/theme-loader-utils';
+import {processThemeResources} from './build/plugins/application-theme-plugin/theme-handle';
+import {rewriteCssUrls} from './build/plugins/theme-loader/theme-loader-utils';
 import settings from './build/vaadin-dev-server-settings.json';
-import { defineConfig, mergeConfig, PluginOption, ResolvedConfig, UserConfigFn, OutputOptions, AssetInfo, ChunkInfo } from 'vite';
-import { getManifest } from 'workbox-build';
+import {AssetInfo, ChunkInfo, defineConfig, mergeConfig, OutputOptions, PluginOption, ResolvedConfig, UserConfigFn} from 'vite';
+import {getManifest} from 'workbox-build';
 
 import * as rollup from 'rollup';
 import brotli from 'rollup-plugin-brotli';
@@ -407,12 +407,12 @@ function lenientLitImportPlugin(): PluginOption {
     name: 'vaadin:lenient-lit-import',
     async transform(code, id) {
       const decoratorImports = [
-        /import (.*) from (['"])(lit\/decorators)(['"])/,
-        /import (.*) from (['"])(lit-element\/decorators)(['"])/
+          /import (.*?) from (['"])(lit\/decorators)(['"])/,
+          /import (.*?) from (['"])(lit-element\/decorators)(['"])/
       ];
       const directiveImports = [
-        /import (.*) from (['"])(lit\/directives\/)([^\\.]*)(['"])/,
-        /import (.*) from (['"])(lit-html\/directives\/)([^\\.]*)(['"])/
+          /import (.*?) from (['"])(lit\/directives\/)([^\\.]*?)(['"])/,
+          /import (.*?) from (['"])(lit-html\/directives\/)([^\\.]*?)(['"])/
       ];
 
       decoratorImports.forEach((decoratorImport) => {
@@ -467,15 +467,24 @@ const allowedFrontendFolders = [
 
 function setHmrPortToServerPort(): PluginOption {
   return {
-    name: 'set-hmr-port-to-server-port',
-    configResolved(config) {
-      if (config.server.strictPort && config.server.hmr !== false) {
-        if (config.server.hmr === true) config.server.hmr = {};
-        config.server.hmr = config.server.hmr || {};
-        config.server.hmr.clientPort = config.server.port;
+      name: 'set-hmr-port-to-server-port',
+      configResolved(config) {
+          if (config.server.strictPort && config.server.hmr !== false) {
+              if (config.server.hmr === true) config.server.hmr = {};
+              config.server.hmr = config.server.hmr || {};
+              config.server.hmr.clientPort = config.server.port;
+          }
       }
-    }
   };
+}
+
+function showRecompileReason(): PluginOption {
+    return {
+        name: 'vaadin:why-you-compile',
+        handleHotUpdate(context) {
+            console.log('Recompiling because', context.file, 'changed');
+        }
+    };
 }
 
 export const vaadinConfig: UserConfigFn = (env) => {
@@ -536,19 +545,20 @@ export const vaadinConfig: UserConfigFn = (env) => {
       ]
     },
     plugins: [
-      !devMode && brotli(),
-      devMode && vaadinBundlesPlugin(),
-      devMode && setHmrPortToServerPort(),
-      settings.offlineEnabled && buildSWPlugin({ devMode }),
-      !devMode && statsExtracterPlugin(),
-      themePlugin({devMode}),
-      lenientLitImportPlugin(),
-      postcssLit({
-        include: ['**/*.css', '**/*.css\?*'],
-        exclude: [
-          `${themeFolder}/**/*.css`,
-          `${themeFolder}/**/*.css\?*`,
-          `${themeResourceFolder}/**/*.css`,
+        !devMode && brotli(),
+        devMode && vaadinBundlesPlugin(),
+        devMode && setHmrPortToServerPort(),
+        devMode && showRecompileReason(),
+        settings.offlineEnabled && buildSWPlugin({devMode}),
+        !devMode && statsExtracterPlugin(),
+        themePlugin({devMode}),
+        lenientLitImportPlugin(),
+        postcssLit({
+            include: ['**/*.css', '**/*.css\?*'],
+            exclude: [
+                `${themeFolder}/**/*.css`,
+                `${themeFolder}/**/*.css\?*`,
+                `${themeResourceFolder}/**/*.css`,
           `${themeResourceFolder}/**/*.css\?*`,
           '**/*\?html-proxy*'
         ]
