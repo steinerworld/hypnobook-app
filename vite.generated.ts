@@ -477,7 +477,6 @@ function setHmrPortToServerPort(): PluginOption {
       }
   };
 }
-
 function showRecompileReason(): PluginOption {
     return {
         name: 'vaadin:why-you-compile',
@@ -559,16 +558,16 @@ export const vaadinConfig: UserConfigFn = (env) => {
                 `${themeFolder}/**/*.css`,
                 `${themeFolder}/**/*.css\?*`,
                 `${themeResourceFolder}/**/*.css`,
-          `${themeResourceFolder}/**/*.css\?*`,
-          '**/*\?html-proxy*'
-        ]
-      }),
-      {
-        name: 'vaadin:force-remove-spa-middleware',
-        transformIndexHtml: {
-          enforce: 'pre',
-          transform(_html, { server }) {
-            if (server && !spaMiddlewareForceRemoved) {
+                `${themeResourceFolder}/**/*.css\?*`,
+                '**/*\?html-proxy*'
+            ]
+        }),
+        {
+            name: 'vaadin:force-remove-spa-middleware',
+            transformIndexHtml: {
+                enforce: 'pre',
+                transform(_html, {server}) {
+                    if (server && !spaMiddlewareForceRemoved) {
               server.middlewares.stack = server.middlewares.stack.filter((mw) => {
                 const handleName = '' + mw.handle;
                 return !handleName.includes('viteSpaFallbackMiddleware');

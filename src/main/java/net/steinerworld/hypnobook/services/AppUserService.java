@@ -13,7 +13,7 @@ import net.steinerworld.hypnobook.repository.AppUserRepository;
 public class AppUserService {
    private final AppUserRepository appUserRepository;
 
-   public List<AppUser> findAllUsers() {
+   public List<AppUser> findAll() {
       return appUserRepository.findAll();
    }
 }
