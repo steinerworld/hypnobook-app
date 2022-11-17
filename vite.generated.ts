@@ -568,16 +568,16 @@ export const vaadinConfig: UserConfigFn = (env) => {
                 enforce: 'pre',
                 transform(_html, {server}) {
                     if (server && !spaMiddlewareForceRemoved) {
-              server.middlewares.stack = server.middlewares.stack.filter((mw) => {
-                const handleName = '' + mw.handle;
-                return !handleName.includes('viteSpaFallbackMiddleware');
-              });
-              spaMiddlewareForceRemoved = true;
+                        server.middlewares.stack = server.middlewares.stack.filter((mw) => {
+                            const handleName = '' + mw.handle;
+                            return !handleName.includes('viteSpaFallbackMiddleware');
+                        });
+                        spaMiddlewareForceRemoved = true;
+                    }
+                }
             }
-          }
-        }
-      },
-      hasExportedWebComponents && {
+        },
+        hasExportedWebComponents && {
         name: 'vaadin:inject-entrypoints-to-web-component-html',
         transformIndexHtml: {
           enforce: 'pre',

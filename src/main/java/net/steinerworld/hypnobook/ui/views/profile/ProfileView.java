@@ -1,6 +1,7 @@
 package net.steinerworld.hypnobook.ui.views.profile;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
@@ -14,6 +15,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -46,12 +48,14 @@ public class ProfileView extends HorizontalLayout {
    @PostConstruct
    public void initialize() {
       addUserListBox();
+      addAlterEgo();
       addUserForm();
       userBinder.addStatusChangeListener(event -> LOGGER.info("AppUser: {}", userBinder.getBean()));
    }
 
    private void addUserListBox() {
       ListBox<AppUser> userListBox = new ListBox<>();
+      userListBox.setHeightFull();
       userListBox.setRenderer(new ComponentRenderer<>(this::buildListRenderer));
       userListBox.setItems(appUserService.findAll());
       userListBox.addValueChangeListener(event -> userBinder.setBean(event.getValue()));
@@ -83,6 +87,22 @@ public class ProfileView extends HorizontalLayout {
       row.add(avatar, column);
       row.getStyle().set("line-height", "var(--lumo-line-height-m)");
       return row;
+   }
+
+   private void addAlterEgo() {
+      InputStream ano = getClass().getResourceAsStream("/images/anonymous_user.png");
+      Image alterEgo = new Image();
+      alterEgo.setAlt("Alter Ego");
+      alterEgo.setWidth("200px");
+      alterEgo.setHeight("200px");
+      alterEgo.setVisible(false);
+      add(alterEgo);
+      userBinder.addStatusChangeListener(e -> {
+         AppUser user = userBinder.getBean();
+         StreamResource resource = new StreamResource("profile-pic", () -> new ByteArrayInputStream(user.getProfilePicture()));
+         alterEgo.setSrc(resource);
+         alterEgo.setVisible(true);
+      });
    }
 
    private void addUserForm() {
