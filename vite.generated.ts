@@ -578,16 +578,16 @@ export const vaadinConfig: UserConfigFn = (env) => {
             }
         },
         hasExportedWebComponents && {
-        name: 'vaadin:inject-entrypoints-to-web-component-html',
-        transformIndexHtml: {
-          enforce: 'pre',
-          transform(_html, { path, server }) {
-            if (path !== '/web-component.html') {
-              return;
-            }
+            name: 'vaadin:inject-entrypoints-to-web-component-html',
+            transformIndexHtml: {
+                enforce: 'pre',
+                transform(_html, {path, server}) {
+                    if (path !== '/web-component.html') {
+                        return;
+                    }
 
-            return [
-              {
+                    return [
+                        {
                 tag: 'script',
                 attrs: { type: 'module', src: `/generated/vaadin-web-component.ts` },
                 injectTo: 'head'
