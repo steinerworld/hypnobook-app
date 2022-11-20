@@ -588,13 +588,13 @@ export const vaadinConfig: UserConfigFn = (env) => {
 
                     return [
                         {
-                tag: 'script',
-                attrs: { type: 'module', src: `/generated/vaadin-web-component.ts` },
-                injectTo: 'head'
-              }
-            ]
-          }
-        }
+                            tag: 'script',
+                            attrs: {type: 'module', src: `/generated/vaadin-web-component.ts`},
+                            injectTo: 'head'
+                        }
+                    ]
+                }
+            }
       },
       {
         name: 'vaadin:inject-entrypoints-to-index-html',
