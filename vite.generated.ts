@@ -5,14 +5,14 @@
  * This file will be overwritten on every run. Any custom changes should be made to vite.config.ts
  */
 import path from 'path';
-import {existsSync, readFileSync, writeFileSync} from 'fs';
+import { readFileSync, existsSync, writeFileSync } from 'fs';
 import * as net from 'net';
 
-import {processThemeResources} from './build/plugins/application-theme-plugin/theme-handle';
-import {rewriteCssUrls} from './build/plugins/theme-loader/theme-loader-utils';
+import { processThemeResources } from './build/plugins/application-theme-plugin/theme-handle';
+import { rewriteCssUrls } from './build/plugins/theme-loader/theme-loader-utils';
 import settings from './build/vaadin-dev-server-settings.json';
-import {AssetInfo, ChunkInfo, defineConfig, mergeConfig, OutputOptions, PluginOption, ResolvedConfig, UserConfigFn} from 'vite';
-import {getManifest} from 'workbox-build';
+import { defineConfig, mergeConfig, PluginOption, ResolvedConfig, UserConfigFn, OutputOptions, AssetInfo, ChunkInfo } from 'vite';
+import { getManifest } from 'workbox-build';
 
 import * as rollup from 'rollup';
 import brotli from 'rollup-plugin-brotli';
@@ -407,12 +407,12 @@ function lenientLitImportPlugin(): PluginOption {
     name: 'vaadin:lenient-lit-import',
     async transform(code, id) {
       const decoratorImports = [
-          /import (.*?) from (['"])(lit\/decorators)(['"])/,
-          /import (.*?) from (['"])(lit-element\/decorators)(['"])/
+        /import (.*?) from (['"])(lit\/decorators)(['"])/,
+        /import (.*?) from (['"])(lit-element\/decorators)(['"])/
       ];
       const directiveImports = [
-          /import (.*?) from (['"])(lit\/directives\/)([^\\.]*?)(['"])/,
-          /import (.*?) from (['"])(lit-html\/directives\/)([^\\.]*?)(['"])/
+        /import (.*?) from (['"])(lit\/directives\/)([^\\.]*?)(['"])/,
+        /import (.*?) from (['"])(lit-html\/directives\/)([^\\.]*?)(['"])/
       ];
 
       decoratorImports.forEach((decoratorImport) => {
@@ -467,23 +467,23 @@ const allowedFrontendFolders = [
 
 function setHmrPortToServerPort(): PluginOption {
   return {
-      name: 'set-hmr-port-to-server-port',
-      configResolved(config) {
-          if (config.server.strictPort && config.server.hmr !== false) {
-              if (config.server.hmr === true) config.server.hmr = {};
-              config.server.hmr = config.server.hmr || {};
-              config.server.hmr.clientPort = config.server.port;
-          }
+    name: 'set-hmr-port-to-server-port',
+    configResolved(config) {
+      if (config.server.strictPort && config.server.hmr !== false) {
+        if (config.server.hmr === true) config.server.hmr = {};
+        config.server.hmr = config.server.hmr || {};
+        config.server.hmr.clientPort = config.server.port;
       }
+    }
   };
 }
 function showRecompileReason(): PluginOption {
-    return {
-        name: 'vaadin:why-you-compile',
-        handleHotUpdate(context) {
-            console.log('Recompiling because', context.file, 'changed');
-        }
-    };
+  return {
+    name: 'vaadin:why-you-compile',
+    handleHotUpdate(context) {
+      console.log('Recompiling because', context.file, 'changed');
+    }
+  };
 }
 
 export const vaadinConfig: UserConfigFn = (env) => {
@@ -544,57 +544,57 @@ export const vaadinConfig: UserConfigFn = (env) => {
       ]
     },
     plugins: [
-        !devMode && brotli(),
-        devMode && vaadinBundlesPlugin(),
-        devMode && setHmrPortToServerPort(),
-        devMode && showRecompileReason(),
-        settings.offlineEnabled && buildSWPlugin({devMode}),
-        !devMode && statsExtracterPlugin(),
-        themePlugin({devMode}),
-        lenientLitImportPlugin(),
-        postcssLit({
-            include: ['**/*.css', '**/*.css\?*'],
-            exclude: [
-                `${themeFolder}/**/*.css`,
-                `${themeFolder}/**/*.css\?*`,
-                `${themeResourceFolder}/**/*.css`,
-                `${themeResourceFolder}/**/*.css\?*`,
-                '**/*\?html-proxy*'
-            ]
-        }),
-        {
-            name: 'vaadin:force-remove-spa-middleware',
-            transformIndexHtml: {
-                enforce: 'pre',
-                transform(_html, {server}) {
-                    if (server && !spaMiddlewareForceRemoved) {
-                        server.middlewares.stack = server.middlewares.stack.filter((mw) => {
-                            const handleName = '' + mw.handle;
-                            return !handleName.includes('viteSpaFallbackMiddleware');
-                        });
-                        spaMiddlewareForceRemoved = true;
-                    }
-                }
+      !devMode && brotli(),
+      devMode && vaadinBundlesPlugin(),
+      devMode && setHmrPortToServerPort(),
+      devMode && showRecompileReason(),
+      settings.offlineEnabled && buildSWPlugin({ devMode }),
+      !devMode && statsExtracterPlugin(),
+      themePlugin({devMode}),
+      lenientLitImportPlugin(),
+      postcssLit({
+        include: ['**/*.css', '**/*.css\?*'],
+        exclude: [
+          `${themeFolder}/**/*.css`,
+          `${themeFolder}/**/*.css\?*`,
+          `${themeResourceFolder}/**/*.css`,
+          `${themeResourceFolder}/**/*.css\?*`,
+          '**/*\?html-proxy*'
+        ]
+      }),
+      {
+        name: 'vaadin:force-remove-spa-middleware',
+        transformIndexHtml: {
+          enforce: 'pre',
+          transform(_html, { server }) {
+            if (server && !spaMiddlewareForceRemoved) {
+              server.middlewares.stack = server.middlewares.stack.filter((mw) => {
+                const handleName = '' + mw.handle;
+                return !handleName.includes('viteSpaFallbackMiddleware');
+              });
+              spaMiddlewareForceRemoved = true;
             }
-        },
-        hasExportedWebComponents && {
-            name: 'vaadin:inject-entrypoints-to-web-component-html',
-            transformIndexHtml: {
-                enforce: 'pre',
-                transform(_html, {path, server}) {
-                    if (path !== '/web-component.html') {
-                        return;
-                    }
+          }
+        }
+      },
+      hasExportedWebComponents && {
+        name: 'vaadin:inject-entrypoints-to-web-component-html',
+        transformIndexHtml: {
+          enforce: 'pre',
+          transform(_html, { path, server }) {
+            if (path !== '/web-component.html') {
+              return;
+            }
 
-                    return [
-                        {
-                            tag: 'script',
-                            attrs: {type: 'module', src: `/generated/vaadin-web-component.ts`},
-                            injectTo: 'head'
-                        }
-                    ]
-                }
-            }
+            return [
+              {
+                tag: 'script',
+                attrs: { type: 'module', src: `/generated/vaadin-web-component.ts` },
+                injectTo: 'head'
+              }
+            ]
+          }
+        }
       },
       {
         name: 'vaadin:inject-entrypoints-to-index-html',

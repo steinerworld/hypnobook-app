@@ -27,7 +27,6 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
-import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
@@ -100,12 +99,13 @@ public class ProfileView extends HorizontalLayout {
       alterEgo.setWidth("200px");
       alterEgo.setHeight("200px");
 
-      MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
-      Upload upload = new Upload(buffer);
+      Upload upload = getUploadAreaAlterEgo();
 
-      Div layout = new Div();
+      VerticalLayout layout = new VerticalLayout();
+      layout.setMaxWidth("250px");
       layout.add(alterEgo, upload);
       add(layout);
+
       userBinder.addStatusChangeListener(e -> {
          AppUser user = userBinder.getBean();
          StreamResource resource = new StreamResource("profile-pic", () -> new ByteArrayInputStream(user.getProfilePicture()));
@@ -113,10 +113,12 @@ public class ProfileView extends HorizontalLayout {
       });
    }
 
-   private Upload getUploadButtonAlterEgo() {
+   private Upload getUploadAreaAlterEgo() {
       MemoryBuffer memoryBuffer = new MemoryBuffer();
       Upload singleFileUpload = new Upload(memoryBuffer);
       singleFileUpload.setDropAllowed(false);
+      singleFileUpload.setUploadButton(new Button("Ego"));
+
 
       singleFileUpload.addSucceededListener(event -> {
          // Get information about the uploaded file
@@ -126,6 +128,7 @@ public class ProfileView extends HorizontalLayout {
          String mimeType = event.getMIMEType();
 
          // Do something with the file data
+         LOGGER.info("Filename: {}", fileName);
          // processFile(fileData, fileName, contentLength, mimeType);
       });
       return singleFileUpload;
