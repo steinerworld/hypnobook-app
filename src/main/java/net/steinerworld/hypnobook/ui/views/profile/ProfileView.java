@@ -38,7 +38,7 @@ import com.vaadin.flow.server.StreamResource;
 import elemental.json.Json;
 import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.AppUser;
-import net.steinerworld.hypnobook.domain.Role;
+import net.steinerworld.hypnobook.domain.AppUserRole;
 import net.steinerworld.hypnobook.exceptions.MaloneyException;
 import net.steinerworld.hypnobook.services.AppUserService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
@@ -70,6 +70,7 @@ public class ProfileView extends HorizontalLayout {
 
       Button plusButton = new Button(new Icon(VaadinIcon.PLUS));
       plusButton.addClassName("periode-plus-button");
+      plusButton.addClickListener(e -> Notification.show("Noch nicht implementiert"));
       add(new Div(userListBox, plusButton));
    }
 
@@ -136,14 +137,9 @@ public class ProfileView extends HorizontalLayout {
                uploadButton.setEnabled(!maxFilesReached);
             }).addEventData("event.detail.value");
 
-
       upload.addSucceededListener(event -> {
-         // Get information about the uploaded file
          InputStream fileData = memoryBuffer.getInputStream();
          String fileName = event.getFileName();
-         //         long contentLength = event.getContentLength();
-         //         String mimeType = event.getMIMEType();
-
          processProfilePicture(fileData, fileName);
          upload.getElement().setPropertyJson("files", Json.createArray());
       });
@@ -169,11 +165,12 @@ public class ProfileView extends HorizontalLayout {
       TextField fNameTextField = new TextField("Name");
       TextField uNameTextField = new TextField("Benutzername");
       TextField pWortField = new TextField("Passwort");
+      pWortField.setEnabled(false);
 
-      Select<Role> roleSelect = new Select<>();
+      Select<AppUserRole> roleSelect = new Select<>();
       roleSelect.setLabel("Rolle");
-      roleSelect.setItemLabelGenerator(Role::name);
-      roleSelect.setItems(Role.values());
+      roleSelect.setItemLabelGenerator(AppUserRole::name);
+      roleSelect.setItems(AppUserRole.values());
 
 
       FormLayout layout = new FormLayout(fNameTextField, uNameTextField, pWortField, roleSelect);
@@ -181,6 +178,13 @@ public class ProfileView extends HorizontalLayout {
             new ResponsiveStep("0", 1),
             new ResponsiveStep("500px", 2));
       add(layout);
+
+      userBinder.forField(fNameTextField)
+            .bind(AppUser::getName, AppUser::setName);
+      userBinder.forField(uNameTextField)
+            .bind(AppUser::getUsername, AppUser::setUsername);
+      userBinder.forField(roleSelect)
+            .bind(AppUser::getRoles, AppUser::setRoles);
    }
 
 

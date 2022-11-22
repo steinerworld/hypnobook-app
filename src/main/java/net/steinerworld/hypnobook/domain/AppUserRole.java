@@ -1,5 +1,5 @@
 package net.steinerworld.hypnobook.domain;
 
-public enum Role {
+public enum AppUserRole {
    USER, ADMIN
 }

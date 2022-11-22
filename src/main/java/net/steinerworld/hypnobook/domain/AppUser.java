@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
@@ -26,7 +28,8 @@ public class AppUser {
    @Column(name = "name") private String name;
    @ToString.Exclude
    @Column(name = "pass") private String password;
-   @Column(name = "roles") private String roles;
+   @Enumerated(EnumType.STRING)
+   @Column(name = "roles") private AppUserRole roles;
    @Column(name = "theme") private String theme;
    @ToString.Exclude
    @Lob @Type(type = "org.hibernate.type.ImageType")
