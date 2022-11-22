@@ -1,7 +1,7 @@
 plugins {
    id 'org.springframework.boot' version '2.7.3'
    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
-   id 'com.vaadin' version '23.2.0'
+   id 'com.vaadin' version "${vaadinVersion}"
    id 'org.flywaydb.flyway' version "9.3.0"
    id 'java'
    id 'idea'
@@ -55,7 +55,7 @@ repositories {
 }
 
 ext {
-   set('vaadinVersion', "23.2.0")
+   set('vaadinVersion', "${vaadinVersion}")
 }
 
 dependencies {
@@ -64,9 +64,8 @@ dependencies {
    implementation 'org.springframework.boot:spring-boot-starter-security'
    implementation 'com.vaadin:vaadin-spring-boot-starter'
    implementation 'com.vaadin:vaadin-core'
-   implementation 'org.flywaydb:flyway-core:9.6.0'
+   implementation 'org.flywaydb:flyway-core:9.8.1'
    implementation 'com.itextpdf:itextpdf:5.5.13.3'
-   implementation 'com.github.appreciated:apexcharts:23.0.0'
    compileOnly 'org.projectlombok:lombok'
    developmentOnly 'org.springframework.boot:spring-boot-devtools'
    runtimeOnly 'org.postgresql:postgresql'
@@ -75,7 +74,7 @@ dependencies {
 
    // addon
    implementation 'com.vaadin.componentfactory:togglebutton:2.0.0'
-
+   implementation 'com.github.appreciated:apexcharts:23.0.0'
 }
 
 dependencyManagement {
@@ -156,9 +155,9 @@ docker {
       ports = [9090, 8080]
       images = ["steinerworld/hypnobook:${version}"]
       jvmArgs = ['-Dspring.profiles.active=production', '-Xmx2048m']
-      vaadin {
-         productionMode = true
-      }
+//      vaadin {
+//         productionMode = false
+//      }
       registryCredentials {
          url = '${dockerHubRepository}'
          username = System.getenv('DOCKER_USR')

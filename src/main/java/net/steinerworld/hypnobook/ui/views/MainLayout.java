@@ -45,6 +45,7 @@ import net.steinerworld.hypnobook.ui.views.about.AboutView;
 import net.steinerworld.hypnobook.ui.views.accounting.AccountingView;
 import net.steinerworld.hypnobook.ui.views.category.CategoryView;
 import net.steinerworld.hypnobook.ui.views.dashboard.DashboardView;
+import net.steinerworld.hypnobook.ui.views.profile.ProfileView;
 import net.steinerworld.hypnobook.ui.views.taxperiod.TaxPeriodView;
 
 /**
@@ -53,6 +54,7 @@ import net.steinerworld.hypnobook.ui.views.taxperiod.TaxPeriodView;
 @RequiredArgsConstructor
 public class MainLayout extends AppLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainLayout.class);
+
     private H2 viewTitle;
 
     private final SecurityService securityService;
@@ -93,17 +95,18 @@ public class MainLayout extends AppLayout {
         // For documentation, visit https://github.com/vaadin/vcf-nav#readme
         AppNav nav = new AppNav();
         if (accessChecker.hasAccess(DashboardView.class)) {
-            nav.addItem(new AppNavItem("Übersicht", DashboardView.class, "la la-file"));
+            nav.addItem(new AppNavItem("Übersicht", DashboardView.class).setIcon(createIcon(VaadinIcon.HOME)));
         }
         if (accessChecker.hasAccess(AccountingView.class)) {
-            nav.addItem(new AppNavItem("Buchung", AccountingView.class, "la la-file"));
+            nav.addItem(new AppNavItem("Buchung", AccountingView.class).setIcon(createIcon(VaadinIcon.SCALE_UNBALANCE)));
         }
         AppNavItem settingNav = new AppNavItem("Einstellungen");
-        settingNav.addItem(new AppNavItem("Steuerperiode", TaxPeriodView.class, "la la-file"));
-        settingNav.addItem(new AppNavItem("Kategorie", CategoryView.class, "la la-file"));
+        settingNav.setIcon(createIcon(VaadinIcon.SLIDERS));
+        settingNav.addItem(new AppNavItem("Steuerperiode", TaxPeriodView.class).setIcon(createIcon(VaadinIcon.TASKS)));
+        settingNav.addItem(new AppNavItem("Kategorie", CategoryView.class).setIcon(createIcon(VaadinIcon.TAGS)));
         nav.addItem(settingNav);
         if (accessChecker.hasAccess(AboutView.class)) {
-            nav.addItem(new AppNavItem("Info", AboutView.class, "la la-file"));
+            nav.addItem(new AppNavItem("Info", AboutView.class).setIcon(createIcon(VaadinIcon.INFO_CIRCLE)));
         }
         return nav;
     }
@@ -117,8 +120,7 @@ public class MainLayout extends AppLayout {
             AppUser user = maybeUser.get();
 
             Avatar avatar = new Avatar(user.getUsername());
-            StreamResource resource = new StreamResource("profile-pic",
-                  () -> new ByteArrayInputStream(user.getProfilePicture()));
+            StreamResource resource = new StreamResource("profile-pic", () -> new ByteArrayInputStream(user.getProfilePicture()));
             avatar.setImageResource(resource);
             avatar.setThemeName("xsmall");
             avatar.getElement().setAttribute("tabindex", "-1");
@@ -136,6 +138,7 @@ public class MainLayout extends AppLayout {
             div.getElement().getStyle().set("gap", "var(--lumo-space-s)");
             userName.add(div);
             userName.getSubMenu().addItem("Abmelden", e -> securityService.logout());
+            userName.getSubMenu().addItem("Mein Profil", e -> UI.getCurrent().navigate(ProfileView.class));
             layout.add(createThemeModeToggle(user), userMenu);
         } else {
             Anchor loginLink = new Anchor("login", "Sign in");
@@ -177,7 +180,6 @@ public class MainLayout extends AppLayout {
         userRepository.save(user);
     }
 
-
     @Override
     protected void afterNavigation() {
         super.afterNavigation();
@@ -187,5 +189,11 @@ public class MainLayout extends AppLayout {
     private String getCurrentPageTitle() {
         PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
         return title == null ? "" : title.value();
+    }
+
+    private Icon createIcon(VaadinIcon symbol) {
+        Icon icon = new Icon(symbol);
+        icon.setSize("16px");
+        return icon;
     }
 }
