@@ -1,6 +1,7 @@
 package net.steinerworld.hypnobook.ui.views.profile;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +21,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.listbox.ListBox;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -33,9 +35,11 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 
+import elemental.json.Json;
 import lombok.RequiredArgsConstructor;
 import net.steinerworld.hypnobook.domain.AppUser;
 import net.steinerworld.hypnobook.domain.Role;
+import net.steinerworld.hypnobook.exceptions.MaloneyException;
 import net.steinerworld.hypnobook.services.AppUserService;
 import net.steinerworld.hypnobook.ui.views.MainLayout;
 
@@ -100,38 +104,65 @@ public class ProfileView extends HorizontalLayout {
       alterEgo.setHeight("200px");
 
       Upload upload = getUploadAreaAlterEgo();
+      upload.setVisible(false);
 
       VerticalLayout layout = new VerticalLayout();
+      layout.setAlignItems(Alignment.CENTER);
       layout.setMaxWidth("250px");
       layout.add(alterEgo, upload);
       add(layout);
 
       userBinder.addStatusChangeListener(e -> {
          AppUser user = userBinder.getBean();
-         StreamResource resource = new StreamResource("profile-pic", () -> new ByteArrayInputStream(user.getProfilePicture()));
-         alterEgo.setSrc(resource);
+         if (user != null) {
+            StreamResource resource = new StreamResource("profile-pic", () -> new ByteArrayInputStream(user.getProfilePicture()));
+            alterEgo.setSrc(resource);
+            upload.setVisible(true);
+         }
       });
    }
 
    private Upload getUploadAreaAlterEgo() {
       MemoryBuffer memoryBuffer = new MemoryBuffer();
-      Upload singleFileUpload = new Upload(memoryBuffer);
-      singleFileUpload.setDropAllowed(false);
-      singleFileUpload.setUploadButton(new Button("Ego"));
+      Upload upload = new Upload(memoryBuffer);
+      upload.setDropAllowed(false);
+      Button uploadButton = new Button(new Icon(VaadinIcon.UPLOAD));
+      upload.setUploadButton(uploadButton);
+
+      upload.getElement()
+            .addEventListener("max-files-reached-changed", event -> {
+               boolean maxFilesReached = event.getEventData()
+                     .getBoolean("event.detail.value");
+               uploadButton.setEnabled(!maxFilesReached);
+            }).addEventData("event.detail.value");
 
 
-      singleFileUpload.addSucceededListener(event -> {
+      upload.addSucceededListener(event -> {
          // Get information about the uploaded file
          InputStream fileData = memoryBuffer.getInputStream();
          String fileName = event.getFileName();
-         long contentLength = event.getContentLength();
-         String mimeType = event.getMIMEType();
+         //         long contentLength = event.getContentLength();
+         //         String mimeType = event.getMIMEType();
 
-         // Do something with the file data
-         LOGGER.info("Filename: {}", fileName);
-         // processFile(fileData, fileName, contentLength, mimeType);
+         processProfilePicture(fileData, fileName);
+         upload.getElement().setPropertyJson("files", Json.createArray());
       });
-      return singleFileUpload;
+      return upload;
+   }
+
+   private void processProfilePicture(InputStream is, String fileName) {
+      try {
+         AppUser appUser = userBinder.getBean();
+         if (appUser != null) {
+            appUser.setProfilePicture(is.readAllBytes());
+            AppUser savedUser = appUserService.save(appUser);
+            userBinder.setBean(savedUser);
+            Notification.show("Neues Profilbild gespeichert");
+            LOGGER.info("new ProfilePicture {} saved", fileName);
+         }
+      } catch (IOException e) {
+         throw new MaloneyException("can not save the new ProfilePicture", e);
+      }
    }
 
    private void addUserForm() {

@@ -20,9 +20,6 @@ import com.vaadin.flow.theme.Theme;
 @NpmPackage(value = "onecolor", version = "3.1.0")
 @JsModule("./com/github/appreciated/apexcharts/apexcharts-wrapper.ts")
 
-//@Tag("lit-cropper")
-//@JsModule("./@f0rce/lit-cropper/lit-cropper.js")
-//@NpmPackage(value="cropperjs", version="1.5.11")
 public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
 
 	public static void main(String[] args) {

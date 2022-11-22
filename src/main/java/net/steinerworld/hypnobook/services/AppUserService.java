@@ -16,4 +16,8 @@ public class AppUserService {
    public List<AppUser> findAll() {
       return appUserRepository.findAll();
    }
+
+   public AppUser save(AppUser appUser) {
+      return appUserRepository.save(appUser);
+   }
 }

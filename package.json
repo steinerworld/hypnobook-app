@@ -107,7 +107,6 @@
     "@vaadin/virtual-list": "23.2.8",
     "apexcharts": "3.30.0",
     "construct-style-sheets-polyfill": "3.1.0",
-    "cropperjs": "1.5.11",
     "date-fns": "2.29.3",
     "line-awesome": "1.3.0",
     "lit": "2.3.0",
@@ -235,7 +234,6 @@
       "@vaadin/virtual-list": "23.2.8",
       "apexcharts": "3.30.0",
       "construct-style-sheets-polyfill": "3.1.0",
-      "cropperjs": "1.5.11",
       "date-fns": "2.29.3",
       "line-awesome": "1.3.0",
       "lit": "2.3.0",
@@ -257,7 +255,7 @@
       "workbox-core": "6.5.0",
       "workbox-precaching": "6.5.0"
     },
-    "hash": "fc4748a3db6ffaba9339ae32cbadc22e2572b744e27b7801c7cda9284d3d849a"
+    "hash" : "8d6cb258979a3834264ed9e64849108001340b1814f71e01f80986eed2ba6b96"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -367,7 +365,6 @@
     "line-awesome": "$line-awesome",
     "@vaadin-component-factory/vcf-toggle-button": "$@vaadin-component-factory/vcf-toggle-button",
     "apexcharts": "$apexcharts",
-    "onecolor": "$onecolor",
-    "cropperjs": "$cropperjs"
+    "onecolor" : "$onecolor"
   }
 }

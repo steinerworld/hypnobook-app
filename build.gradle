@@ -75,7 +75,6 @@ dependencies {
    // addon
    implementation 'com.vaadin.componentfactory:togglebutton:2.0.0'
    implementation 'com.github.appreciated:apexcharts:23.0.0'
-//   implementation 'org.vaadin.addons.cropperjs:cropperjs:1.0.2'
 }
 
 dependencyManagement {
