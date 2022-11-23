@@ -17,6 +17,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.tabs.Tab;
@@ -140,7 +141,10 @@ public class AccountingView extends VerticalLayout {
       ingoingBinder.addStatusChangeListener(e -> loadAccountingData(grid));
       outgoingBinder.addStatusChangeListener(e -> loadAccountingData(grid));
 
-      add(grid);
+      Scroller scroller = new Scroller(grid);
+      scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
+      scroller.setWidthFull();
+      add(scroller);
    }
 
    private void loadAccountingData(Grid<Accounting> grid) {

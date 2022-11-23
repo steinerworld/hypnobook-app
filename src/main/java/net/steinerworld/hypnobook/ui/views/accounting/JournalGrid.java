@@ -32,6 +32,7 @@ public class JournalGrid extends Grid<Accounting> {
       void remove(Accounting accounting);
    }
 
+
    private final List<RemoveListener> removeListenerList = new ArrayList<>();
 
    public JournalGrid() {
@@ -67,7 +68,6 @@ public class JournalGrid extends Grid<Accounting> {
       }))
             .setWidth("80px")
             .setFlexGrow(0);
-      setHeightFull();
    }
 
    public void addRemoveListener(RemoveListener listener) {

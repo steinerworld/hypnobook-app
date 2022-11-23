@@ -1,6 +1,7 @@
 package net.steinerworld.hypnobook.ui.views.accounting;
 
 import java.time.LocalDate;
+import java.util.Locale;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -16,6 +17,8 @@ public class IngoingBooking extends AbstractBooking<IngoingBooking> {
 
    public IngoingBooking() {
       super();
+
+      zahlungsdatumField.setLocale(new Locale("de", "CH"));
 
       Component[] comps = {belegNrField, betragField, buchungsdatumField, zahlungseingangCheck, zahlungsdatumField, textField};
       addFormLayoutAndButtons(comps);
