@@ -14,6 +14,7 @@ import com.github.appreciated.apexcharts.config.builder.XAxisBuilder;
 import com.github.appreciated.apexcharts.config.builder.YAxisBuilder;
 import com.github.appreciated.apexcharts.config.chart.Type;
 import com.github.appreciated.apexcharts.config.plotoptions.builder.BarBuilder;
+import com.github.appreciated.apexcharts.config.yaxis.builder.LabelsBuilder;
 import com.github.appreciated.apexcharts.config.yaxis.builder.TitleBuilder;
 import com.github.appreciated.apexcharts.helper.Series;
 
@@ -51,6 +52,11 @@ public class SumPerMonthBarChart extends ApexChartsBuilder {
             .withYaxis(YAxisBuilder.get()
                   .withTitle(TitleBuilder.get()
                         .withText("CHF")
+                        .build())
+                  .withLabels(LabelsBuilder.get()
+                        .withFormatter("function(val) {\n"
+                              + "  return val.toFixed(0)\n"
+                              + "}")
                         .build())
                   .build())
             .withXaxis(XAxisBuilder.get()

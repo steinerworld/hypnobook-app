@@ -143,7 +143,7 @@ public class AccountingView extends VerticalLayout {
 
       Scroller scroller = new Scroller(grid);
       scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
-      scroller.setWidthFull();
+      scroller.setSizeFull();
       add(scroller);
    }
 
