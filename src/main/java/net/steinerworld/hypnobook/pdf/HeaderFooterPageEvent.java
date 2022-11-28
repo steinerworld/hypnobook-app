@@ -1,10 +1,16 @@
 package net.steinerworld.hypnobook.pdf;
 
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.ExceptionConverter;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -16,26 +22,46 @@ https://www.javamadesoeasy.com/2016/06/how-to-set-header-and-footer-in-pdf-in.ht
  */
 public class HeaderFooterPageEvent extends PdfPageEventHelper {
 
-   public void onStartPage(PdfWriter pdfWriter, Document document) {
-      System.out.println("onStartPage() method > Writing header in file");
-      //      Rectangle rect = pdfWriter.getBoxSize("rectangle");
-      Rectangle rect = pdfWriter.getPageSize();
+   public void onStartPage(PdfWriter writer, Document document) {
+      Rectangle rect = writer.getPageSize();
+
+      PdfPTable header = new PdfPTable(2);
+      try {
+         // set defaults
+         header.setWidths(new int[] {2, 24});
+         header.setTotalWidth(rect.getWidth());
+         header.getDefaultCell().setFixedHeight(40);
+         header.getDefaultCell().setBorder(Rectangle.BOTTOM);
+         header.getDefaultCell().setBorderColor(BaseColor.LIGHT_GRAY);
+
+         // add image
+         PdfPCell logo = new PdfPCell();
+         logo.setPaddingBottom(15);
+         logo.setPaddingLeft(10);
+         logo.setBorder(Rectangle.BOTTOM);
+         logo.setBorderColor(BaseColor.LIGHT_GRAY);
+         logo.addElement(new Phrase("LOGO :-)", new Font(Font.FontFamily.HELVETICA, 12)));
+         header.addCell(logo);
+
+         //         Image logo = Image.getInstance(HeaderFooterPageEvent.class.getResource("/icons/icon.png"));
+         //         header.addCell(logo);
 
 
-      // TOP LEFT
-      ColumnText.showTextAligned(pdfWriter.getDirectContent(),
-            Element.ALIGN_CENTER, new Phrase("TOP LEFT"), rect.getLeft(),
-            rect.getTop() - 30, 0);
+         // add text
+         PdfPCell text = new PdfPCell();
+         text.setPaddingBottom(15);
+         text.setPaddingLeft(10);
+         text.setBorder(Rectangle.BOTTOM);
+         text.setBorderColor(BaseColor.LIGHT_GRAY);
+         text.addElement(new Phrase("Buchungsjournal", new Font(Font.FontFamily.HELVETICA, 12)));
+         text.addElement(new Phrase("Hypnose Steiner, Fabrikstrasse 6, 4556 Biberist", new Font(Font.FontFamily.HELVETICA, 8)));
+         header.addCell(text);
 
-      // TOP MEDIUM
-      ColumnText.showTextAligned(pdfWriter.getDirectContent(),
-            Element.ALIGN_CENTER, new Phrase("TOP MEDIUM"),
-            rect.getRight() / 2, rect.getTop() - 30, 0);
-
-      // TOP RIGHT
-      ColumnText.showTextAligned(pdfWriter.getDirectContent(),
-            Element.ALIGN_CENTER, new Phrase("TOP RIGHT"), rect.getRight() - 30,
-            rect.getTop() - 30, 0);
+         // write content
+         header.writeSelectedRows(0, -1, rect.getLeft(), rect.getTop() - 10, writer.getDirectContent());
+      } catch (DocumentException e) {
+         throw new ExceptionConverter(e);
+      }
    }
 
    @Override
