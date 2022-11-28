@@ -21,19 +21,19 @@ public class AccountingService {
    private static final Logger LOGGER = LoggerFactory.getLogger(AccountingService.class);
    private final AccountingRepository accountRepo;
 
-   public List<Accounting> findAllSortedInPeriode(TaxPeriod periode) {
-      return accountRepo.findByTaxPeriod(periode, Sort.by(Sort.Direction.DESC, "buchungsdatum", "id"));
+   public List<Accounting> findAllSortedInPeriode(TaxPeriod periode, Sort.Direction sortDirection) {
+      return accountRepo.findByTaxPeriod(periode, Sort.by(sortDirection, "buchungsdatum", "id"));
    }
 
    public double sumAusgabenInPeriode(TaxPeriod periode) {
-      return findAllSortedInPeriode(periode).stream()
+      return findAllSortedInPeriode(periode, Sort.Direction.DESC).stream()
             .filter(accounting -> Objects.nonNull(accounting.getAusgabe()))
             .mapToDouble(Accounting::getAusgabe)
             .sum();
    }
 
    public double sumEinnahmenInPeriode(TaxPeriod periode) {
-      return findAllSortedInPeriode(periode).stream()
+      return findAllSortedInPeriode(periode, Sort.Direction.DESC).stream()
             .filter(accounting -> Objects.nonNull(accounting.getEinnahme()))
             .mapToDouble(Accounting::getEinnahme)
             .sum();

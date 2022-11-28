@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.vaadin.flow.component.notification.Notification;
@@ -90,7 +91,7 @@ public class TaxPeriodService {
 
    public List<Double> outgoingSumPerMonthByTax(TaxPeriod tax) {
       List<Double> monthList = Arrays.stream(Month.values()).map(m -> 0.0).collect(Collectors.toList());
-      accountingService.findAllSortedInPeriode(tax).stream()
+      accountingService.findAllSortedInPeriode(tax, Sort.Direction.DESC).stream()
             .filter(ac -> ac.getAccountingType() == AccountingType.AUSGABE)
             .collect(Collectors.groupingBy(ac -> ac.getBuchungsdatum().getMonthValue(), Collectors.summingDouble(Accounting::getAusgabe)))
             .forEach((monthNr, sum) -> monthList.set(monthNr - 1, sum));
@@ -99,7 +100,7 @@ public class TaxPeriodService {
 
    public List<Double> ingoingSumPerMonthByTax(TaxPeriod tax) {
       List<Double> monthList = Arrays.stream(Month.values()).map(m -> 0.0).collect(Collectors.toList());
-      accountingService.findAllSortedInPeriode(tax).stream()
+      accountingService.findAllSortedInPeriode(tax, Sort.Direction.DESC).stream()
             .filter(ac -> ac.getAccountingType() == AccountingType.EINNAHME)
             .collect(Collectors.groupingBy(ac -> ac.getBuchungsdatum().getMonthValue(), Collectors.summingDouble(Accounting::getEinnahme)))
             .forEach((monthNr, sum) -> monthList.set(monthNr - 1, sum));

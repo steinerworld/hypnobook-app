@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.itextpdf.text.BaseColor;
@@ -15,6 +16,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
@@ -27,6 +29,7 @@ import net.steinerworld.hypnobook.domain.AccountingType;
 import net.steinerworld.hypnobook.domain.TaxPeriod;
 import net.steinerworld.hypnobook.dto.JournalDto;
 import net.steinerworld.hypnobook.exceptions.MaloneyException;
+import net.steinerworld.hypnobook.pdf.HeaderFooterPageEvent;
 
 @Service
 @RequiredArgsConstructor
@@ -39,21 +42,24 @@ public class JournalSheetService {
    private static final String EMPTY = "";
    private static final Font TITLE_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK);
    private static final Font TEXT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 11, BaseColor.BLACK);
-   private static final Font TEXT_SMALL_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
+   public static final Font TEXT_SMALL_FONT = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
    private static final Font TEXT_BOLD_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, BaseColor.BLACK);
    private static final Font TEXT_ITALIC_SMALLER_FONT = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.ITALIC, BaseColor.BLACK);
    private static final Logger LOGGER = LoggerFactory.getLogger(JournalSheetService.class);
 
-   public JournalDto createDto(TaxPeriod tax) {
+   public JournalDto createDtoSortASC(TaxPeriod tax) {
       return new JournalDto()
             .setCurrentYearCaption(String.valueOf(tax.getGeschaeftsjahr()))
-            .setAccountingList(accService.findAllSortedInPeriode(tax));
+            .setAccountingList(accService.findAllSortedInPeriode(tax, Sort.Direction.ASC));
    }
 
    public ByteArrayOutputStream streamJournalPDF(JournalDto dto) {
       try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-         Document document = new Document();
-         PdfWriter.getInstance(document, os);
+         Document document = new Document(PageSize.A4, 36, 36, 90, 36);
+
+         PdfWriter writer = PdfWriter.getInstance(document, os);
+         writer.setPageEvent(new HeaderFooterPageEvent());
+
          document.open();
 
          Paragraph title = new Paragraph("Buchungsjournal " + dto.getCurrentYearCaption(), TITLE_FONT);
@@ -68,6 +74,7 @@ public class JournalSheetService {
          // Table
          float[] pointColumnWidths = {12f, 13f, 13f, 12f, 50f};
          PdfPTable table = new PdfPTable(pointColumnWidths);
+         table.setHeaderRows(1);
          table.setHorizontalAlignment(Element.ALIGN_LEFT);
          table.setWidthPercentage(100);
          table.setSpacingBefore(25);
