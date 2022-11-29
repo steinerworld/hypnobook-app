@@ -64,11 +64,6 @@ public class JournalSheetService {
          title.setAlignment(Element.ALIGN_CENTER);
          document.add(title);
 
-         Paragraph adr = new Paragraph("Hypnose Steiner, Fabrikstrasse 6, 4556 Biberist", TEXT_FONT);
-         adr.setSpacingBefore(10);
-         adr.setAlignment(Element.ALIGN_CENTER);
-         document.add(adr);
-
          // Table
          float[] pointColumnWidths = {12f, 13f, 13f, 12f, 50f};
          PdfPTable table = new PdfPTable(pointColumnWidths);
