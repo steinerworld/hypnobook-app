@@ -56,10 +56,8 @@ public class JournalSheetService {
    public ByteArrayOutputStream streamJournalPDF(JournalDto dto) {
       try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
          Document document = new Document(PageSize.A4, 36, 36, 90, 36);
-
          PdfWriter writer = PdfWriter.getInstance(document, os);
          writer.setPageEvent(new HeaderFooterPageEvent());
-
          document.open();
 
          Paragraph title = new Paragraph("Buchungsjournal " + dto.getCurrentYearCaption(), TITLE_FONT);
