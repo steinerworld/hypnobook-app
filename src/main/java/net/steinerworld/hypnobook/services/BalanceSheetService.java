@@ -15,6 +15,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
@@ -26,6 +27,7 @@ import net.steinerworld.hypnobook.domain.Category;
 import net.steinerworld.hypnobook.domain.TaxPeriod;
 import net.steinerworld.hypnobook.dto.BalanceDto;
 import net.steinerworld.hypnobook.exceptions.MaloneyException;
+import net.steinerworld.hypnobook.pdf.HeaderFooterPageEvent;
 
 @Service
 @RequiredArgsConstructor
@@ -86,17 +88,12 @@ public class BalanceSheetService {
 
    public ByteArrayOutputStream streamBalancePdfSheet(BalanceDto dto) {
       try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-         Document document = new Document();
-         PdfWriter.getInstance(document, os);
+         Document document = new Document(PageSize.A4, 36, 36, 90, 36);
+         PdfWriter writer = PdfWriter.getInstance(document, os);
+         writer.setPageEvent(new HeaderFooterPageEvent());
          document.open();
 
          document.add(new Paragraph("Geschäftsjahr " + dto.getCurrentYearCaption(), TITLE_FONT));
-
-         Paragraph adr = new Paragraph();
-         adr.setSpacingBefore(10);
-         adr.setFont(TEXT_FONT);
-         adr.add("Hypnose Steiner\nFabrikstrasse 6\n4562 Biberist");
-         document.add(adr);
 
          float[] pointColumnWidths = {3f, 1f, 1f};
          PdfPTable table = new PdfPTable(pointColumnWidths);

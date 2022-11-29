@@ -10,6 +10,7 @@ import javax.annotation.security.PermitAll;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
@@ -17,6 +18,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.tabs.Tab;
@@ -140,12 +142,15 @@ public class AccountingView extends VerticalLayout {
       ingoingBinder.addStatusChangeListener(e -> loadAccountingData(grid));
       outgoingBinder.addStatusChangeListener(e -> loadAccountingData(grid));
 
-      add(grid);
+      Scroller scroller = new Scroller(grid);
+      scroller.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
+      scroller.setSizeFull();
+      add(scroller);
    }
 
    private void loadAccountingData(Grid<Accounting> grid) {
       TaxPeriod cp = taxBinder.getBean();
-      List<Accounting> list = accountingService.findAllSortedInPeriode(cp);
+      List<Accounting> list = accountingService.findAllSortedInPeriode(cp, Sort.Direction.DESC);
       grid.setItems(list);
    }
 

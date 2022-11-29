@@ -220,7 +220,7 @@ public class DashboardView extends VerticalLayout {
    private Anchor buildAnchorForJournalSheet() {
       String fileName = String.format("Journal_%d.pdf", taxBinder.getBean().getGeschaeftsjahr());
       Anchor anchor = new Anchor(new StreamResource(fileName, (InputStreamFactory) () -> {
-         JournalDto dto = journalSheetService.createDto(taxBinder.getBean());
+         JournalDto dto = journalSheetService.createDtoSortASC(taxBinder.getBean());
          ByteArrayOutputStream os = journalSheetService.streamJournalPDF(dto);
          return new ByteArrayInputStream(os.toByteArray());
       }), "");

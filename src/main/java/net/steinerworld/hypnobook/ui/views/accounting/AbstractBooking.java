@@ -1,6 +1,7 @@
 package net.steinerworld.hypnobook.ui.views.accounting;
 
 import java.time.LocalDate;
+import java.util.Locale;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -26,11 +27,13 @@ public abstract class AbstractBooking<T> extends Div {
    protected final Button buchenButton = new Button("Buchen");
    protected final Button cancelButton = new Button("Abbrechen");
 
-   public AbstractBooking() {
+   protected AbstractBooking() {
       setWidthFull();
       Div chfSuffix = new Div();
       chfSuffix.setText("CHF");
       betragField.setSuffixComponent(chfSuffix);
+
+      buchungsdatumField.setLocale(new Locale("de", "CH"));
 
       buchenButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
       cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
