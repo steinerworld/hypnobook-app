@@ -38,7 +38,6 @@ public class JournalGrid extends Grid<Accounting> {
    public JournalGrid() {
       addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
       setSelectionMode(SelectionMode.SINGLE);
-      setAllRowsVisible(true);
       addColumn(buchungsdatumColumnRenderer())
             .setHeader("Datum")
             .setWidth("200px")
