@@ -84,7 +84,7 @@ dependencyManagement {
 }
 
 vaadin {
-   productionMode = false
+   productionMode = true
 }
 
 flyway {
