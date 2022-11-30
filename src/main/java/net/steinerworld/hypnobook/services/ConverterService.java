@@ -11,8 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConverterService {
    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-   private static final DecimalFormatSymbols DE_CH = DecimalFormatSymbols.getInstance(Locale.forLanguageTag("de-CH"));
-   private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,##0.00", DE_CH);
+   private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(Locale.forLanguageTag("de-CH")));
 
    public String localDateToString(LocalDate date) {
       return DATE_TIME_FORMATTER.format(date);
